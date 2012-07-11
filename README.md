@@ -15,16 +15,26 @@ Radix has a pretty hard coded method for it's MVC
 ## Bootstrap the MVC
 
 <pre>
-    require_once('Radix.php');
 
-    // Path
+// Path
 
-    //
-    radix::init()
-    radix::exec();
-    radix::view();
-    radix::send();
+require_once('Radix.php');
+
+radix::init()
+radix::exec();
+radix::view();
+radix::send();
+
 </pre>
 
 ## Radix Provided Interfaces
 
+* Basics: Caching, Cart, IPC, MRU, Session
+
+* Auth with HTTP, Facebook,  Google or Twitter
+* Checkout: Authorize.net, MerchantE, VirtualMerchant
+* Apps: FreeSWITCH
+* Misc API: eNom, Twilio
+* Amazon: S3, MTurk
+* Email: SMTP, IMAP
+* Network: Telnet, IRC, XMPP
