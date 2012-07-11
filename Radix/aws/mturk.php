@@ -1,6 +1,9 @@
 <?php
 /**
+    @file
+    @brief Radix Amazon Mechanical Turk Interface
 
+    @see http://aws.amazon.com/code/Amazon-Mechanical-Turk/464 - old, but had some influence on this library
     @see https://portal.aws.amazon.com/gp/aws/securityCredentials for access keys
 
 */
@@ -16,71 +19,13 @@ class radix_aws_mturk
     private $_access;
     private $_secret;
 
-    /** Sanity Checks **/
-    /* Valid operations, includes types added 10-01-2006 after RegisterHITType */
-    public static $command_list = array(
-        'ApproveAssignment',
-        'ApproveRejectedAssignment',
-        'CreateHIT',
-        'CreateQualificationType',
-        'DisableHIT',
-        'DisposeHIT',
-        'ExtendHIT',
-        'GetAccountBalance',
-        'GetAssignmentsForHIT',
-        'GetHIT',
-        'GetQualificationRequests',
-        'GetQualificationScore',
-        'GetQualificationType',
-        'GetRequesterStatistic',
-        'GetReviewableHITs',
-        'GrantQualification',
-        'Help',
-        'NotifyWorkers',
-        'RejectAssignment',
-        'SearchQualificationTypes',
-        'UpdateQualificationScore',
-        'UpdateQualificationType',
-        'SetHITAsReviewing',
-        'RegisterHITType',
-        'SearchHITs',
-        'ForceExpireHIT',
-        'SetHITTypeNotification',
-        'SendTestEventNotification',
-        'GrantBonus',
-        'GetFileUploadURL',
-        'RejectQualificationRequest',
-        'GetQualificationsForQualificationType'
-    );
-    /* Valid statistics, not fully in use yet */
-    // var $validStats = array("NumberAssignmentsAvailable", "NumberAssignmentsAccepted", "NumberAssignmentsPending",
-    // "NumberAssignmentsApproved", "NumberAssignmentsRejected", "NumberAssignmentsReturned", "NumberAssignmentsAbandoned",
-    // "PercentAssignmentsApproved", "PercentAssignmentsRejected", "TotalRewardPayout", "AverageRewardAmount",
-    // "TotalFeePayout", "TotalRewardAndFeePayout", "NumberHITsCreated", "NumberHITsCompleted", "NumberHITsAssignable",
-    // "NumberHITsReviewable", "EstimatedRewardLiability", "EstimatedFeeLiability", "EstimatedTotalLiability");
-    //
-    // var $validQTS   = array("Active", "Inactive"); /* Qualification Type Status */
-    // var $validSP    = array("AcceptTime", "SubmitTime", "AssignmentStatus");  /* Sort Property for GetAssignmentsForHIT */
-    // var $validGRHSP = array("Title", "Reward", "Expiration", "CreationTime"); /* Sort Property for GetReviewableHITs */
-    // var $validGQRSP = array("QualificationTypeId", "SubmitTime");             /* Sort Property for GetQualificationRequests */
-    // var $validSD    = array("Ascending", "Descending"); /* Sort Direction */
-    // var $validTP    = array("OneDay", "SevenDays", "ThirtyDays", "LifeToDate");
-    // var $validHT    = array("Operation", "ResponseGroup", "AssignmentSummary");
-    // var $validMBR   = array("true", "false"); /* Simple Boolean */
-    // var $validCPT   = array("LessThan", "LessThanOrEqualTo", "GreaterThan", "GreaterThanOrEqualTo", "EqualTo","NotEqualTo", "Exists");
-    // var $validSMO   = array("Reviewable", "Reviewing"); /* StatusMatchOption, or now just Status */
-    // var $validAS    = array("Submitted", "Approved", "Rejected"); /* Assignment Status */
-    // var $validET    = array("AssignmentAccepted", "AssignmentAbandoned", "AssignmentReturned", "AssignmentSubmitted", "HITReviewable", "HITExpired", "Ping"); /* Event Type */
-    // var $validGQS   = array("Granted", "Revoked"); /* Status for GetQualificationsForQualificationType */
     /**
+        @param $a Access Key
+        @param $s Secret Key
+
     */
-    function __construct($a, $s)
+    public function __construct($a, $s)
     {
-        // $this->Service       = "AWSMechanicalTurkRequester";
-        // $this->SecretKey     = $SecretKey;
-        // $this->AccessKey     = $AccessKey;
-        // $this->Version       = $Version;
-        // $this->ResponseGroup = "Minimal";
         $this->_access = $a;
         $this->_secret = $s;
     }
@@ -89,7 +34,7 @@ class radix_aws_mturk
         @param $aid Assignment ID
         @param $rfb Requester Feedback
     */
-    function ApproveAssignment($aid,$rfb=null)
+    public function ApproveAssignment($aid,$rfb=null)
     {
         $arg = array(
             'Operation' => 'ApproveAssignment',
@@ -101,14 +46,54 @@ class radix_aws_mturk
     }
     /**
     */
-    public function ApproveRejectedAssignment()
+    public function ApproveRejectedAssignment($aid,$rfb=null)
     {
-        
+        $arg = array(
+            'Operation' => 'ApproveRejectedAssignment',
+            'AssignmentId' => $aid,
+            'RequesterFeedback' => $rfb,
+        );
+        $r = $this->_http($arg);
+        return $r;
     }
+    /**
+        @param $qti QualificationTypeId
+        @param $wid WorkerId
+        @param $val IntegerValue
+        @param $sn SendNotification
+    */
+    public function AssignQualification($qti,$wid,$val=null,$sn=null)
+    {
+        $arg = array(
+            'Operation' => 'AssignQualification',
+            'QualificationTypeId' => $qti,
+            'WorkerId' => $wid,
+            'IntegerValue' => $val,
+            'SendNotification' => $sn,
+        );
+        $r = $this->_http($arg);
+        return $r;
+    }
+    /**
+        @param $wid WorkerId
+        @param $why Reason
+    */
+    public function BlockWorker($wid,$why)
+    {
+        $arg = array(
+            'Operation' => 'BlockWorker',
+            'WorkerId' => $wid,
+            'Reason' => $why,
+        );
+        $r = $this->_http($arg);
+        return $r;
+    }
+    public function ChangeHITTypeOfHIT() {}
 
-   /* Create a new HIT - SOAP Operation understands HITTypeId */
-   function CreateHIT()
-   {
+    /**
+    */
+    function CreateHIT()
+    {
       if     ($this->HITTypeId && $this->mtBreaksHTI()) return $this->mtError("Incompatible mixing of HITTypeId and other values");
       elseif (!$this->HITTypeId)
       {
@@ -147,50 +132,76 @@ class radix_aws_mturk
 
       return $this->mtFakeSoap();
    }
+    /**
 
-   /* Create a new qualification */
-   function CreateQualificationType()
-   {
-      if     (!$this->Name)                                               return $this->mtError("Missing Name Parameter");
-      elseif (!$this->Description)                                        return $this->mtError("Missing Description Parameter");
-      elseif (!$this->QualificationTypeStatus)                            return $this->mtError("Missing QualificationTypeStatus Parameter");
-      elseif (!in_array($this->QualificationTypeStatus, $this->validQTS)) return $this->mtError("Invalid QualificationTypeStatus Value");
-      elseif ($this->AnswerKey && !$this->Test)                           return $this->mtError("AnswerKey cannot be provided without Test!");
-      return $this->mtFakeSoap();
-   }
+    */
+    public function CreateQualificationType()
+    {
+        $arg = array(
+            'Operation' => 'CreateQualificationType',
+        );
+        // if     (!$this->Name)                                               return $this->mtError("Missing Name Parameter");
+        // elseif (!$this->Description)                                        return $this->mtError("Missing Description Parameter");
+        // elseif (!$this->QualificationTypeStatus)                            return $this->mtError("Missing QualificationTypeStatus Parameter");
+        // elseif (!in_array($this->QualificationTypeStatus, $this->validQTS)) return $this->mtError("Invalid QualificationTypeStatus Value");
+        // elseif ($this->AnswerKey && !$this->Test)                           return $this->mtError("AnswerKey cannot be provided without Test!");
+        // return $this->mtFakeSoap();
+    }
 
-   /* Disable a HIT */
-   function DisableHIT()
-   {
-      if     (!$this->HITId)        return $this->mtError("Missing HITId Parameter");
-      else                          $this->QueryData['HITId'] = $this->HITId;
-      return $this->mtMakeRequest();
-   }
+    /**
+        @param $hid HITId
+    */
+    public function DisableHIT($hid)
+    {
+        $arg = array(
+            'Operation' => 'DisableHIT'
+            'HITId' => $hid,
+        );
+        return $this->_http($arg);
+    }
 
-   /* Dispose of a HIT */
-   function DisposeHIT()
-   {
-      if     (!$this->HITId)        return $this->mtError("Missing HITId Parameter");
-      else                          $this->QueryData['HITId'] = $this->HITId;
-      return $this->mtMakeRequest();
-   }
+    /**
+        @param $hid HITId
+    */
+    public function DisposeHIT($hid)
+    {
+        $arg = array(
+            'Operation' => 'DisposeHIT'
+            'HITId' => $hid,
+        );
+        return $this->_http($arg);
+    }
 
-   /* Extend the timing on a HIT */
-   function ExtendHIT()
-   {
-      if     (!$this->HITId)                       return $this->mtError("Missing HITId Parameter");
-      else                                         $this->QueryData['HITId']                        = $this->HITId;
-      if     ($this->MaxAssignmentsIncrement)      $this->QueryData['MaxAssignmentsIncrement']      = $this->MaxAssignmentsIncrement;
-      if     ($this->ExpirationIncrementInSeconds) $this->QueryData['ExpirationIncrementInSeconds'] = $this->ExpirationIncrementInSeconds;
-      return $this->mtMakeRequest();
-   }
+    /**
+    */
+    public function DisposeQualificationType() {}
 
-   /* Force a HIT to expire immediately, as if the HIT's LifetimeInSeconds had elapsed */
-   function ForceExpireHIT() {
-      if     (!$this->HITId)                       return $this->mtError("Missing HITId Parameter");
-      else                                         $this->QueryData['HITId']                        = $this->HITId;
-      return $this->mtMakeRequest();
-   }
+    /**
+        @param $hid HITId
+    */
+    public function ExtendHIT($hid)
+    {
+        $arg = array(
+            'Operation' => 'ExtendHIT',
+            'MaxAssignmentsIncrement' => null,
+            'ExpirationIncrementInSeconds' => null,
+            'UniqueRequestToken' => null
+        );
+        return $this->_http($arg);
+    }
+
+    /**
+        @param $hid HITId
+    */
+    public function ForceExpireHIT($hid)
+    {
+        $arg = array(
+            'Operation' => 'ForceExpireHIT'
+            'HITId' => $hid,
+        );
+        return $this->_http($arg);
+    }
+
     /**
     */
     function GetAccountBalance()
@@ -198,36 +209,48 @@ class radix_aws_mturk
         $arg = array(
             'Operation' => 'GetAccountBalance'
         );
-        return $this->mtMakeRequest($arg);
+        return $this->_http($arg);
     }
-    /* Get a list of assignments for a given HIT Id */
+
+    /**
+    */
+    public function GetAssignment() {}
+
+    /**
+        @param $hid HITId
+    */
     function GetAssignmentsForHIT($hid)
     {
         $arg = array(
             'Operation' => 'GetAssignmentsForHIT',
             'HITId' => $hid,
+            'PageSize' => 100,
         );
-        // if     (!$this->HITId)                                                        return $this->mtError("Missing HITId Parameter");
-        // else                                                                                   $this->QueryData['HITId']         = $this->HITId;
-        // if     ($this->AssignmentStatus && !in_array($this->AssignmentStatus, $this->validAS)) return $this->mtError("Invalid Assignment Status Value (Submitted/Approved/Rejected)");
-        // elseif ($this->AssignmentStatus)                                                       $this->QueryData['AssignmentStatus'] = $this->AssignmentStatus;
-        // if     ($this->SortProperty && !in_array($this->SortProperty, $this->validSP))         return $this->mtError("Invalid Sort Property Value (AcceptTime/SubmitTime/AssignmentStatus");
-        // elseif ($this->SortProperty)                                                           $this->QueryData['SortProperty']  = $this->SortProperty;
-        // if     ($this->SortDirection && !in_array($this->SortDirection, $this->validSD))       return $this->mtError("Invalid SortDirection Value (Ascending/Descending)");
-        // elseif ($this->SortDirection)                                                          $this->QueryData['SortDirection'] = $this->SortDirection;
-        // if     (is_numeric($this->PageSize) && $this->PageSize > 0)                            $this->QueryData['PageSize']      = $this->PageSize;
-        // if     (is_numeric($this->PageNumber) && $this->PageNumber > 0)                        $this->QueryData['PageNumber']    = $this->PageNumber;
-        return $this->mtMakeRequest($arg);
+        return $this->_http($arg);
     }
 
-   function GetFileUploadURL()
-   {
-      if   (!$this->AssignmentId)                    return $this->mtError("Missing AssignmentId");
-      else                                           $this->QueryData['AssignmentId']       = $this->AssignmentId;
-      if   (!$this->QuestionIdentifier)              return $this->mtError("Missing QuestionIdentifier");
-      else                                           $this->QueryData['QuestionIdentifier'] = $this->QuestionIdentifier;
-      return $this->mtMakeRequest();
-   }
+    /**
+    */
+    public function GetBlockedWorkers() {}
+
+    /**
+    */
+    public function GetBonusPayments() {}
+
+
+    /**
+        @param $aid AssignmentId
+        @param $qid QuestionIdentifier
+    */
+    public function GetFileUploadURL($aid,$qid)
+    {
+        $arg = array(
+            'Operation' => 'GetFileUploadURL',
+            'AssignmentId' => $aid,
+            'QuestionIdentifier' => $qid,
+        );
+        return $this->_http($arg);
+    }
 
     /**
     */
@@ -237,12 +260,21 @@ class radix_aws_mturk
             'Operation' => 'GetHIT',
             'HITId' => $hid,
         );
-        return $this->mtMakeRequest($arg);
+        return $this->_http($arg);
     }
 
-   /* Get qualification requests list */
-   function GetQualificationRequests()
-   {
+    /**
+    */
+    public function GetHITsForQualificationType() {}
+
+    /**
+    */
+    public function GetQualificationsForQualificationType() {}
+
+    /**
+    */
+    public function GetQualificationRequests()
+    {
       if     (!$this->QualificationTypeId)                                              return $this->mtError("Missing QualificationTypeId Parameter");
       else                                                                              $this->QueryData['QualificationTypeId']     = $this->QualificationTypeId;
       if     (is_numeric($this->PageSize) && $this->PageSize > 0)                       $this->QueryData['PageSize']      = $this->PageSize;
@@ -252,30 +284,21 @@ class radix_aws_mturk
       if     ($this->SortDirection && !in_array($this->SortDirection, $this->validSD))  return $this->mtError("Invalid SortDirection Value (Ascending/Descending)");
       elseif ($this->SortDirection)                                                     $this->QueryData['SortDirection'] = $this->SortDirection;
       return $this->mtMakeRequest();
-   }
+    }
 
-   /* Return a User's Qualification Score */
-   function GetQualificationScore()
-   {
+    /**
+    */
+    public function GetQualificationScore()
+    {
       if     (!$this->QualificationTypeId) return $this->mtError("Missing QualificationTypeId Parameter");
       else                                 $this->QueryData['QualificationTypeId'] = $this->QualificationTypeId;
       if     (!$this->SubjectId)           return $this->mtError("Missing SubjectId Parameter");
       else                                 $this->QueryData['SubjectId']           = $this->SubjectId;
       return $this->mtMakeRequest();
-   }
+    }
 
-   /* Returns all of the Qualifications granted to Workers for a given Qualification type */
-   function GetQualificationsForQualificationType()
-   {
-      if     (!$this->QualificationTypeId)                                return $this->mtError("Missing QualificationTypeId Parameter");
-      else                                                                $this->QueryData['QualificationTypeId'] = $this->QualificationTypeId;
-      if     ($this->Status && !in_array($this->Status, $this->validGQS)) return $this->mtError("Invalid Status Parameter");
-      else                                                                $this->QueryData['Status']              = $this->Status;
-      if     (is_numeric($this->PageSize) && $this->PageSize > 0)         $this->QueryData['PageSize']      = $this->PageSize;
-      if     (is_numeric($this->PageNumber) && $this->PageNumber > 0)     $this->QueryData['PageNumber']    = $this->PageNumber;
-      return $this->mtMakeRequest();
-   }
-
+    /**
+    */
    /* Get qualification type data */
    function GetQualificationType()
    {
@@ -284,9 +307,9 @@ class radix_aws_mturk
       return $this->mtMakeRequest();
    }
 
-   /* Retrieve various statistics */
-   function GetRequesterStatistic()
-   {
+    /* Retrieve various statistics */
+    function GetRequesterStatistic()
+    {
       if     (!$this->Statistic)                                                 return $this->mtError("Missing Statistic Parameter");
       elseif (!in_array($this->Statistic, $this->validStats))                    return $this->mtError("Invalid Statistic Type");
       else                                                                       $this->QueryData['Statistic'] = $this->Statistic;
@@ -296,9 +319,14 @@ class radix_aws_mturk
       return $this->mtMakeRequest();
    }
 
-   /* Get Reviewable HITs */
-   function GetReviewableHITs()
-   {
+   /**
+   */
+   public function GetRequesterWorkerStatistic() {}
+
+    /**
+    */
+    public function GetReviewableHITs()
+    {
       if     ($this->HITTypeId)                                                         $this->QueryData['HITTypeId']     = $this->HITTypeId;
       if     ($this->Status && !in_array($this->Status, $this->validSMO))               return $this->mtError("Invalid Status Value (Reviewing/Reviewable - PREVIOUSLY StatusMatchOption)");
       elseif ($this->Status)                                                            $this->QueryData['Status']        = $this->Status;
@@ -309,31 +337,38 @@ class radix_aws_mturk
       if     ($this->SortDirection && !in_array($this->SortDirection, $this->validSD))  return $this->mtError("Invalid SortDirection Value (Ascending/Descending)");
       elseif ($this->SortDirection)                                                     $this->QueryData['SortDirection'] = $this->SortDirection;
       return $this->mtMakeRequest();
-   }
+    }
 
-   /* Issues a payment of money from your account to a Worker */
-   function GrantBonus()
-   {
+    /**
+    */
+    public function GetReviewResultsForHIT() {}
+
+
+    /**
+    */
+    public function GrantBonus()
+    {
       if     (!$this->WorkerId)                         return $this->mtError("Missing WorkerId Parameter(s)");
       elseif (!$this->AssignmentId)                     return $this->mtError("Missing AssignmentId");
       elseif (!$this->BonusAmount)                      return $this->mtError("Missing BonusAmount");
       if     (!mtCheckPriceData(1, $this->BonusAmount)) return false;
       return $this->mtFakeSoap();
-   }
+    }
 
-   /* Grant a qualification score to a user */
-   function GrantQualification()
-   {
+    /**
+    */
+    public function GrantQualification()
+    {
       if     (!$this->QualificationRequestId)        return $this->mtError("Missing QualificationRequestId Parameter");
       else                                           $this->QueryData['QualificationRequestId'] = $this->QualificationRequestId;
       if     (!is_numeric($this->IntegerValue))      return $this->mtError("Missing IntegerValue Parameter");
       else                                           $this->QueryData['IntegerValue']           = $this->Value;
       return $this->mtMakeRequest();
-   }
+    }
 
-   /* GET HELP! */
-   function Help()
-   {
+    /* GET HELP! */
+    public function Help()
+    {
       if     (!$this->HelpType)                           return $this->mtError("Missing HelpType Parameter");
       elseif (!in_array($this->HelpType, $this->validHT)) return $this->mtError("Invalid HelpType Type");
       else                                                $this->QueryData['HelpType'] = $this->HelpType;
@@ -341,11 +376,12 @@ class radix_aws_mturk
       elseif (!in_array($this->About, $this->validOps))   return $this->mtError("Invalid About Type");
       else                                                $this->QueryData['About']    = $this->About;
       return $this->mtMakeRequest();
-   }
+    }
 
-   /* Send workers a message */
-   function NotifyWorkers()
-   {
+    /**
+    */
+    public function NotifyWorkers()
+    {
       if     (!$this->Subject)           return $this->mtError("Missing Subject Parameter");
       else                               $this->QueryData['Subject']     = $this->Subject;
       if     (!$this->MessageText)       return $this->mtError("Missing MessageText Parameter");
@@ -354,11 +390,12 @@ class radix_aws_mturk
       elseif (is_array($this->WorkerId)) foreach ($this->WorkerId as $wk => $wi) $this->QueryData[("WorkerId." . $wk + 1)] = $wi;
       else                               $this->QueryData['WorkerId'] = $this->WorkerId;
       return $this->mtMakeRequest();
-   }
+    }
 
-   /* Register a HIT Type, essentially the same as CreateHIT, minus the actual HIT creation */
-   function RegisterHITType()
-   {
+    /**
+    */
+    public function RegisterHITType()
+    {
       if     (!$this->Title)                       return $this->mtError("Missing Title Parameter");
       elseif (!$this->Description)                 return $this->mtError("Missing Description Parameter");
       elseif (!$this->Amount)                      return $this->mtError("Missing Amount Parameter");
@@ -381,96 +418,127 @@ class radix_aws_mturk
       }
 
       return $this->mtFakeSoap();
-   }
+    }
 
-   /* Reject HIT Assigmnment */
-   function RejectAssignment()
-   {
+    /**
+    */
+    public function RejectAssignment()
+    {
       if   (!$this->AssignmentId)                                                  return $this->mtError("Missing AssignmentId");
       else                                                                         $this->QueryData['AssignmentId'] = $this->AssignmentId;
       if     ($this->RequesterFeedback && strlen($this->RequesterFeedback) > 1024) return $this->mtError("RequesterFeedback entry is too long!");
       elseif ($this->RequesterFeedback)                                            $this->QueryData['RequesterFeedback'] = $this->RequesterFeedback;
       return $this->mtMakeRequest();
-   }
+    }
 
-   /* Reject a Qualification Request */
-   function RejectQualificationRequest()
-   {
+    /**
+    */
+    public function RejectQualificationRequest()
+    {
       if     (!$this->QualificationRequestId)        return $this->mtError("Missing QualificationRequestId Parameter");
       else                                           $this->QueryData['QualificationRequestId'] = $this->QualificationRequestId;
       if     ($this->Reason)                         $this->QueryData['Reason']                 = $this->Reason;
       return $this->mtMakeRequest();
-   }
+    }
 
-   /* Returns all HITs, except for HITs that have been disposed with the DisposeHIT  operation.*/
-   function SearchHITs()
-   {
-      if     ($this->SortProperty && !in_array($this->SortProperty, $this->validGRHSP)) return $this->mtError("Invalid SortProperty Value (Title/Reward/Expiration/CreationTime)");
-      elseif ($this->SortProperty)                                                      $this->QueryData['SortProperty']  = $this->SortProperty;
-      if     ($this->SortDirection && !in_array($this->SortDirection, $this->validSD))  return $this->mtError("Invalid SortDirection Value (Ascending/Descending)");
-      elseif ($this->SortDirection)                                                     $this->QueryData['SortDirection'] = $this->SortDirection;
-      if     (is_numeric($this->PageSize) && $this->PageSize > 0)                       $this->QueryData['PageSize']      = $this->PageSize;
-      if     (is_numeric($this->PageNumber) && $this->PageNumber > 0)                   $this->QueryData['PageNumber']    = $this->PageNumber;
-      return $this->mtMakeRequest();
-   }
+    /**
+    */
+    public function RevokeQualification() {}
 
-   /* Search Qualification Types on keyword */
-   function SearchQualificationTypes()
-   {
-      if     ($this->Query)                                                                     $this->QueryData['Query']      = $this->Query;
-      if     (is_numeric($this->PageSize) && $this->PageSize > 0)                               $this->QueryData['PageSize']      = $this->PageSize;
-      if     (is_numeric($this->PageNumber) && $this->PageNumber > 0)                           $this->QueryData['PageNumber']    = $this->PageNumber;
-      if     ($this->SortProperty)                                                              $this->QueryData['SortProperty']  = $this->SortProperty;
-      if     ($this->SortDirection && !in_array($this->SortDirection, $this->validSD))          return $this->mtError("Invalid SortDirection Value (Ascending/Descending)");
-      elseif ($this->SortDirection)                                                             $this->QueryData['SortDirection'] = $this->SortDirection;
-      if     ($this->MustBeRequestable && !in_array($this->MustBeRequestable, $this->validMBR)) return $this->mtError("Invalid MustBeRequestable Value (true/false)");
-      elseif ($this->MustBeRequestable)                                                         $this->QueryData['MustBeRequestable'] = $this->MustBeRequestable;
-      return $this->mtMakeRequest();
-   }
+    /**
+        @param SortProperty
+        @param SortDirection
+        @param PageSize
+        @param PageNumber
+    */
+    function SearchHITs()
+    {
+        // if     ($this->SortProperty && !in_array($this->SortProperty, $this->validGRHSP)) return $this->mtError("Invalid SortProperty Value (Title/Reward/Expiration/CreationTime)");
+        // elseif ($this->SortProperty)                                                      $this->QueryData['SortProperty']  = $this->SortProperty;
+        // if     ($this->SortDirection && !in_array($this->SortDirection, $this->validSD))  return $this->mtError("Invalid SortDirection Value (Ascending/Descending)");
+        // elseif ($this->SortDirection)                                                     $this->QueryData['SortDirection'] = $this->SortDirection;
+        // if     (is_numeric($this->PageSize) && $this->PageSize > 0)                       $this->QueryData['PageSize']      = $this->PageSize;
+        // if     (is_numeric($this->PageNumber) && $this->PageNumber > 0)                   $this->QueryData['PageNumber']    = $this->PageNumber;
+        // return $this->mtMakeRequest();
+        $arg = array(
+            'Operation' => 'SearchHITs',
+            'SortProperty' => null,
+            'SortDirection' => null,
+            'PageSize' => null,
+            'PageNumber' => null,
+        );
+        $r = $this->_http($arg);
+        return $r;
+    }
 
-   function SendTestEventNotification()
-   {
-      if     (is_array($this->Notification))
-      {
-         foreach ($this->Notification as $itr => $val)
-         {
-           if (!$this->mtCheckNotificationData($itr, $val)) return false;
-           if (!isset($val['Version']) && $this->Version)   $this->Notification[$itr]['Version'] = $this->Version; /* Helpful */
-         }
-      }
-      if     ($this->TestEventType && !in_array($this->TestEventType, $validET)) return $this->mtError("Invalid TestEventType Value");
-      return $this->mtFakeSoap();
-   }
+    /**
+    */
+    public function SearchQualificationTypes()
+    {
+       if     ($this->Query)                                                                     $this->QueryData['Query']      = $this->Query;
+       if     (is_numeric($this->PageSize) && $this->PageSize > 0)                               $this->QueryData['PageSize']      = $this->PageSize;
+       if     (is_numeric($this->PageNumber) && $this->PageNumber > 0)                           $this->QueryData['PageNumber']    = $this->PageNumber;
+       if     ($this->SortProperty)                                                              $this->QueryData['SortProperty']  = $this->SortProperty;
+       if     ($this->SortDirection && !in_array($this->SortDirection, $this->validSD))          return $this->mtError("Invalid SortDirection Value (Ascending/Descending)");
+       elseif ($this->SortDirection)                                                             $this->QueryData['SortDirection'] = $this->SortDirection;
+       if     ($this->MustBeRequestable && !in_array($this->MustBeRequestable, $this->validMBR)) return $this->mtError("Invalid MustBeRequestable Value (true/false)");
+       elseif ($this->MustBeRequestable)                                                         $this->QueryData['MustBeRequestable'] = $this->MustBeRequestable;
+       return $this->mtMakeRequest();
+    }
 
-   function SetHITAsReviewing()
-   {
-      if     (!$this->HITId) return $this->mtError("Missing HITId Parameter");
-      else                   $this->QueryData['HITId'] = $this->HITId;
-      if     ($this->Revert) $this->QueryData['Revert'] = 'true';
-      else                   $this->QueryData['Revert'] = 'false';
-      return $this->mtMakeRequest();
-   }
+    /**
+    */
+    public function SendTestEventNotification()
+    {
+       if     (is_array($this->Notification))
+       {
+          foreach ($this->Notification as $itr => $val)
+          {
+            if (!$this->mtCheckNotificationData($itr, $val)) return false;
+            if (!isset($val['Version']) && $this->Version)   $this->Notification[$itr]['Version'] = $this->Version; /* Helpful */
+          }
+       }
+       if     ($this->TestEventType && !in_array($this->TestEventType, $validET)) return $this->mtError("Invalid TestEventType Value");
+       return $this->mtFakeSoap();
+    }
 
-   /* Creates, updates, disables or re-enables notifications for a HIT type */
-   function SetHITTypeNotification()
-   {
-      if     (!$this->HITTypeId)                                          return $this->mtError("Missing HITTypeId Parameter");
-      if     ($this->Active && !in_array($this->Active, $this->validMBR)) return $this->mtError("Invalid Active Parameter");
-      /* Notification Array Checking */
-      if     (is_array($this->Notification))
-      {
-         foreach ($this->Notification as $itr => $val)
-         {
-           if (!$this->mtCheckNotificationData($itr, $val)) return false;
-           if (!isset($val['Version']) && $this->Version)   $this->Notification[$itr]['Version'] = $this->Version; /* Helpful */
-         }
-      }
-      return $this->mtFakeSoap();
-   }
+    /**
+    */
+    public function SetHITAsReviewing()
+    {
+       if     (!$this->HITId) return $this->mtError("Missing HITId Parameter");
+       else                   $this->QueryData['HITId'] = $this->HITId;
+       if     ($this->Revert) $this->QueryData['Revert'] = 'true';
+       else                   $this->QueryData['Revert'] = 'false';
+       return $this->mtMakeRequest();
+    }
 
-   /* Update the qualification score for a user */
-   function UpdateQualificationScore()
-   {
+    /**
+    */
+    public function SetHITTypeNotification()
+    {
+       if     (!$this->HITTypeId)                                          return $this->mtError("Missing HITTypeId Parameter");
+       if     ($this->Active && !in_array($this->Active, $this->validMBR)) return $this->mtError("Invalid Active Parameter");
+       /* Notification Array Checking */
+       if     (is_array($this->Notification))
+       {
+          foreach ($this->Notification as $itr => $val)
+          {
+            if (!$this->mtCheckNotificationData($itr, $val)) return false;
+            if (!isset($val['Version']) && $this->Version)   $this->Notification[$itr]['Version'] = $this->Version; /* Helpful */
+          }
+       }
+       return $this->mtFakeSoap();
+    }
+
+    /**
+    */
+    public function UnblockWorker() { }
+
+    /**
+    */
+    public function UpdateQualificationScore()
+    {
       if     (!$this->QualificationTypeId)                          return $this->mtError("Missing QualificationTypeId Parameter");
       else                                                          $this->QueryData['QualificationTypeId'] = $this->QualificationTypeId;
       if     (!$this->SubjectId)                                    return $this->mtError("Missing SubjectId Parameter");
@@ -479,24 +547,30 @@ class radix_aws_mturk
       elseif ($this->IntegerValue < 0 || $this->IntegerValue > 100) return $this->mtError("Invalid IntegerValue Parameter");
       else                                                          $this->QueryData['IntegerValue'] = $this->IntegerValue;
       return $this->mtMakeRequest();
-   }
+    }
 
-   /* Update Qualification - RTB 03/10/06 - Switched to SOAP after API update */
-   function UpdateQualificationType()
-   {
-      if     (!$this->QualificationTypeId)                                                                  return $this->mtError("Missing QualificationTypeId Parameter");
-      if     ($this->QualificationTypeStatus && !in_array($this->QualificationTypeStatus, $this->validQTS)) return $this->mtError("Invalid QualificationTypeStatus Value (Active/Inactive)");
-      return $this->mtFakeSoap();
-   }
-   /* Figures out if a HITTypeID is going to be busted because a field used for it is included */
-   function mtBreaksHTI()
-   {
-     if ($this->Title || $this->Description || $this->Keywords || $this->Reward || $this->AssignmentDurationsInSeconds || $this->AutoApprovalDelayInSeconds || is_array($this->QualificationRequirement))
-     {
-       return TRUE;
-     }
-     return FALSE;
-   }
+    /**
+    */
+    public function UpdateQualificationType($qti)
+    {
+        // if     (!$this->QualificationTypeId)                                                                  return $this->mtError("Missing QualificationTypeId Parameter");
+        // if     ($this->QualificationTypeStatus && !in_array($this->QualificationTypeStatus, $this->validQTS)) return $this->mtError("Invalid QualificationTypeStatus Value (Active/Inactive)");
+        // return $this->mtFakeSoap();
+        $arg = array(
+            'Operation' => 'UpdateQualificationType',
+            'QualificationTypeId' => $qti,
+            // 'RetryDelayInSeconds' =>
+            // QualificationTypeStatus
+            // Description
+            // Test
+            // AnswerKey
+            // TestDurationInSeconds
+            // AutoGranted
+            // AutoGrantedValue
+        );
+        $r = $this->_http($arg);
+        return $r;
+    }
 
    /* Checks Notification Data Structure */
    function mtCheckNotificationData($iteration, $data)
@@ -538,71 +612,9 @@ class radix_aws_mturk
      return true;
    }
 
-   /* Convert given date to ISO 8601 format */
-//    function Unix2ISO8601($int_date)
-//    {
-//       // $int_date = $int_date + $this->mtHours(8);
-//       $date_mod = date('Y-m-d\TH:i:s', $int_date);
-//       // $pre_timezone = date('O', $int_date);
-//       return $date_mod . ".000Z";
-//    }
-
-   /* Convert given RFC 8601 Date to Unix Timestamp */
-   function ISO86012Unix($timestamp)
-   {
-      $day    = substr($timestamp,8,2);
-      $month  = substr($timestamp,5,2);
-      $year   = substr($timestamp,0,4);
-      $hour   = substr($timestamp,11,2);
-      $minute = substr($timestamp,14,2);
-      $second = substr($timestamp,17,2);
-      $output = mktime($hour,$minute,$second,$month,$day,$year);
-      return    $output;
-   }
-
-   function LoadQuestion($inputsource)
-   {
-      $data = $this->mtPullSource($inputsource);
-      if   ($data) $this->Question = $data;
-      else         return $data;
-      return TRUE;
-   }
-
-   function LoadTest($inputsource)
-   {
-      $data = $this->mtPullSource($inputsource);
-      if   ($data) $this->Test = $data;
-      else         return $data;
-      return TRUE;
-   }
-
-   function LoadAnswerKey($inputsource)
-   {
-      $data = $this->mtPullSource($inputsource);
-      if   ($data) $this->AnswerKey = $data;
-      else         return $data;
-      return TRUE;
-   }
-
-   /* Output hit list internal var */
-   function PullHITList()
-   {
-      if   (is_array($this->HITList)) return $this->HITList;
-      else                            return array();
-   }
-
-   function PullAssignmentList()
-   {
-      if   (is_array($this->AssignmentList)) return $this->AssignmentList;
-      else                                   return array();
-   }
-
-   function PullQualificationRequestList()
-   {
-      if   (is_array($this->QualificationRequestList)) return $this->QualificationRequestList;
-      else                                             return array();
-   }
     /**
+        @param Request URI
+        @return XML Data buffer
     */
     private function _http($arg)
     {
@@ -623,9 +635,10 @@ class radix_aws_mturk
         // $this->SOAPSwitch = FALSE; /* We ARE NOT making a SOAP request */
 
         foreach ($req as $a => $b) $callData[] = "{$a}=" . urlencode($b);
-        $uri   = self::REST_URI . '?' . implode('&',$callData);
-        echo "uri:$uri\n";
-        echo "uri:" . self::REST_URI . '?' . http_build_query($req) . "\n";
+        // $uri   = self::REST_URI . '?' . implode('&',$callData);
+        // echo "uri:$uri\n";
+        // echo "uri:" . self::REST_URI . '?' . http_build_query($req) . "\n";
+        $uri = self::REST_URI . '?' . http_build_query($req);
 
         $ch = curl_init($uri);
         curl_setopt($ch, CURLOPT_USERAGENT, self::UA);
@@ -637,25 +650,29 @@ class radix_aws_mturk
         curl_setopt($ch, CURLOPT_FAILONERROR, 0);
         $buf = curl_exec($ch);
         curl_close($ch);
-        // print_r($buf);
+
         return $buf;
     }
     /**
+        @param $op Operation
+        @param $ts Time Stamp
+        @return base64 encoded stuff
     */
     private function _sign($op,$ts)
     {
         $sign = self::SERVICE . $op . $ts;
-        $hmac = $this->_sign_hmac_sha1($this->_secret,$sign);
-        $r = base64_encode($hmac);
-        return $r;
+        $hmac = $this->_sign_hmac_sha1($sign);
+        return base64_encode($hmac);
     }
 
-    private function _sign_hmac_sha1($key,$s)
+    /**
+        @param $s string to sign
+        @return binary data
+    */
+    private function _sign_hmac_sha1($s)
     {
-      return pack("H*", sha1((str_pad($key, 64, chr(0x00)) ^ (str_repeat(chr(0x5c), 64))) .
-                             pack("H*", sha1((str_pad($key, 64, chr(0x00)) ^ (str_repeat(chr(0x36), 64))) . $s))));
+      return pack("H*", sha1((str_pad($this->_secret, 64, chr(0x00)) ^ (str_repeat(chr(0x5c), 64))) .
+                             pack("H*", sha1((str_pad($this->_secret, 64, chr(0x00)) ^ (str_repeat(chr(0x36), 64))) . $s))));
 
     }
 }
-
-
