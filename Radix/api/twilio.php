@@ -57,7 +57,7 @@ class radix_api_twilio
         $this->_base.= sprintf(self::URI_PATH . '/Accounts/%s',$u);
     }
     /**
-        
+        Not implemented
     */
     public function getAccounts()
     {
@@ -110,40 +110,26 @@ class radix_api_twilio
     */
     public function listNumbers($args=null)
     {
-        $ret = $this->api('IncomingPhoneNumbers.json');
+        return $this->api('IncomingPhoneNumbers.json');
     }
     /**
+        Twilio GET API
     */
     public function api($api,$arg=null)
     {
         // Special Case the nocache Argument
-        $use_cache = true;
-        if ($arg['nocache']) {
-            $use_cache = true;
-            unset($arg['nocache']);
-        }
-
+        $this->_stat['get']++;
         $uri = $this->fixURI($api,$arg);
-
-        $ret = radix_cache::get($uri);
-        if (empty($ret)) {
-            // radix_session::flash('warn','Cache Miss');
-            $this->_stat['get']++;
-            $res = radix_http::get($uri);
-            // radix::dump($res);
-            $ret = json_decode($res['body'],true);
-            if ($ret) {
-                $r = radix_cache::put($uri,$ret,64);
-            } else {
-                $ret = $res;
-            }
-        } else {
-            $this->_stat['get-hit']++;
-            // radix_session::flash('warn',"Cache Hit $api");
+        $res = radix_http::get($uri);
+        $ret = json_decode($res['body'],true);
+        if (!$ret) {
+            $ret = $res;
+            echo json_last_error();
         }
         return $ret;
     }
     /**
+        Execute POST API
     */
     public function post($api,$arg)
     {
@@ -207,10 +193,7 @@ class radix_api_twilio
         }
         return $uri;
     }
-    public function flushCache($uri)
-    {
-        $r = radix_cache::del($uri);
-    }
+
     /**
         Drop an Existing Caller ID
         @param $sid of the Caller ID
@@ -220,6 +203,7 @@ class radix_api_twilio
         $r = $this->delete(sprintf('OutgoingCallerIds/%s.json',$sid));
         return $r;
     }
+
     /**
         Ask Twilio for a new Caller ID
         @param $arg = number or argument array
@@ -247,23 +231,24 @@ class radix_api_twilio
         $r = $this->post('OutgoingCallerIds.json',$p);
         return $r;
     }
+
     /**
         List the Caller IDs
     */
     function listCallerIds()
     {
-        $r = $this->api('OutgoingCallerIds.json');
-        return $r;
+        return $this->api('OutgoingCallerIds.json');
     }
+
     /**
         Stat the Caller ID
         @param $sid of the Caller ID
     */
     function statCallerId($sid)
     {
-        $r = $this->api('OutgoingCallerIds.json/'. $sid);
-        return $r;
+        return $this->api('OutgoingCallerIds.json/'. $sid);
     }
+
     /**
     */
     public static function errorText($x)

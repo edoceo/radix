@@ -1,4 +1,13 @@
 <?php
+/**
+    @file
+    @brief Radix Mongo Interface
+
+    @author code@edoceo.com
+    @copyright 2011 Edoceo, Inc.
+    @package Radix
+*/
+
 
 class radix_db_mongo
 {

@@ -138,7 +138,13 @@ class radix_mail_smtp
         }
 
         // Terminate Data
-        $this->_send("\r\n.\r\n");
+        $this->_send("\r\n");
+        if ($res = $this->_recv()) {
+            $ret = array_merge($ret,$res);
+        }
+
+        // Terminate Mail
+        $this->_send(".\r\n");
         if ($res = $this->_recv()) {
             $ret = array_merge($ret,$res);
         }
@@ -163,11 +169,11 @@ class radix_mail_smtp
     */
     private function _send($data)
     {
-        //echo "_send($data)\n";
+        // echo "_send($data)\n";
         if (empty($this->_s)) {
             error_log("SMTP Shutdown $data?");
         }
-        
+
         $ret = fwrite($this->_s,$data);
         return $ret;
     }

@@ -9,8 +9,6 @@
     @author code@edoceo.com
     @copyright 2011 Edoceo, Inc.
     @package Radix
-    @version $Id$
-
 */
 
 class radix_db_couch
@@ -20,14 +18,14 @@ class radix_db_couch
     private static $_cdb;
     private static $_opt;
     private $_host;
-    private $_port;
+    private $_port = 5984;
     private $_auth; // Authentication
     private $_base; // Base of Database to Query
     private $_stat; // Status of Last Query
 
     /**
         Get an Instance
-        @param options array
+        @param $opt array
     */
     function __construct($opt=null)
     {
@@ -40,6 +38,9 @@ class radix_db_couch
         }
         $this->_base = trim($opt['host'],'/') . '/' . trim($opt['base'],'/');
     }
+
+    /**
+    */
     public static function easy($verb,$uri,$opt=null)
     {
         if (empty(self::$_cdb)) {
@@ -54,6 +55,7 @@ class radix_db_couch
             return self::$_cdb->put($uri,$opt);
         }
     }
+
     /**
         Sets static defaults
     */
@@ -61,6 +63,7 @@ class radix_db_couch
     {
         self::$_opt = $opt;
     }
+
     /**
         Sets auth information
     */
@@ -68,6 +71,7 @@ class radix_db_couch
     {
         $this->_auth = 'Authorization: Basic ' . base64_encode(sprintf('%s:%s',$u,$p));
     }
+
     /**
         Gets list of All Databases
     */
@@ -84,6 +88,7 @@ class radix_db_couch
          $ret = $this->get('/_all_docs');
          return $ret;
     }
+
     /**
         Delete an Object
         @return an object
@@ -92,11 +97,11 @@ class radix_db_couch
     {
         $uri = trim($this->_base,'/') . '/' . trim($uri,'/');
         $uri.= '?rev=' . $rev;
-        // echo "$uri\n";
         $ch = self::_curl_init($uri);
         curl_setopt($ch,CURLOPT_CUSTOMREQUEST,'DELETE');
         return self::_curl_exec($ch);
     }
+
     /**
         Get an Object
     */
@@ -128,11 +133,12 @@ class radix_db_couch
         curl_setopt($ch,CURLOPT_HTTPHEADER,array(
             'Content-Type: application/json',
         ));
-        $ret = curl_exec($ch);
-        $this->_stat = curl_getinfo($ch);
-        $ret = json_decode($ret,true);
-        $ret = $ret['rows'];
-        return $ret;
+        return $this->_curl_exec($ch);
+        // $ret = curl_exec($ch);
+        // $this->_stat = curl_getinfo($ch);
+        // $ret = json_decode($ret,true);
+        // $ret = $ret['rows'];
+        // return $ret;
     }
     /**
         Return a Single Document
@@ -159,10 +165,7 @@ class radix_db_couch
             $this->_auth,
             'Content-Type: application/json',
         ));
-        $ret = curl_exec($ch);
-        $this->_stat = curl_getinfo($ch);
-        $ret = json_decode($ret,true);
-        return $ret;
+        return $this->_curl_exec($ch);
     }
     /**
         Put an Object
@@ -232,7 +235,7 @@ class radix_db_couch
         $ret = $this->_curl_exec($ch);
         print_r($ret);
         print_r($this);
-        die("Uri");
+        die("put_attachment");
     }
     /**
         Execute a CURL

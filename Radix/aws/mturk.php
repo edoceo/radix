@@ -85,67 +85,31 @@ class radix_aws_mturk
             'WorkerId' => $wid,
             'Reason' => $why,
         );
-        $r = $this->_http($arg);
-        return $r;
+        return $this->_http($arg);
     }
+
+    /**
+    */
     public function ChangeHITTypeOfHIT() {}
 
     /**
     */
-    function CreateHIT()
-    {
-      if     ($this->HITTypeId && $this->mtBreaksHTI()) return $this->mtError("Incompatible mixing of HITTypeId and other values");
-      elseif (!$this->HITTypeId)
-      {
-         /* Values only applicable without HITTypeID */
-         if     (!$this->Title)                            return $this->mtError("Missing Title Parameter");
-         elseif (!$this->Description)                      return $this->mtError("Missing Description Parameter");
-         elseif (!$this->Amount)                           return $this->mtError("Missing Amount Parameter");
-         if     (!$this->CurrencyCode)                     $this->CurrencyCode = "USD";
-         elseif (!$this->AssignmentDurationInSeconds)      return $this->mtError("Missing AssignmentDurationInSeconds Parameter");
-
-         /* Qualification Array Checking */
-         if     (is_array($this->QualificationRequirement))
-         {
-            foreach ($this->QualificationRequirement as $itr => $val)
-            {
-               $fg = "(Group {$itr})";
-               if     (!$val['QualificationTypeId'])                   return $this->mtError("Missing QualificationTypeId Parameter {$fg}");
-               elseif (!$val['Comparator'])                            return $this->mtError("Missing Comparator Parameter {$fg}");
-               elseif (!in_array($val['Comparator'], $this->validCPT)) return $this->mtError("Invalid Comparator Parameter {$fg}");
-               if ($val['QualificationTypeId'] == "00000000000000000071") {
-                 /* Locale Value */
-                 if (!$val['LocaleValue']) return $this->mtError("Need a LocaleValue to accompany a Locale Qualification {$fg}");
-               } else {
-                 /* Regular Value */
-                 if (!isset($val['IntegerValue']) || !is_numeric($val['IntegerValue'])) return $this->mtError("Need an InterValue to accompany a qualification {$fg}");
-               }
-               if (isset($val['RequiredToPreview']) && !in_array($val['RequiredToPreview'], $this->validMBR)) return $this->mtError("Invalid RequiredToPreview value (true/false) {$fg}");
-            }
-         }
-      }
-
-      /* Required values for either type */
-      if     (!$this->LifetimeInSeconds)                return $this->mtError("Missing LifetimeInSeconds Parameter");
-      elseif (!$this->Question)                         return $this->mtError("Missing Question Parameter");
-
-
-      return $this->mtFakeSoap();
-   }
-    /**
-
-    */
-    public function CreateQualificationType()
+    public function CreateHIT($hit)
     {
         $arg = array(
+            'Operation' => 'CreateHIT',
+        );
+        return $this->_http(array_merge($arg,$hit));
+    }
+
+    /**
+    */
+    public function CreateQualificationType($arg)
+    {
+        $req = array(
             'Operation' => 'CreateQualificationType',
         );
-        // if     (!$this->Name)                                               return $this->mtError("Missing Name Parameter");
-        // elseif (!$this->Description)                                        return $this->mtError("Missing Description Parameter");
-        // elseif (!$this->QualificationTypeStatus)                            return $this->mtError("Missing QualificationTypeStatus Parameter");
-        // elseif (!in_array($this->QualificationTypeStatus, $this->validQTS)) return $this->mtError("Invalid QualificationTypeStatus Value");
-        // elseif ($this->AnswerKey && !$this->Test)                           return $this->mtError("AnswerKey cannot be provided without Test!");
-        // return $this->mtFakeSoap();
+        return $this->_http(array_merge($req,$arg));
     }
 
     /**
@@ -154,7 +118,7 @@ class radix_aws_mturk
     public function DisableHIT($hid)
     {
         $arg = array(
-            'Operation' => 'DisableHIT'
+            'Operation' => 'DisableHIT',
             'HITId' => $hid,
         );
         return $this->_http($arg);
@@ -166,7 +130,7 @@ class radix_aws_mturk
     public function DisposeHIT($hid)
     {
         $arg = array(
-            'Operation' => 'DisposeHIT'
+            'Operation' => 'DisposeHIT',
             'HITId' => $hid,
         );
         return $this->_http($arg);
@@ -196,7 +160,7 @@ class radix_aws_mturk
     public function ForceExpireHIT($hid)
     {
         $arg = array(
-            'Operation' => 'ForceExpireHIT'
+            'Operation' => 'ForceExpireHIT',
             'HITId' => $hid,
         );
         return $this->_http($arg);
@@ -204,7 +168,7 @@ class radix_aws_mturk
 
     /**
     */
-    function GetAccountBalance()
+    public function GetAccountBalance()
     {
         $arg = array(
             'Operation' => 'GetAccountBalance'
@@ -219,7 +183,7 @@ class radix_aws_mturk
     /**
         @param $hid HITId
     */
-    function GetAssignmentsForHIT($hid)
+    public function GetAssignmentsForHIT($hid)
     {
         $arg = array(
             'Operation' => 'GetAssignmentsForHIT',
@@ -254,7 +218,7 @@ class radix_aws_mturk
 
     /**
     */
-    function GetHIT($hid)
+    public function GetHIT($hid)
     {
         $arg = array(
             'Operation' => 'GetHIT',
@@ -299,16 +263,15 @@ class radix_aws_mturk
 
     /**
     */
-   /* Get qualification type data */
-   function GetQualificationType()
-   {
-      if     (!$this->QualificationTypeId) return $this->mtError("Missing QualificationTypeId Parameter");
-      else                                 $this->QueryData['QualificationTypeId'] = $this->QualificationTypeId;
-      return $this->mtMakeRequest();
-   }
+    public function GetQualificationType()
+    {
+        if     (!$this->QualificationTypeId) return $this->mtError("Missing QualificationTypeId Parameter");
+        else                                 $this->QueryData['QualificationTypeId'] = $this->QualificationTypeId;
+        return $this->mtMakeRequest();
+    }
 
     /* Retrieve various statistics */
-    function GetRequesterStatistic()
+    public function GetRequesterStatistic()
     {
       if     (!$this->Statistic)                                                 return $this->mtError("Missing Statistic Parameter");
       elseif (!in_array($this->Statistic, $this->validStats))                    return $this->mtError("Invalid Statistic Type");
@@ -324,24 +287,27 @@ class radix_aws_mturk
    public function GetRequesterWorkerStatistic() {}
 
     /**
+        @return xml string
     */
     public function GetReviewableHITs()
     {
-      if     ($this->HITTypeId)                                                         $this->QueryData['HITTypeId']     = $this->HITTypeId;
-      if     ($this->Status && !in_array($this->Status, $this->validSMO))               return $this->mtError("Invalid Status Value (Reviewing/Reviewable - PREVIOUSLY StatusMatchOption)");
-      elseif ($this->Status)                                                            $this->QueryData['Status']        = $this->Status;
-      if     (is_numeric($this->PageSize) && $this->PageSize > 0)                       $this->QueryData['PageSize']      = $this->PageSize;
-      if     (is_numeric($this->PageNumber) && $this->PageNumber > 0)                   $this->QueryData['PageNumber']    = $this->PageNumber;
-      if     ($this->SortProperty && !in_array($this->SortProperty, $this->validGRHSP)) return $this->mtError("Invalid SortProperty Value (Title/Reward/Expiration/CreationTime)");
-      elseif ($this->SortProperty)                                                      $this->QueryData['SortProperty']  = $this->SortProperty;
-      if     ($this->SortDirection && !in_array($this->SortDirection, $this->validSD))  return $this->mtError("Invalid SortDirection Value (Ascending/Descending)");
-      elseif ($this->SortDirection)                                                     $this->QueryData['SortDirection'] = $this->SortDirection;
-      return $this->mtMakeRequest();
+        $arg = array(
+            'Operation' => 'GetReviewableHITs',
+        );
+        return $this->_http($arg);
     }
 
     /**
+        @param Hit ID
     */
-    public function GetReviewResultsForHIT() {}
+    public function GetReviewResultsForHIT($hid)
+    {
+        $arg = array(
+            'Operation' => 'GetReviewResultsForHIT',
+            'HITId' => $hid,
+        );
+        return $this->_http($arg);
+    }
 
 
     /**
@@ -451,15 +417,8 @@ class radix_aws_mturk
         @param PageSize
         @param PageNumber
     */
-    function SearchHITs()
+    public function SearchHITs()
     {
-        // if     ($this->SortProperty && !in_array($this->SortProperty, $this->validGRHSP)) return $this->mtError("Invalid SortProperty Value (Title/Reward/Expiration/CreationTime)");
-        // elseif ($this->SortProperty)                                                      $this->QueryData['SortProperty']  = $this->SortProperty;
-        // if     ($this->SortDirection && !in_array($this->SortDirection, $this->validSD))  return $this->mtError("Invalid SortDirection Value (Ascending/Descending)");
-        // elseif ($this->SortDirection)                                                     $this->QueryData['SortDirection'] = $this->SortDirection;
-        // if     (is_numeric($this->PageSize) && $this->PageSize > 0)                       $this->QueryData['PageSize']      = $this->PageSize;
-        // if     (is_numeric($this->PageNumber) && $this->PageNumber > 0)                   $this->QueryData['PageNumber']    = $this->PageNumber;
-        // return $this->mtMakeRequest();
         $arg = array(
             'Operation' => 'SearchHITs',
             'SortProperty' => null,
@@ -571,47 +530,6 @@ class radix_aws_mturk
         $r = $this->_http($arg);
         return $r;
     }
-
-   /* Checks Notification Data Structure */
-   function mtCheckNotificationData($iteration, $data)
-   {
-     if     (!isset($data['Destination'])) return $this->mtError("Missing Destination Value (Notification Level {$iteration})");
-     elseif (!isset($data['Transport']))   return $this->mtError("Missing Transport Value (Notification Level {$iteration} - Email/SOAP/REST)");
-     elseif (!isset($data['EventType']))   return $this->mtError("Missing EventType Value (Notification Level {$iteration})");
-     else
-     {
-       switch ($data['Transport'])
-       {
-         case "Email":
-           if (!$this->mtValidEmail($data['Destination'])) return $this->mtError("Invalid email address as destination (Notification Level {$iteration})");
-         break;
-         case "SOAP":
-         case "REST":
-           if (!$this->mtValidHTTP($data['Destination'])) return $this->mtError("Invalid url as destination (Notification Level {$iteration})");
-         break;
-       }
-     }
-
-     if (is_array($data['EventType']))
-     {
-       foreach ($data['EventType'] as $checkMe)
-       {
-         if (!in_array($checkMe, $validET)) return $this->mtError("Invalid EventType Value '{$checkMe}' (Notification Level {$iteration})");
-       }
-     }
-     elseif (!in_array($data['EventType'], $validET)) return $this->mtError("Invalid EventType Value (Notification Level {$iteration})");
-     return true;
-   }
-
-   /* Checks Price Data Structure Info */
-   function mtCheckPriceData($iteration, $data)
-   {
-     if     (!isset($data['Amount']) || !is_numeric($data['Amount'])) return $this->mtError("Missing/Invalid Amount Specified (Price Level {$iteration})");
-     elseif (!isset($data['CurrencyCode']))                           return $this->mtError("Missing Currency Code Specified (Price Level {$iteration})");
-     elseif (!in_array($data['CurrencyCode'], $validCC))              return $this->mtError("Invalid Currency Code Specified (Price Level {$iteration})");
-     return true;
-   }
-
     /**
         @param Request URI
         @return XML Data buffer
@@ -622,37 +540,48 @@ class radix_aws_mturk
             'AWSAccessKeyId' => $this->_access,
             'Service' => self::SERVICE,
             'Signature' => null,
-            'Timestamp' => date('c'), // $this->Unix2ISO8601(time());
+            'Timestamp' => date('c'),
             // 'ResponseGroup' => null,
             // 'Version' => self::VERSION,
-            // 'Validate' =>
-            // 'Credential'
+            // 'Validate' => null,
+            // 'Credential' => null,
         );
 
         $req = array_merge($req,$arg);
 
         $req['Signature'] = $this->_sign($req['Operation'],$req['Timestamp']);
-        // $this->SOAPSwitch = FALSE; /* We ARE NOT making a SOAP request */
 
-        foreach ($req as $a => $b) $callData[] = "{$a}=" . urlencode($b);
-        // $uri   = self::REST_URI . '?' . implode('&',$callData);
-        // echo "uri:$uri\n";
-        // echo "uri:" . self::REST_URI . '?' . http_build_query($req) . "\n";
         $uri = self::REST_URI . '?' . http_build_query($req);
 
         $ch = curl_init($uri);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        curl_setopt($ch, CURLOPT_COOKIESESSION, false);
+        curl_setopt($ch, CURLOPT_CRLF, false);
+        curl_setopt($ch, CURLOPT_FAILONERROR, false);
+        curl_setopt($ch, CURLOPT_FILETIME, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
+        curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_NETRC, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
+
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
         curl_setopt($ch, CURLOPT_USERAGENT, self::UA);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 0); /* 1 for return header output */
-        curl_setopt($ch, CURLOPT_VERBOSE, 0);
-        curl_setopt($ch, CURLOPT_FAILONERROR, 0);
+
         $buf = curl_exec($ch);
         curl_close($ch);
 
         return $buf;
     }
+
     /**
         @param $op Operation
         @param $ts Time Stamp
@@ -671,8 +600,8 @@ class radix_aws_mturk
     */
     private function _sign_hmac_sha1($s)
     {
-      return pack("H*", sha1((str_pad($this->_secret, 64, chr(0x00)) ^ (str_repeat(chr(0x5c), 64))) .
-                             pack("H*", sha1((str_pad($this->_secret, 64, chr(0x00)) ^ (str_repeat(chr(0x36), 64))) . $s))));
+      return pack('H*', sha1((str_pad($this->_secret, 64, chr(0x00)) ^ (str_repeat(chr(0x5c), 64))) .
+                 pack('H*', sha1((str_pad($this->_secret, 64, chr(0x00)) ^ (str_repeat(chr(0x36), 64))) . $s))));
 
     }
 }
