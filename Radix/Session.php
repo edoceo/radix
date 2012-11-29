@@ -3,7 +3,6 @@
     @file
     @brief Basic "secure" session
 
-    @author http://edoceo.com/
     @package radix
 */
 
@@ -132,6 +131,7 @@ class Radix_Session
             }
         }
     }
+
     /**
         Completely kills the session
         Removes all $_SESSION data
@@ -149,25 +149,53 @@ class Radix_Session
         session_destroy();
         setcookie(session_name(),false,1,$cp['path'],$cp['domain'],$cp['secure']);
     }
-    /**
-        @deprecated
-        @return fail,warn,info messages in nice HTML
+
+    /*
+        Set a specific piece of data to expire at a specific time
+
+        @param $name String then name of the session key ($_SESSION[ $this_one ]) to expire at time
+        @param $time unix timestamp or date or the pattern "+(\d+)(s|m|h|d)" to expire if unchanged for that amount of time
     */
-    static function drawFlash()
+    static function expire($name,$time='+30m')
     {
+        if (empty($_SESSION['_radix']['_expires'])) {
+            $_SESSION['_radix']['_expires'] = array();
+        }
+
+        $_SESSION['_radix']['_expires'][ $name ] = array(
+            'md5' => md5(serialize( $_SESSON[ $name ] ) ),
+            'mtime' => time(),
+            'xtime' => $time,
+        );
+
+    }
+
+    /**
+        Add to Warning Messages
+        @param $what is the div class to flash in
+        @param $html is the message to display
+        flash() returns the message
+        flash($what) resets $what
+        flash($what,$html) appends a message to that class
+    */
+    static function flash($what=null,$html=null)
+    {
+        // Add Message
+        if ( ($what != null) && ($html != null) ) {
+            $_SESSION['_radix'][$what][] = $html;
+            return true;
+        }
+
+        // Or Clear it Out
+        if ( ($what != null) && ($html == null) ) {
+            $_SESSION['_radix'][$what] = array();
+            return true;
+        }
+
+        // Or Output
         $out = null;
         foreach (array('fail','warn','info') as $key) {
-            // Init if empty
-            if (empty($_SESSION['_radix'][$key])) {
-                $_SESSION['_radix'][$key] = array();
-            }
-            // Merge Legacy
-            if (!empty($_SESSION[$key])) {
-                if (!is_array($_SESSION[$key])) {
-                    $_SESSION[$key] = array($_SESSION[$key]);
-                }
-                $_SESSION['_radix'][$key] = array_merge($_SESSION['_radix'][$key],$_SESSION[$key]);
-            }
+            // Skip?
             if (empty($_SESSION['_radix'][$key])) {
                 continue;
             }
@@ -189,54 +217,17 @@ class Radix_Session
                 $out.= '</ul>';
             } elseif ((is_string($buf)) && (strlen($buf))) {
                 $out.= sprintf('<p>%s</p>',$buf);
+            } elseif (is_object($buf)) {
+                if ($buf instanceof Exception) {
+                    $out.= sprintf('#%s: %s',$buf->getCode(),$buf->getMessage());
+                } else {
+                    die(print_r($buf,true));
+                }
             }
             $out.= '</div>';
             unset($_SESSION['_radix'][$key]);
             unset($_SESSION[$key]); // legacy
         }
         return $out;
-    }
-    /**
-        Set a specific piece of data to expire at a specific time
-
-        @param $name String then name of the session key ($_SESSION[ $this_one ]) to expire at time
-        @param $time unix timestamp or date or the pattern "+(\d+)(s|m|h|d)" to expire if unchanged for that amount of time
-    */
-    static function expire($name,$time='+30m')
-    {
-        if (empty($_SESSION['_radix']['_expires'])) {
-            $_SESSION['_radix']['_expires'] = array();
-        }
-
-        $_SESSION['_radix']['_expires'][ $name ] = array(
-            'md5' => md5(serialize( $_SESSON[ $name ] ) ),
-            'mtime' => time(),
-            'xtime' => $time,
-        );
-
-    }
-    /**
-        Add to Warning Messages
-        @param $what is the div class to flash in
-        @param $html is the message to display
-        flash() returns the message
-        flash($what) resets $what
-        flash($what,$html) appends a message to that class
-    */
-    static function flash($what=null,$html=null)
-    {
-        if ( ($what == null) && ($html == null) ) {
-            return self::drawFlash();
-        }
-        
-        // Clear it Out
-        if ( ($what != null) && ($html == null) ) {
-            $_SESSION['_radix'][$what] = array();
-        }
-
-        // Add Message
-        if ( ($what != null) && ($html != null) ) {
-            $_SESSION['_radix'][$what][] = $html;
-        }
     }
 }

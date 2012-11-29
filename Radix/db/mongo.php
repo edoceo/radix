@@ -1,11 +1,10 @@
 <?php
 /**
     @file
-    @brief Radix Mongo Interface
+    @brief Radix Mongo Database Interface
 
-    @author code@edoceo.com
     @copyright 2011 Edoceo, Inc.
-    @package Radix
+    @package radix
 */
 
 
@@ -25,6 +24,7 @@ class radix_db_mongo
         // self::$_m = new Mongo();
         // self::$_d = self::$_m->selectDB($args['database']);
     }
+
     /**
     */
     function __construct($opt=null)
@@ -35,44 +35,80 @@ class radix_db_mongo
         if (!empty($opt['logs'])) {
             // Save for Later
         }
-        $this->_m = new Mongo();
+        $this->_m = new Mongo($opt['hostname'],array('connect'=>false));
         $this->_d = $this->_m->selectDB($opt['database']);
     }
+
     /**
+        Create a Collection
     */
     function create($c)
     {
         $this->_c = $this->_d->createCollection($c);
     }
+
+    /**
+        Remove a Record
+    */
     function delete($c,$a,$o=null)
     {
         $c = $this->_d->selectCollection($c);
         $r = $c->remove($a,$o);
         return $r;
     }
+
     /**
+        Execute on Database
     */
-    function find($c,$a=null)
+    function execute($c,$a=null)
     {
-        $c = $this->_d->selectCollection($c);
-        $r = $c->find($a);
+        if ($a == null) $a = array();
+        $r = $this->_d->execute($c,$a);
         return $r;
     }
-    function find_one($c,$a)
-    {
-        $c = $this->_d->selectCollection($c);
-        $r = $c->findOne($a);
-        return $r;
-    }
+
     /**
+        Find a Set of Records
+        @param $c collection name
+        @param $q query parameters
+        @param $f fields to return, defaults to all
     */
-    function insert($c,$a)
+    function find($c,$q=null,$f=array())
     {
         $c = $this->_d->selectCollection($c);
-        $r = $c->insert($a);
+        $r = $c->find($q,$f);
         return $r;
     }
+
     /**
+        Find and Return One
+        @param $c collection name
+        @param $q query parameters
+        @param $f fields to return, defaults to all
+    */
+    function find_one($c,$q,$f=array())
+    {
+        $c = $this->_d->selectCollection($c);
+        $r = $c->findOne($q,$f);
+        return $r;
+    }
+
+    /**
+        Insert a Record
+        @param $c collection name
+        @param $a the data array to insert
+    */
+    function insert($c,$a,$opt=null)
+    {
+        $c = $this->_d->selectCollection($c);
+        $r = $c->insert($a,$opt);
+        return $r;
+    }
+
+    /**
+        Update a Record
+        @param $c collection name
+        @param $a the data array to upgrade, needs _id field
     */
     function update($c,$a)
     {

@@ -29,10 +29,10 @@ class radix_irc
     private $_irc; // Array of Handles
 
     // For the Static Stuff
-    // private static $_host;
-    // private static $_nick;
-    // private static $_room;
-    // private static $_yell; //!< Socket Handle of Yeller
+    private static $_host;
+    private static $_nick;
+    private static $_room;
+    private static $_yell; //!< Socket Handle of Yeller
 
     private $_msg_read_tick = 0; // Messages Read Count
     private $_msg_spin_tick = 0; // Messages Spin Read Count
@@ -66,9 +66,11 @@ class radix_irc
         // $this->wait('255');
         if (!empty($opts['pass'])) $this->_send(sprintf('PASS %s',$opts['pass']));
         $this->_send(sprintf('NICK %s',$nick));
-        $this->_send(sprintf('USER %s %s %s :%s',$opts['user'],parse_url($host,PHP_URL_HOST),parse_url($host,PHP_URL_HOST),$opts['real']));
+        // $this->_send(sprintf('USER %s %s %s :%s',$opts['user'],parse_url($host,PHP_URL_HOST),parse_url($host,PHP_URL_HOST),$opts['real']));
+        $this->_send(sprintf('USER %s %s %s :%s',$opts['user'],$host,$host,$opts['real']));
         // $this->_send('USER '.$this->_username.' '.$usermode.' '.SMARTIRC_UNUSED.' :'.$this->_realname, SMARTIRC_CRITICAL);
     }
+
     /**
         My Destructor
     */
@@ -76,6 +78,7 @@ class radix_irc
     {
         $this->quit();
     }
+
     /**
         Join a Specific Channel
     */
@@ -86,6 +89,7 @@ class radix_irc
         // $this->wait('/353/');
         return $this->wait(); // Wait for next line
     }
+
     /**
         Quit the IRC Session
     */
@@ -101,6 +105,7 @@ class radix_irc
         $this->_irc = null;
 
     }
+
     /**
         Spin Loop
     */
@@ -116,6 +121,7 @@ class radix_irc
             }
         }
     }
+
     /**
         Add a Function to the Hook List
         @param $line pattern to match pre, cmd, arg
@@ -130,6 +136,7 @@ class radix_irc
         );
         // print_r($this->_hook_list);
     }
+
     /**
         Process the Recieved Messages agains the Hooks
         @param $line the parsed line we are parsing
@@ -159,6 +166,7 @@ class radix_irc
         //     //     //    continue;
         //     //     //}
     }
+
     /**
         Wait for a Specific IRC Condition
 
@@ -198,6 +206,7 @@ class radix_irc
         }
         return false;
     }
+
     /**
         Inititlaize Radix_IRC for Yelling
     */
@@ -208,13 +217,14 @@ class radix_irc
             self::$_yell = null;
         }
         self::$_host = $host;
-        self::$_nick = $nick;
+        self::$_nick = substr($nick,0,9);
         // Fixup $room
         if (substr($room,0,1) != '#') {
             $room = "#$room";
         }
         self::$_room = $room;
     }
+
     /**
         Quickly Send a Message to a Host and Channel
         @param $host hostname
@@ -231,10 +241,11 @@ class radix_irc
         }
         // Fixup $text
         if (substr($text,0,7) != 'PRIVMSG') {
-            $text = sprintf('PRIVMSG %s %s',self::$_room,$text);
+            $text = sprintf('PRIVMSG %s :%s',strtok(self::$_room,' '),$text);
         }
-        self::$_yell->write($text);
+        self::$_yell->_send($text);
     }
+
     /**
         Read Message into Parts
         Waits for and Reads data from the Socket
@@ -291,6 +302,7 @@ class radix_irc
         // }
         return $ret;
     }
+
     /**
         Send a Message on the Socket
         @return void

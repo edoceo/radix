@@ -2,10 +2,10 @@
 /**
     @file
     @brief Radix Output Formatting Routines
-    $Id: Format.php 2314 2012-06-27 05:11:14Z code@edoceo.com $
+
+    @package radix
 
     @see http://en.wikipedia.org/wiki/Local_conventions_for_writing_telephone_numbers
-    @package Radix
 */
 
 /**
@@ -81,7 +81,7 @@ class Radix_Format
         if ($span <= 3600) {// One Hour
             return 'about ' . floor($span / 300 * 5) . ' minutes ago';
         }
-		
+
 		return self::niceDate($time);
     }
     /**
@@ -112,6 +112,7 @@ class Radix_Format
 
     /**
         Formats a Telephone Number
+        @see http://countrycode.org/
         @param $p phone number
         @param $iso2 country ISO code for formatting
     */
@@ -148,6 +149,23 @@ class Radix_Format
         default:
             $ret = $num;
         }
+        
+        // China
+        if (preg_match('/^(86\d{7,11})$/',$p,$m)) {
+            return "+{$m[1]}";
+        }
+
+        // India
+        if (preg_match('/^(91[1-8]\d{7,11})$/',$p,$m)) {
+            return "+{$m[1]}";
+        }
+        
+        // Last on the List
+        // Saint Martin
+        if (preg_match('/^(590)(590)(\d{2})(\d{2})(\d{2})/',$p,$m)) {
+            return "+{$m[1]} {$m[2]} {$m[3]} {$m[4]} {$m[5]}";
+        }
+
         // Prepare Return Value
         // $ret = $num;
         // Add Extension
@@ -175,4 +193,49 @@ class Radix_Format
         return $num;
     }
 
+    /**
+        Phone e164 Format
+        @see http://en.wikipedia.org/wiki/List_of_North_American_Numbering_Plan_area_codes
+        @param $x Phone Number
+        @return e164 formatted phone number
+    */
+    public static function phone_e164($x)
+    {
+        $x = preg_replace('/[^\d]+/',null,$x);
+
+        // US 10 Digit
+        if(preg_match('/^1?([2-9][0-8]\d{8})$/',$x,$m)){
+            return "+1{$m[1]}";
+        }
+
+        // Have Attempted to Sort These By Country
+
+        // China
+        if (preg_match('/^(86\d{7,11})$/',$x,$m)) {
+            return "+{$m[1]}";
+        }
+
+        // intl 10
+        if(preg_match('/^([2-9][0-9]{9})$/',$x,$m)){
+            return "+{$m[1]}";
+        }
+
+        // intl longer
+        if(preg_match('/^([2-9][0-9]{8,14})$/',$x,$m)){
+            return "+{$m[1]}";
+        }
+
+        // Specialty US? \d11
+        if(preg_match('/^([2-9]11)$/',$x,$m)){
+            return "+1{$m[1]}";
+        }
+        
+        if (preg_match('/^260[1-2]\d{6}/',$x,$m)) { // Zambia
+            // 
+        }
+        if (preg_match('/^(263{8})/',$x,$m)) { // Zimbabwe
+
+        }
+        return $x;
+    }
 }

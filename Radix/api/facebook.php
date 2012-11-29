@@ -47,7 +47,7 @@ class radix_api_facebook
         self::$_secret = $secret;
     }
     /**
-    */                                                                                                               
+    */
     public static function fql($fql)
     {
         $fb = new Facebook(array(

@@ -13,6 +13,7 @@ class radix_api_twilio
 {
     const URI_BASE = 'https://%s:%s@api.twilio.com';
     const URI_PATH = '/2010-04-01';
+    const UA = 'Radix Twilio API v2012.28';
 
     private static $__init = false;
     private static $__user;
@@ -63,6 +64,7 @@ class radix_api_twilio
     {
 
     }
+
     /**
         List of Calls by Page
         @param $page Page Number, 0
@@ -73,6 +75,7 @@ class radix_api_twilio
         $api = sprintf('Calls.json?Page=%d&PageSize=%d',$page,$size);
         return $this->api($api);
     }
+
     /**
         List of Texts
         @param $page Page Number, 0
@@ -112,6 +115,7 @@ class radix_api_twilio
     {
         return $this->api('IncomingPhoneNumbers.json');
     }
+
     /**
         Twilio GET API
     */
@@ -128,8 +132,9 @@ class radix_api_twilio
         }
         return $ret;
     }
+
     /**
-        Execute POST API
+        Execute POST
     */
     public function post($api,$arg)
     {
@@ -142,6 +147,10 @@ class radix_api_twilio
         // radix::dump($ret);
         return $ret;
     }
+    
+    /**
+        Execute DELETE
+    */
     public function delete($api)
     {
         $uri = $this->fixURI($api);

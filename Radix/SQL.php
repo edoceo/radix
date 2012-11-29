@@ -3,10 +3,8 @@
     @file
     @brief The SQL Handling Code of Radix
 
-    @author http://edoceo.com/
     @copyright 2004 Edoceo, Inc.
     @package Radix
-    $Id: SQL.php 2160 2012-04-13 00:13:40Z code@edoceo.com $
 
 */
 

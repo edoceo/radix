@@ -102,12 +102,16 @@ class Radix_Filter
         // Radix::dump("r:$t");
         return $t;
     }
+
     /**
         @return normalized URI, false on failure
     */
     static function uri($uri,$def=false)
     {
-        $buf = @parse_url($uri);
+        if (!preg_match('/^([\w\-]{2,8}):\/\//',$uri)) {
+            $uri = "http://$uri";
+        }
+        $buf = parse_url($uri);
         if (empty($buf['scheme'])) $buf['scheme'] = 'http';
         if (empty($buf['host'])) {
             if (preg_match('/^[\w\.]+$/',$buf['path'])) {

@@ -2,7 +2,6 @@
 /**
     @file
     @brief Class to Communicate with the Merchant E Solutions Gateway
-    @version $Id: VirtualMerchant.php 2113 2012-03-26 04:08:02Z code@edoceo.com $
 
     @package radix
 
@@ -48,7 +47,6 @@ class radix_checkout_virtualmerchant
     private $_account_mid;
     private $_account_uid;
     private $_account_pin;
-
 
     private $_parameter_list;
 

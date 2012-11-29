@@ -3,9 +3,8 @@
     @file
     @brief A Caching Interface for Filesystem or Memcache
 
-    @author code@edoceo.com
     @copyright 2005 Edoceo, Inc.
-    @package Radix
+    @package radix
 
     @see http://pecl.php.net/memcached (aka: dev-php5/pecl-memcached)
     @see http://php.net/manual/en/book.memcached.php

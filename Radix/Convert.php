@@ -2,15 +2,13 @@
 /**
     @file
     @brief General Conversion Routeines
-    $Id: Convert.php 2110 2012-03-20 01:53:01Z code@edoceo.com $
 
     Converts Decimal number to different alphabetic numeric base, like 2, 8, 16, 32, 62 or 73
     Converts Measurements
     Converts time sec2dhms()
 
-    @author code@edoceo.com
     @copyright Edoceo, Inc.
-    @package Radix
+    @package radix
 
     @see http://javaconfessions.com/2008/09/convert-between-base-10-and-base-62-in.html
     @see http://kevin.vanzonneveld.net/techblog/article/create_short_ids_with_php_like_youtube_or_tinyurl/

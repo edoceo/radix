@@ -2,11 +2,9 @@
 /**
     @file
     @brief Contains the XMPP Client Library Code
-    $Id: XMPP.php 2016 2012-02-19 22:04:05Z code@edoceo.com $
 
-    @author http://edoceo.com/
     @copyright 2009 edoceo, inc.
-    @package Radix
+    @package radix
 
     @see http://xmpp.org/rfcs/rfc6120.html
     

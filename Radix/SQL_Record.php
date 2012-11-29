@@ -2,10 +2,9 @@
 /**
     @file
     @brief this is the Active Record type inteface for Radix
-    @version $Id: SQL_Record.php 2113 2012-03-26 04:08:02Z code@edoceo.com $
 
     @copyright 2008 Edoceo, Inc
-    @package Radix
+    @package radix
 
 */
 class Radix_SQL_Record implements ArrayAccess, Iterator

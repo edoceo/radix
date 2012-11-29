@@ -11,10 +11,10 @@
     @see https://github.com/abraham/twitteroauth
     @see https://github.com/jmathai/twitter-async
     @see http://pear.php.net/package/Services_Twitter
-    
+
 */
 
-class Radix_Twitter
+class radix_twitter
 {
     const API_URI = 'http://twitter.com';
     const AUTH_URI = 'http://twitter.com/oauth/authenticate';
@@ -33,7 +33,7 @@ class Radix_Twitter
         'oauth_token',
         'oauth_version'
     );
-    
+
     private $_format = 'json';
 
     private $_consumer_key;
@@ -110,29 +110,27 @@ class Radix_Twitter
         $path   = '/' . preg_replace('/[A-Z]|[0-9]+/e', "'/'.strtolower('\\0')", $parts) . '.json';
         if(!empty($params))
           $args = array_shift($params);
-        
+
         // intercept calls to the search api
         if(preg_match('/^(search|trends)/', $parts)) {
           $query = isset($args) ? http_build_query($args) : '';
           $url = "{$this->searchUrl}{$path}?{$query}";
           $ch = curl_init($url);
           curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
+
           return new EpiTwitterJson(EpiCurl::getInstance()->addCurl($ch));
         }
         // Radix::dump($args);
-        
+
         $r = $this->_curl($method, self::API_URI . $path, $args);
         $r = json_decode($r['body']);
         return $r; // new EpiTwitterJson(call_user_func(array($this, 'httpRequest'), $method, "{$this->apiUrl}{$path}", $args));
     }
     /**
-        Do a Tweet
-        * Updates the authenticated user's status.
-        * @param string $status Text of the status, no URL encoding necessary
-        * @param string|integer $reply_to ID of the status to reply to. Optional
-        * @param string $format Return format
-        * @return string
+        Do a Tweet, Updates the authenticated user's status.
+
+        @param string $t Text of the status, no URL encoding necessary
+        @return string
     */
     // function updateStatus($status, $reply_to = null, $format = 'xml') {
     public function tweet($t)
@@ -166,8 +164,8 @@ class Radix_Twitter
     /**
         Get Button HTML/Code
     */
-    
-    
+
+
     /**
     * Executes an API call
     * @param string $twitter_method The Twitter method to call
@@ -190,11 +188,11 @@ class Radix_Twitter
     //     // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
     //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     //     curl_setopt($ch, CURLOPT_VERBOSE, true);
-    // 
+    //
     //     if (!empty($this->_pass)) {
     //         curl_setopt($ch, CURLOPT_USERPWD, $this->_auth);
     //     }
-    // 
+    //
     //     if ($http_method == 'post') {
     //         curl_setopt($ch, CURLOPT_POST, true);
     //         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($options));
@@ -302,7 +300,7 @@ class Radix_Twitter
     //     //     $args['oauth'] = array();
     //     // }
     //     // unset($args['oauth']['oauth_secret']);
-    // 
+    //
     //     $sign_args = $args;
     //     $sign_args['oauth_consumer_key'] = $this->_consumer_key;
     //     $sign_args['oauth_nonce'] = '1234567890'; // md5(openssl_random_pseudo_bytes(128));
@@ -315,7 +313,7 @@ class Radix_Twitter
     //     // signing
     //     $sign_args['oauth_signature'] = $this->_makeSignature($verb, $uri, $sign_args);
     //     ksort($sign_args);
-    // 
+    //
     //     $ret = array(
     //         'oauth' => $sign_args,
     //         'request' => $args,

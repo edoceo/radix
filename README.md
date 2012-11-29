@@ -1,40 +1,40 @@
 # Radix PHP Toolkit
 
-Radix is a PHP toolkit that I originally started in 2001, and it's been gradually growing ever since.
-It provides very minimalistic structures for things like MVC as well as some common interfaces and APIs to external interfaces.
+It's a simple PHP toolkit (or framework?) that provides a basic MVC environment
+It also includes basic tools for caching (file, memcache), databases (postgresql,mysql,sqlite,couchdb,mongodb), shopping carts and other things you'd expect to find.
+API interfaces exist for dozens of services such as AWS, Facebook, eNom, Twitter, Twilio.
 
-## Radix MVC Structures
+* Official Site: http://radix.edoceo.com/
+* API Documentation: http://radix.edoceo.com/dox
 
-Radix has a pretty hard coded method for it's MVC
+## History
 
-* Controllers: ./c
-* View: ./v
+I started hacking PHP in 2001 or so; started cobbling together useful libraries as I built them.
+I read PoEAA when it came out and sort of abandoned Radix while exploring other frameworks or CMS (Cake, Drupal, Joomla, Symphony, ZF ...)
+I like them, will embrace them and use them on a weekly basis.
 
-* Libraries or Models typically in ./lib
+However, some use-cases I kept coming back to, where those didn't fit
 
-## Bootstrap the MVC
+* Exisiting Custom Apps
+* Rapid Prototype / LoFi MVP
 
-<pre>
+### Existing Apps
 
-// Path
+There are many custom web-applications that have been around for a while and currently don't use any existing framework.
+These kinds of applications suffer internal inconsistencies and many lack documentation.
 
-require_once('Radix.php');
+These can use Radix as a unified and documented set of tools.
+Linking to Radix, you can use portions of it (ACL, Cache, Social APIs) with minimal dependencies.
+This brings some stability to legacy applications w/o requiring a more lenghty overhaul as when converting to a more robust framework platform.
 
-radix::init()
-radix::exec();
-radix::view();
-radix::send();
+### Rapid Prototype / MVP
 
-</pre>
+Also, in many cases we need to build rapid prototypes to test business models; or build one-off internal applications.
+Due to it's simplistic nature Radix can be used to create these systems pretty quickly.
 
-## Radix Provided Interfaces
+## We Don't Have
 
-* Basics: Caching, Cart, IPC, MRU, Session
+* Automatic table creation from some magic markup
+* Fancy inherited modeling
+* Command line tools
 
-* Auth with HTTP, Facebook,  Google or Twitter
-* Checkout: Authorize.net, MerchantE, VirtualMerchant
-* Apps: FreeSWITCH
-* Misc API: eNom, Twilio
-* Amazon: S3, MTurk
-* Email: SMTP, IMAP
-* Network: Telnet, IRC, XMPP

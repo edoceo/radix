@@ -4,10 +4,8 @@
     @brief Radix PHP Development Toolkit
     @see http://radix.edoceo.com/
 
-    @author code@edoceo.com
     @copyright 2001-2012 Edoceo, Inc.
     @package Radix
-    @version $Id: Radix.php 2311 2012-06-27 04:00:03Z code@edoceo.com $
 
     @mainpage Radix PHP Toolkit Core Library
     @section intro_sec Introduction
@@ -20,17 +18,17 @@
 
 /**
     @brief Radix Base Class, Core MVC Utilities
+           Radix is also the class instantiated for the View object
 */
 
 class Radix
 {
-    // private static $_base = null; // Web-Base of the Application, like '/' or '/appname'
-    private static $_c; // Controller;
+    const OK = 200;
+    const NOT_FOUND = 404;
+
     private static $_module_list;
     private static $_file_list = array();
     private static $_route_list = array();
-
-    //private static $_opts = null;
 
     public static $theme_name = 'html';
     public static $theme_bail = 'bail';
@@ -46,7 +44,8 @@ class Radix
 
     public $body; // Body of the Request
 
-    private function __construct() { /*  Only I can create my Instance */ }
+    private function __construct() { /*  Only I may dance */ }
+
     /**
         Initialize the Radix System
 
@@ -65,7 +64,6 @@ class Radix
         } else {
             // We are Generally Rooted one-up from the Handler
             self::$root = dirname(dirname($_SERVER['SCRIPT_FILENAME'])); // Should be webroot/index.php
-            //self::$_opts['root'] = dirname($_SERVER['DOCUMENT_ROOT']);
         }
 
         // Base of Application
@@ -88,6 +86,7 @@ class Radix
             self::$view = new Radix();
         }
     }
+
     /**
         Create a new Route, routes are only process once (that is, no cascade/recurse)
 
@@ -95,7 +94,7 @@ class Radix
         @param $dst = the destination path
         @param $arg = the by-ref argument of where to put the matched stuff
     */
-    public static function route($src,$dst,&$arg=null)
+    public static function route($src=null,$dst=null,&$arg=null)
     {
         // Accept the $src as RE, but escape only the '/'
         $src = str_replace('/','\/',$src);
@@ -118,63 +117,7 @@ class Radix
         // die( $src );
         // if (preg_match(
     }
-    /**
-        Load a Module into Radix Pages
-        @param $name is the path name, under the app root, of the module
-        @return true|false success state
-    */
-    public static function load($name)
-    {
-        $path = sprintf('%s/%s',self::$root,$name);
-        if (is_dir($path)) {
-            if (empty(self::$_module_list)) {
-                self::$_module_list = array();
-            }
-            $load = sprintf('%s/%s.php',$path,basename($name));
-            if (is_file($load)) {
-                die("Should Load the Module Include File Here");
-                // $this->_include();
-            }
-            self::$_module_list[ basename($name) ] = $path;
-            return true;
-        }
-        return false;
-    }
-    /**
-        Executes an Action Before the $what
-        $what = 'the script to execute as a hook'
-        @deprecated
-    */
-    public static function hook($what)
-    {
-        ob_start();
-        $hook_file = sprintf('%s/hook/%s.php',Radix::$root,basename($what,'.php'));
-        if (is_file($hook_file)) {
-            include($hook_file);
-        }
-//         $list = array(            '%s/hook/%s.php',
-//        $path = explode('/',ltrim(self::$path,'/'));
-//
-//        $c = count($path);
-//        $list = array(sprintf('%s/%s/hook.php',Radix::$root,$what));
-//        for ($i=1;$i<=$c;$i++) {
-//            $hook = implode('/',array_slice($path,0,$i));
-//            $list[] = sprintf('%s/%s/%s-hook.php',Radix::$root,$what,$hook);
-//        }
-//
-//        // Find and Include
-//        foreach ($list as $file) {
-//            //syslog(LOG_DEBUG,"Hook $what/$file");
-//            if (is_file($file)) {
-//                self::$view->_include($file);
-//            }
-//        }
-//
-//        // Append to Buffer
-//        self::$view->body.= ob_get_clean();
-//        self::$view->hook.= ob_get_clean();
-          return ob_get_clean();
-    }
+
     /**
         Execute the Controller for the Request
         Searches /controller from most specific to least specific path
@@ -188,68 +131,36 @@ class Radix
             $path = dirname($path);
         }
         ob_start();
-        $ret = self::$view->_include($list);
+        $res = self::$view->_include($list);
         self::$view->body.= ob_get_clean();
-        return $ret;
+        return $res > 0 ?self::OK : self::NOT_FOUND;
     }
+
     /**
         render the view body
     */
     public static function view()
     {
         //syslog(LOG_DEBUG,'Radix::view()');
-        ob_start();
-
-        $good = 0;
         $list = array();
         // Module View
         if (!empty(self::$_module_list[self::$module])) {
             $list[sprintf('%s/view/%s.php',self::$_module_list[self::$module],self::$path)] = -1;
         }
-        // Theme View
+        // Theme Specific View
         $list[] = sprintf('%s/theme/%s/view/%s.php',self::$root,self::$theme_name,self::$path);
-        // Application View
+        // Standard View
         $list[] = sprintf('%s/view/%s.php',self::$root,self::$path);
-        //Radix::dump($list);
-        $good = self::$view->_include($list);
-        // No View is a Fatal Error
-        if (intval($good) == 0) {
-            // @note setting headers in IIS is fail
-            // $_SERVER['SERVER_SOFTWARE'] = 'Microsoft-IIS/7.0';
-            // header('404 Not Found HTTP/1.1',true,404);
-            self::$view->title = 'View Not Found';
-            // Theme Error View?
-            if (!empty(self::$theme_bail)) {
-                $list = array();
-                // Theme Root
-                $list[] = sprintf('%s/theme/%s.php',self::$root,self::$theme_bail);
-                // Theme Specific Directory
-                $list[] = sprintf('%s/theme/%s/%s.php',self::$root,self::$theme_name,self::$theme_bail);
-                self::$view->_include($list);
-            } else {
-                echo "Not Found";
-            }
-            //echo '<p>Root</p>';
-            //self::dump(self::root());
-            //echo '<p>Base</p>';
-            //self::dump(self::base());
-            //echo '<p>Base (full)</p>';
-            //self::dump(self::base(true));
-            //echo '<p>Path</p>';
-            //self::dump(self::path());
-            ////self::dump($list);
-            //self::dump( $_SERVER );
-            //die(sprintf('%s#%d',__FILE__,__LINE__));
-            //exit(0);
-            // echo 'View Not Found';
-            // throw new Exception('View Not Found',__LINE__);
-        }
+
+        ob_start();
+        $res = self::$view->_include($list);
         self::$view->body.= ob_get_clean();
-        return $list;
+        return $res > 0 ? self::OK : self::NOT_FOUND;
     }
+
     /**
         Sends the Results from the exec() and view() as page
-        // @todo rename to show()?
+        @return 200|404
     */
     static function send()
     {
@@ -257,8 +168,9 @@ class Radix
         ob_start();
         $list = array(
             sprintf('%s/theme/%s.php',self::$root,self::$theme_name),
-            sprintf('%s/theme/%s/layout.php',self::$root,self::$theme_name),
+            // sprintf('%s/theme/%s/layout.php',self::$root,self::$theme_name),
         );
+
         if (self::$view->_include($list)) {
             ob_end_flush();
             return(0);
@@ -274,6 +186,7 @@ class Radix
         echo '<h1>' . self::$view->title . '</h1>';
         echo '<div>' . self::$view->body . '</div>';
         echo '</body></html>';
+
         ob_end_flush();
     }
     /**
@@ -345,29 +258,30 @@ class Radix
         self::send();
         exit(0);
     }
+
     /**
         Engage trap handler for error and exceptions
         Also the routine that is used to trap errors and exceptions
     */
     static function trap()
     {
-        
+
         // Engage myself as the error handler
         if ( ($e_code === true) && ($e_text === null) ) {
             //set_error_handler(array(self,'trap'));
             //set_exception_handler(array(self,'trap'));
             return(true);
         }
-    
+
         //if ( (is_numeric($e_code) && (is_string($e_text)) ) {
         syslog(LOG_ERR,"I have had a fatal error");
         file_put_contents('/tmp/custos.err',print_r(debug_backtrace(),true));
         die(__LINE__);
         //}
-        
+
         //set_error_handler('Radix::error_handler',  int $error_types = E_ALL | E_STRICT  ] )
         //set_exception_handler('Radix::hook_exception');
-        
+
         ob_end_clean();
         set_exception_handler(null);
 
@@ -386,6 +300,7 @@ class Radix
         }
         die(sprintf('%s#%d',__FILE__,__LINE__));
     }
+
     /**
         @return uri base of the application
         @note site's at the root are '/' otherwise '/path/'
@@ -415,6 +330,7 @@ class Radix
         $base.= dirname(parse_url($_SERVER['SCRIPT_NAME'],PHP_URL_PATH));
         return rtrim($base,'/');;
     }
+
     /**
         @return path of current request, with leading /
     */
@@ -457,6 +373,7 @@ class Radix
 
         return $path;
     }
+
     /**
         @param $data the stuff to dump
         @return debug dumping
@@ -469,8 +386,10 @@ class Radix
             echo ("\n" . print_r($data,true) . "\n");
         }
     }
+
     /**
         Info function returns text/html or text/plain about the radix system
+        @return string html
     */
     public static function info()
     {
@@ -494,6 +413,7 @@ class Radix
         }
         return $html;
     }
+
     /**
         Dumps a var and traces how we got here
         @param $x the var to assert on
@@ -555,6 +475,7 @@ class Radix
         self::dump($buf); // echo "<pre>$buf</pre>";
         exit(0);
     }
+
     /**
         @param string $uri to redirect to
         @param int $code HTTP code, default 302, or full HTTP status line
@@ -654,9 +575,6 @@ class Radix
     }
 
     /**
-        Instance Methods
-    */
-    /**
         Output a file from the ./block directory
         Has access to self::$view (or $this->view) as the View object
 
@@ -679,6 +597,7 @@ class Radix
             return $html;
         }
     }
+
     /**
         Relative Link to this Base
         @param $path is application path, starting with '/' or schema://
@@ -696,8 +615,10 @@ class Radix
         }
         return $path;
     }
+
     /**
         Given a list of files, include them
+        @return int count of loaded files
     */
     private function _include($list,$once=true)
     {
@@ -710,19 +631,19 @@ class Radix
         $load = 0;
         foreach ($list as $file) {
             self::$_file_list[$file] = 'fail';
-            //syslog(LOG_DEBUG,sprintf('Radix::include_file(test:%s)',$file));
             if (is_file($file)) {
-                //syslog(LOG_DEBUG,sprintf('Radix::include_file(load:%s)',$file));
+                $load++;
                 $this->_include_file($file);
                 self::$_file_list[$file] = 'load';
                 $load++;
-                if ($once) return(true);
+                if ($once) return(1);
             }
         }
         return($load);
     }
+
     /**
-        Includes the requested file with an empty var space
+        Includes the requested file with an mostly empty var space
         @param $f the file
         @return the return value from include
     */

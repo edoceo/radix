@@ -2,14 +2,14 @@
 /**
     @file
     @brief Sends SMS via Carriers Email=>SMS Gateway
-    $Id: SMS.php 1661 2011-03-06 19:23:41Z code@edoceo.com $
-    
+    @deprecated this is a straight up hack, you should really use a proper gateway
+
     @see http://www.notepage.net/smtp.htm
     @see http://www.tech-recipes.com/rx/939/sms_email_cingular_nextel_sprint_tmobile_verizon_virgin/
 */
 
 
-class Radix_SMS
+class radix_sms
 {
 	// Uncomment the ones you want...
 	public static $carrier_list = array(
@@ -249,14 +249,15 @@ class Radix_SMS
         //'Western Wireless 	phonenumber@cellularonewest.com
         //'Wyndtell 	number@wyndtell.com
     );
+
 	/**
 	    Send It...
 	*/
 	function send($from,$cell,$host,$text)
 	{
 		$hdrs = array(
-			//'Errors-To'=>'David Busby <busby@edoceo.com>',
-			//'Reply-To'=>'David Busby <busby@edoceo.com>',
+			//'Errors-To'=>'',
+			//'Reply-To'=>'',
 			'From'=>$from,
 			//'Subject'=>$subj
 		);

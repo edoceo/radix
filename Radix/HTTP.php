@@ -28,6 +28,7 @@ class Radix_HTTP
     static function init($opts=null)
     {
         self::$_opts = array(
+            'head'     => array(),
             'async'    => false,
             'cookie'   => null, // Path to Cookie File
             'referrer' => null,
@@ -63,6 +64,7 @@ class Radix_HTTP
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
         return self::_curl_exec($ch);
     }
+
     /**
         Performs HTTP POST on the URI
         @param $uri
@@ -76,6 +78,7 @@ class Radix_HTTP
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         return self::_curl_exec($ch);
     }
+
     /**
         Executes HTTP DELETE to the specified URI
         @param $uri the URI to delete
@@ -88,6 +91,7 @@ class Radix_HTTP
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
         return self::_curl_exec($ch);
     }
+
     /**
         Get's info from the Multi CURL or Single Curl
     */
@@ -143,6 +147,7 @@ class Radix_HTTP
         }
         return null;
     }
+
     /**
         Executes the Single or Multiple Requests
     */
@@ -176,7 +181,7 @@ class Radix_HTTP
         curl_setopt(self::$_ch, CURLOPT_MAXREDIRS, 0);
         curl_setopt(self::$_ch, CURLOPT_SSL_VERIFYHOST, 0);
         // curl_setopt(self::$_ch, CURLOPT_SSLVERSION, 3); // 2, 3 or GnuTLS
-        curl_setopt(self::$_ch, CURLOPT_TIMEOUT, 0);
+        curl_setopt(self::$_ch, CURLOPT_TIMEOUT, self::$_opts['timeout']);
         curl_setopt(self::$_ch, CURLOPT_USERAGENT, self::$_opts['user-agent']);
 
         if ( (!empty(self::$_opts['head'])) ) {

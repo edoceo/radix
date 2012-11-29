@@ -5,10 +5,8 @@
 
     @see http://en.wikipedia.org/wiki/Basic_access_authentication
 
-    @author code@edoceo.com
     @copyright 2006 Edoceo, Inc.
-    @package Radix
-    @version $Id: Radix.php 1948 2011-12-19 19:47:46Z code@edoceo.com $
+    @package radix
 
 */
 

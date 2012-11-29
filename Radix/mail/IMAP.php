@@ -2,15 +2,12 @@
 /**
     @file
     @brief Wraps the Native PHP IMAP functions
-    $Id$
-    
-    @author code@edoceo.com
-    @license MIT
-    @package Radix
+
+    @package radix
 */
 
 
-class Radix_Mail_IMAP
+class radix_mail_imap
 {
     private $_c; // Connection Handle
     private $_c_host; // Server Part {}

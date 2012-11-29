@@ -2,9 +2,8 @@
 /**
     @file
     @brief Authorize.net Checkout Interface
-    @version $Id: Authorize.php 2113 2012-03-26 04:08:02Z code@edoceo.com $
+
     @package radix
-    @author edoceo, inc
     @copyright 2004 edoceo, inc
 
     @see http://developer.authorize.net/guides/AIM/

@@ -2,11 +2,9 @@
 /**
     @file
     @brief Implements a Simple Actor->Asset Based Access Control List
-    $Id: ACL.php 2294 2012-06-22 18:17:30Z code@edoceo.com $
 
-    @author http://edoceo.com/
     @copyright 2009 edoceo, inc.
-    @package Radix
+    @package radix
 
     This controls Actor access to Asset
 

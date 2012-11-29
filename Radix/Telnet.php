@@ -3,9 +3,7 @@
     Radix Telnet Toolkit
 
     @copyright Edoceo, Inc - 2010
-    @version $Id$
-    @license MIT
-    
+
     @note having issue with commands, perhaps our responses to DO/DONT are not functional?
 
     @see http://www.faqs.org/rfcs/rfc318.html

@@ -2,7 +2,6 @@
 /**
     @file
     @brief Class to Communicate with the Merchant E Solutions Gateway
-    @version $Id: MerchantE.php 2113 2012-03-26 04:08:02Z code@edoceo.com $
 
     @package radix
     @see http://resources.merchante-solutions.com/

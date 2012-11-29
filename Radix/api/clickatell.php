@@ -3,7 +3,6 @@
     @file
     @brief API Interaction with Clickatell
 
-    @author code@edoceo.com
     @copyright 2009 edoceo, inc
     @package radix
     @version $Id$

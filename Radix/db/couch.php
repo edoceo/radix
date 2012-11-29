@@ -36,7 +36,7 @@ class radix_db_couch
         if (!empty($opt['logs'])) {
             // Save for Later
         }
-        $this->_base = trim($opt['host'],'/') . '/' . trim($opt['base'],'/');
+        $this->_base = trim($opt['host'],'/') . '/' . trim(@$opt['base'],'/');
     }
 
     /**
@@ -121,7 +121,7 @@ class radix_db_couch
     }
     function get_attachment($doc,$name)
     {
-        
+
     }
     /**
         @return an Array of Rows or False
@@ -155,6 +155,9 @@ class radix_db_couch
         }
         return null;
     }
+
+    /**
+    */
     function post($uri,$obj)
     {
         $uri = $this->_base . '/' . trim($uri,'/');
@@ -167,6 +170,7 @@ class radix_db_couch
         ));
         return $this->_curl_exec($ch);
     }
+
     /**
         Put an Object
     */
@@ -194,6 +198,7 @@ class radix_db_couch
         ));
         return $this->_curl_exec($ch);
     }
+
     /**
         Uploads a File to the Database
     */
@@ -237,6 +242,7 @@ class radix_db_couch
         print_r($this);
         die("put_attachment");
     }
+
     /**
         Execute a CURL
     */
@@ -276,8 +282,9 @@ class radix_db_couch
         return $ch;
 
     }
+
     /**
-    
+
     */
     function _curl_exec($ch)
     {
