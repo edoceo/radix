@@ -4,14 +4,13 @@
     @brief The SQL Handling Code of Radix
 
     @copyright 2004 Edoceo, Inc.
-    @package Radix
-
+    @package radix
 */
 
 /**
     @brief SQL Database Interface Wrapper, internally PDO
 */
-class Radix_SQL
+class radix_db_sql
 {
     private static $_pdo;
     private static $_sql_stat = array();
@@ -26,6 +25,7 @@ class Radix_SQL
     {
         self::$_pdo = new PDO($dsn,$user,$pass,$opts);
     }
+
     /**
         Get most Recent Error
 
@@ -41,6 +41,7 @@ class Radix_SQL
             return sprintf('%s (Guru Meditation: #%s.%s)',$info[2],$info[0],$info[1]);
         }
     }
+
     /**
         @return Status Information Array
     */
@@ -52,6 +53,7 @@ class Radix_SQL
         );
         return $ret;
     }
+
     /**
         Fetch
 
@@ -65,6 +67,7 @@ class Radix_SQL
         $res->setFetchMode(PDO::FETCH_ASSOC);
         return $res;
     }
+
     /**
         fetch_all
 
@@ -82,6 +85,7 @@ class Radix_SQL
         }
         return $ret;
     }
+
     /**
         @param $sql
         @param $arg bindable array
@@ -96,6 +100,7 @@ class Radix_SQL
 	    }
 	    return $ret;
     }
+
     /**
         @param $sql
         @param $arg bindable array
@@ -110,6 +115,7 @@ class Radix_SQL
 	    }
 	    return $ret;
     }
+
     /**
         fetch_one()
 
@@ -129,6 +135,7 @@ class Radix_SQL
         }
         return null;
     }
+
     /**
         fetch_row
 
@@ -148,6 +155,7 @@ class Radix_SQL
         }
         return null;
     }
+
     /**
         Query
 
@@ -162,6 +170,7 @@ class Radix_SQL
         }
         return false;
     }
+
     /**
         Prepare
         @param $sql string of SQL
@@ -176,6 +185,7 @@ class Radix_SQL
         $res = self::$_pdo->prepare($sql,$arg);
         return $res;
     }
+
     /**
         Insert Data using PDO Query
     */
@@ -194,6 +204,7 @@ class Radix_SQL
         $res = self::_sql_query($sql,$col_data);
         return $res->fetchColumn(0);
     }
+
     /**
         Update an SQL Record using PDO
 
@@ -212,6 +223,7 @@ class Radix_SQL
         $res = self::_sql_query($sql,$arg);
         return $res->rowCount();
     }
+
     /**
         Delete from a Table
     */
@@ -221,11 +233,15 @@ class Radix_SQL
         $sql.= ' WHERE (' . $w . ')';
         return self::_sql_query($sql);
     }
+
     public static function shut()
     {
         self::$_pdo = null;
     }
+
     /**
+        @param $sql string
+        @param $arg array
     */
     private static function _sql_query($sql,$arg)
     {
@@ -257,6 +273,7 @@ class Radix_SQL
         }
         return $res;
     }
+
     /**
         Describe the Tables or one Table
 
@@ -276,6 +293,7 @@ class Radix_SQL
         $sql.= " AND n.nspname ~ '^(ca)$' ";
         $sql.= ' ORDER BY 1,2; ';
     }
+
     /**
         List of Views
 
@@ -295,6 +313,7 @@ class Radix_SQL
         $sql.= " AND n.nspname ~ '^(ca)$' ";
         $sql.= ' ORDER BY 1,2; ';
     }
+
     /**
     */
     public static function describeColumn($t,$c)
@@ -305,7 +324,5 @@ class Radix_SQL
           $sql.= 'SELECT oid FROM pg_class ';
           $sql.= " WHERE relname = '$t' ";
         $sql.= ") AND attname = '$c'";
-
-
     }
 }
