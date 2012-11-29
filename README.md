@@ -38,3 +38,25 @@ Due to it's simplistic nature Radix can be used to create these systems pretty q
 * Fancy inherited modeling
 * Command line tools
 
+## Radix MVC Structures
+
+Radix has a pretty hard coded method for it's MVC
+
+* ./boot.php
+* ./controller - Controllers
+* ./etc - Configuration
+* ./lib - Libraries or Models
+* ./view - Guess!
+* ./webroot/index.php
+'
+## Radix Provided Interfaces
+
+* Basics: Caching, Cart, IPC, MRU, Session
+
+* Auth with HTTP, Facebook, Google or Twitter
+* Checkout: Authorize.net, MerchantE, Stripe, VirtualMerchant
+* Apps: FreeSWITCH
+* Misc API: eNom, Twilio, Phaxio, Plivo
+* Amazon: MTurk, S3, SQS
+* Email: SMTP, IMAP
+* Network: Telnet, IRC, XMPP
