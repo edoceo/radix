@@ -29,6 +29,8 @@ class Radix
     private static $_module_list;
     private static $_file_list = array();
     private static $_route_list = array();
+    private static $_exec_res; // Result of exec()
+    private static $_view_res; // Result of view()
 
     public static $theme_name = 'html';
     public static $theme_bail = 'bail';
@@ -133,7 +135,8 @@ class Radix
         ob_start();
         $res = self::$view->_include($list);
         self::$view->body.= ob_get_clean();
-        return $res > 0 ?self::OK : self::NOT_FOUND;
+        self::$_exec_res = $res;
+        return self::$_exec_res;
     }
 
     /**
@@ -155,7 +158,8 @@ class Radix
         ob_start();
         $res = self::$view->_include($list);
         self::$view->body.= ob_get_clean();
-        return $res > 0 ? self::OK : self::NOT_FOUND;
+        self::$_view_res = $res;
+        return self::$_view_res;
     }
 
     /**
@@ -164,8 +168,17 @@ class Radix
     */
     static function send()
     {
-        //syslog(LOG_DEBUG,'Radix::send()');
         ob_start();
+
+        // Bail on Error?
+        // die('self::$_view_res ' . self::$_view_res . "\n");
+        if (self::$_view_res !== self::OK) {
+            $v = self::$_view_res;
+            self::$_view_res = self::OK;
+            radix::bail($v);
+            return(0);
+        }
+
         $list = array(
             sprintf('%s/theme/%s.php',self::$root,self::$theme_name),
             // sprintf('%s/theme/%s/layout.php',self::$root,self::$theme_name),
@@ -177,22 +190,22 @@ class Radix
         }
 
         // No Layout? Use This Built-In
-        echo "<!DOCTYPE html>\n";
+        if (empty($_ENV['title'])) $_ENV['title'] = 'radix';
+        echo "<!doctype html>\n";
         echo "<html>\n";
-        echo '<head>';
-        echo '<meta http-equiv="content-type" content="text/html;charset=utf-8" />';
-        echo '<title>' . self::$view->title . '</title>';
+        echo '<head><meta http-equiv="content-type" content="text/html;charset=utf-8" />';
+        echo '<title>' . $_ENV['title'] .'</title>';
         echo '</head><body>';
-        echo '<h1>' . self::$view->title . '</h1>';
         echo '<div>' . self::$view->body . '</div>';
         echo '</body></html>';
 
         ob_end_flush();
     }
+
     /**
         Respond with an HTTP 400 or 500 level Error Message
         @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-        @param $opt int or text for error message or array('title'=>null,'body'=>null), default 500
+        @param $opt int or text for error message or array('body'=>null), default 500
         @return never
     */
     static function bail($opt=null)
@@ -253,8 +266,9 @@ class Radix
             break;
         }
         header(sprintf('HTTP/1.1 %d %s',$opt['code'],$opt['text']));
-        self::$view->title = null;
-        self::$view->body = $opt['text'];
+        if (empty(self::$view->body)) {
+            self::$view->body = $opt['text'];
+        }
         self::send();
         exit(0);
     }
@@ -394,22 +408,24 @@ class Radix
     public static function info()
     {
         $html = null;
-        $html.= 'root:' . self::$root . '<br />'; // Root Path of Application
-        $html.= 'host:' . self::$host . '<br />'; // Hostname
-        $html.= 'base:' . self::$base . '<br />'; // Web-Base of Application ( "/" or "/something" )
-        $html.= 'path:' . self::$path . '<br />'; // Path of Request in Application
-        $html.= 'files:<br />';
+        $html.= 'root:' . self::$root . '<br>'; // Root Path of Application
+        $html.= 'host:' . self::$host . '<br>'; // Hostname
+        $html.= 'base:' . self::$base . '<br>'; // Web-Base of Application ( "/" or "/something" )
+        $html.= 'path:' . self::$path . '<br>'; // Path of Request in Application
+        $html.= 'exec()==' . self::$_exec_res . '<br>';
+        $html.= 'view()==' . self::$_view_res . '<br>';
+        $html.= 'files:<br>';
         foreach (self::$_file_list as $k=>$v) {
-            $html.= ('+' . $k . ' = ' . $v . '<br />');
+            $html.= ('+' . $k . ' = ' . $v . '<br>');
         }
-        $html.= 'routes:<br />';
+        $html.= 'routes:<br>';
         foreach (self::$_route_list as $k=>$v) {
-            $html.= ('@' . htmlspecialchars($v['src']) . ' = ' . htmlspecialchars($v['dst']) . '<br />');
-        }
+            $html.= ('@' . htmlspecialchars($v['src']) . ' = ' . htmlspecialchars($v['dst']) . '<br>');
+        }                                                                                                                                                      
         // $html.= 'module:self::$module"; // Module of Request?
         // $html.= "view:$view; // The View Object
         if (php_sapi_name() == 'cli') {
-            $html = strip_tags(str_replace('<br />',"\n",$html));
+            $html = strip_tags(str_replace('<br>',"\n",$html));
         }
         return $html;
     }
@@ -617,8 +633,8 @@ class Radix
     }
 
     /**
-        Given a list of files, include them
-        @return int count of loaded files
+        Given a list of files, include the first
+        @return from included file
     */
     private function _include($list,$once=true)
     {
@@ -627,19 +643,20 @@ class Radix
         if (!is_array($list)) {
             $list = array($list);
         }
+
         // Loop
-        $load = 0;
         foreach ($list as $file) {
-            self::$_file_list[$file] = 'fail';
+            self::$_file_list[$file] = 'fail:404';
             if (is_file($file)) {
-                $load++;
-                $this->_include_file($file);
-                self::$_file_list[$file] = 'load';
-                $load++;
-                if ($once) return(1);
+                $r = $this->_include_file($file);
+                // 0 if included file says "return(0);"
+                // 1 to promote include() success to HTTP OK
+                if ( ($r === 0) || ($r === 1) ) $r = self::OK;
+                self::$_file_list[$file] = sprintf('load:%d',$r);
+                return($r);
             }
         }
-        return($load);
+        return self::NOT_FOUND;
     }
 
     /**

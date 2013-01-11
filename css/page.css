@@ -1,0 +1,39 @@
+/**
+    @file
+    @brief Fancy Page Style Things
+*/
+
+blockquote.r
+{
+    float: right;
+    padding-right: 15px;
+    padding-left: 0;
+    border-right: 5px solid #EEE;
+    border-left: 0;
+    text-align: right;
+}
+
+div.hero
+{
+    font-size:56px;
+    margin:16px;
+    padding:32px;
+}
+
+p.lead {
+    margin:16px;
+    font-weight:700;
+    font-size:120%;
+}
+
+pre.prettyprint {
+    margin-bottom: 18px;
+}
+/* Limit Height */
+pre.hmax
+{
+  max-height: 344px;
+  overflow-y: scroll;
+}
+
+/* Leader Text Highlights */

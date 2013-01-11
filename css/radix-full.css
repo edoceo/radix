@@ -1,0 +1,975 @@
+/*
+radix.css
+
+Based From https://github.com/necolas/normalize.css
+Updated with info from:
+    http://www.javascriptkit.com/dhtmltutors/csshacks3.shtml
+    http://kyleschaeffer.com/best-practices/css-font-size-em-vs-px-vs-pt-vs/
+
+*/
+
+/* Base ============================================================ */
+html {
+    /* Corrects text resizing oddly in IE6/7 when body `font-size` is set using `em` units. */
+    font-family: sans-serif;
+    font-size: 100%; /* 1 */
+    /* Prevents iOS text size adjust after orientation change, without disabling user zoom. */
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-rendering: optimizelegibility;
+}
+
+body
+{
+    margin:0; padding:0;
+}
+
+/* */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+nav,
+section,
+summary {
+    display: block;
+}
+
+/* Corrects `inline-block` display not defined in IE6/7/8/9 & FF3. */
+audio { display:inline; margin:0px; padding:0px; }
+canvas,
+video
+{
+    display: inline-block;
+}
+
+/*
+ * Prevents modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS5 devices.
+ */
+
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+/* Addresses styling for `hidden` attribute not present in IE7/8/9, FF3, S4. Known issue: no IE6 support. */
+[hidden] {
+    display: none;
+}
+
+/* Consistent `font-family` inconsistency between `textarea` and other form */
+button,
+input,
+select,
+textarea {
+    font-family:sans-serif;
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+/*
+ * Addresses `outline` inconsistency between Chrome and other browsers.
+ */
+
+a { color:inherit; }
+a:focus { outline: thin dotted; }
+
+/*
+ * Improves readability when focused and also mouse hovered in all browsers.
+ * people.opera.com/patrickl/experiments/keyboard/test
+ */
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+/*
+ * Addresses font sizes and margins set differently in IE6/7.
+ * Addresses font sizes within `section` and `article` in FF4+, Chrome, S5.
+ */
+/*  */
+h1 {
+    font-size: 144%;
+    margin:0;
+    padding:16px 0px;
+}
+
+h2 {
+    font-size: 136%;
+    margin:0;
+    padding:8px 0px;
+}
+
+h3 {
+    font-size:128%;
+    margin:1em 0;
+}
+
+h4 {
+    font-size: 120%;
+    margin: 8px 4px;
+}
+
+h5 {
+    font-size: 112%;
+    margin: 1.67em 0;
+}
+
+h6 {
+    font-size: 104%;
+    margin: 2.33em 0;
+}
+
+/* Sub Text in a Header */
+h1 small,
+h2 small,
+h3 small,
+h4 small,
+h5 small,
+h6 small
+{
+    color: #999;
+    font-weight: normal;
+}
+
+/*
+ * Addresses styling not present in IE7/8/9, S5, Chrome.
+ */
+abbr
+{
+    cursor:help;
+}
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+
+/*
+ * Addresses style set to `bolder` in FF3+, S4/5, Chrome.
+ */
+
+b, strong { font-weight: bold; }
+
+blockquote
+{
+    border-left: 5px solid #eee;
+    margin: 0 0 16px;
+    padding: 0 0 0 16px;
+}
+blockquote small {
+    color: #999;
+    display: block;
+    font-size:16px;
+    line-height: 20px;
+}
+
+/*
+ * Addresses styling not present in S5, Chrome.
+ */
+
+dfn {
+    font-style: italic;
+}
+
+/*
+ * Addresses styling not present in IE6/7/8/9.
+ */
+
+mark {
+    background: #ff0;
+    color: #000;
+}
+
+/*
+ * Addresses margins set differently in IE6/7.
+ */
+
+p,
+pre {
+    margin: 1em 0;
+}
+
+/*
+ * Corrects font family set oddly in IE6, S4/5, Chrome.
+ * en.wikipedia.org/wiki/User:Davidgothberg/Test59
+ */
+
+code,
+kbd,
+pre,
+samp {
+    font-family: monospace, serif;
+    font-size: 1em;
+}
+
+/*
+ * Improves readability of pre-formatted text in all browsers.
+ */
+
+pre {
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    padding: 2px;
+    white-space: pre;
+    white-space: pre-wrap;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+code, pre
+{
+    padding: 2px;
+    color: #333333;
+    border-radius: 3px;
+}
+
+code {
+  padding: 2px 4px;
+  color: #d14;
+  background-color: #f7f7f9;
+  border: 1px solid #e1e1e8;
+}
+pre code {
+  padding: 0;
+  color: inherit;
+  background-color: transparent;
+  border: 0;
+}
+
+/*
+ * Addresses CSS quotes not supported in IE6/7.
+ */
+
+q {
+    quotes: none;
+}
+
+/*
+ * Addresses `quotes` property not supported in S4.
+ */
+
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+small {
+    font-size: 75%;
+}
+
+/*
+ * Prevents `sub` and `sup` affecting `line-height` in all browsers.
+ * gist.github.com/413930
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sup {
+    top: -0.5em;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+/* Lists =========================================================== */
+
+/*
+ * Addresses margins set differently in IE6/7.
+ */
+
+dl,
+menu,
+ol,
+ul {
+    margin: 1em 0;
+}
+
+dd {
+    margin: 0 0 0 40px;
+}
+
+ol, ul {
+    padding: 0;
+    margin: 0 0 8px 24px;
+}
+ol ol, ol ul, ul ol, ul ul {
+    padding: 0;
+    margin: 0 0 0 20px;
+}
+/*
+ * Addresses paddings set differently in IE6/7.
+ */
+
+ul { 
+    list-style: disc;
+}
+
+/*
+ * Corrects list images handled incorrectly in IE7.
+ */
+
+nav ul,
+nav ol {
+    list-style: none;
+    list-style-image: none;
+}
+
+/* Horizontal Style DL */
+dl.h dt
+{
+    clear:left;
+    float:left;
+    font-weight:700;
+    margin-right:16px;
+    overflow:hidden;
+    text-align:right;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    width:192px;
+}
+
+dl.h dd
+{
+    display:block;
+}
+
+ul.h
+{
+    list-style:none;
+}
+ul.h li
+{
+    display:block;
+    float:left;
+    padding:8px 16px;
+}
+
+ul.h li a
+{
+    display: block;
+    float: none;
+    padding: 8px;
+    text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+
+/* ==========================================================================
+   Embedded content
+   ========================================================================== */
+
+/*
+ * 1. Removes border when inside `a` element in IE6/7/8/9, FF3.
+ * 2. Improves image quality when scaled in IE7.
+ *    code.flickr.com/blog/2008/11/12/on-ui-quality-the-little-things-client-side-image-resizing/
+ */
+
+img {
+    border: 0; /* 1 */
+    -ms-interpolation-mode: bicubic; /* 2 */
+}
+
+/*
+ * Corrects overflow displayed oddly in IE9.
+ */
+
+svg:not(:root) {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+
+/*
+ * Addresses margin not present in IE6/7/8/9, S5, O11.
+ */
+
+figure {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+/*
+ * Corrects margin displayed oddly in IE6/7.
+ */
+
+form {
+    margin: 0;
+}
+
+/*
+ * Define consistent border, margin, and padding.
+ */
+
+fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 4px;
+    padding: 8px;
+}
+
+/*
+ * 2. Corrects text not wrapping in FF3.
+ */
+
+legend {
+    border: 0; /* 1 */
+    padding: 0;
+    white-space: normal; /* 2 */
+}
+
+/*
+ * 1. Corrects font size not being inherited in all browsers.
+ * 2. Addresses margins set differently in IE6/7, FF3+, S5, Chrome.
+ * 3. Improves appearance and consistency in all browsers.
+ */
+
+button,
+input,
+select,
+textarea {
+    font-size: 100%; /* 1 */
+    margin: 0; /* 2 */
+    vertical-align: baseline; /* 3 */
+}
+
+/*
+ * Addresses FF3/4 setting `line-height` on `input` using `!important` in the
+ * UA stylesheet.
+ */
+
+button,
+input {
+    line-height: normal;
+}
+
+/*
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Corrects inability to style clickable `input` types in iOS.
+ * 3. Improves usability and consistency of cursor style between image-type
+ *    `input` and others.
+ */
+
+button,
+html input[type="button"], /* 1 */
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button; /* 2 */
+    cursor: pointer; /* 3 */
+}
+
+input[type="button"],
+input[type="submit"],
+button
+{
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    margin:8px 0px 4px 8px;
+}
+input[type="button"].pri,
+input[type="submit"].pri,
+button.pri
+{
+    background-color: #05C;
+}
+
+input[type="button"]:hover,
+input[type="submit"]:hover,
+button:hover
+{
+
+}
+
+
+/*
+ * Re-set default cursor for disabled elements.
+ */
+
+button[disabled], input[disabled] {
+    cursor: default;
+}
+
+/*
+ * 1. Addresses box sizing set to content-box in IE8/9.
+ * 2. Removes excess padding in IE8/9.
+ */
+
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; padding:0; }
+
+/*
+ * 1. Addresses `appearance` set to `searchfield` in S5, Chrome.
+ * 2. Addresses `box-sizing` set to `border-box` in S5, Chrome (include `-moz`
+ *    to future-proof).
+ */
+
+input[type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box; /* 2 */
+    box-sizing: content-box;
+}
+
+/*
+ * Removes inner padding and search cancel button in S5, Chrome on OS X.
+ */
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+
+/*
+ * 2. Improves readability and alignment in all browsers.
+ */
+
+textarea {
+    /* 1. Removes default vertical scrollbar in IE6/7/8/9 */
+    overflow: auto; /* 1 */
+    /* 2. Improves readability and alignment in all browsers. */
+    vertical-align: top; /* 2 */
+    /* #3 @see http://upshots.org/css/css-box-sizing-textarea-width-100-exceeds-container */
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+table
+{
+    border:none;
+    border-collapse: collapse;
+    border-radius: 4px;
+    border-spacing: 0;
+    margin-bottom: 16px;
+    width:100%;
+}
+table tbody td
+{
+    border-top: 1px solid #ddd;
+}
+
+table td, table th
+{ 
+    padding: 8px;
+    text-align: left;
+}
+table th
+{
+    font-weight: bold;
+    vertical-align: bottom;
+}
+
+table td {
+    vertical-align: top;
+}
+
+/* End of Normalisation */
+
+/* Radix Specific Here - Clones from Bootstrap */
+
+body {
+    background:#fcfcfc;
+    color: #202020;
+}
+
+/**
+
+*/
+
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"]
+{
+    cursor: pointer;
+    vertical-align: middle;
+    -webkit-appearance: button;
+}
+
+button.exec,
+input[type="button"].exec,
+input[type="reset"].exec,
+input[type="submit"].exec
+{
+    background-color: #0074cc;
+    background-image: -moz-linear-gradient(top, #0088cc, #0055cc);
+    background-image: -ms-linear-gradient(top, #0088cc, #0055cc);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0055cc));
+    background-image: -webkit-linear-gradient(top, #0088cc, #0055cc);
+    background-image: -o-linear-gradient(top, #0088cc, #0055cc);
+    background-image: linear-gradient(top, #0088cc, #0055cc);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0088cc', endColorstr='#0055cc', GradientType=0);
+    border-color: #0055cc #0055cc #003580;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    *background-color: #0055cc;
+    /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+
+button.exec:hover,
+button.exec:active,
+input[type="button"].exec:hover,
+input[type="button"].exec:active,
+input[type="reset"].exec:hover,
+input[type="submit"].exec:active
+{
+    background-color: #0055cc;
+    /* background-color: #004099; */
+}
+/*
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary.active,
+.btn-primary.disabled,
+.btn-primary[disabled] {
+}
+
+.btn-primary:active,
+.btn-primary.active {
+}
+*//**
+    @file
+    @brief Fancy Page Style Things
+*/
+
+blockquote.r
+{
+    float: right;
+    padding-right: 15px;
+    padding-left: 0;
+    border-right: 5px solid #EEE;
+    border-left: 0;
+    text-align: right;
+}
+
+div.hero
+{
+    font-size:56px;
+    margin:16px;
+    padding:32px;
+}
+
+p.lead {
+    margin:16px;
+    font-weight:700;
+    font-size:120%;
+}
+
+pre.prettyprint {
+    margin-bottom: 18px;
+}
+/* Limit Height */
+pre.hmax
+{
+  max-height: 344px;
+  overflow-y: scroll;
+}
+
+/* Leader Text Highlights */
+/*
+    Pretty Gradients for Alerts, Buttons
+    @see http://twitter.github.com/bootstrap/base-css.html#buttons
+*/
+
+/*
+    Bright Blue Gradient Background
+*/
+.exec {
+    background-color: #0044CC;
+    background-image: linear-gadient(center top, #0088CC, #0044CC);
+    background-image: -moz-linear-gradient(center top , #0088CC, #0044CC);
+    background-image: -ms-linear-gradient(center top , #0088CC, #0044CC);
+    background-image: -webkit-linear-gadient(center top, #0088CC, #0044CC);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    color: #FFFFFF;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.exec .disabled {
+    background-color: #0044CC;
+    opacity:0.64;
+}
+
+
+/*
+    Red Gradient Background
+*/
+.fail
+{
+    background-color: #da4f49;
+    background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);
+    background-image: -ms-linear-gradient(top, #ee5f5b, #bd362f);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#bd362f));
+    background-image: -webkit-linear-gradient(top, #ee5f5b, #bd362f);
+    background-image: -o-linear-gradient(top, #ee5f5b, #bd362f);
+    background-image: linear-gradient(top, #ee5f5b, #bd362f);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ee5f5b', endColorstr='#bd362f', GradientType=0);
+    border-color: #bd362f #bd362f #802420;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    *background-color: #bd362f;
+    /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.fail:hover,
+.fail:active,
+.fail.active,
+.fail.disabled,
+.fail[disabled] {
+  background-color: #bd362f;
+}
+
+.fail:active,
+.fail.active {
+    background-color: #942a25;
+}
+
+/*
+    Pale Blue Gradient Background
+*/
+.info
+{
+    background-color: #49afcd;
+    background-image: -moz-linear-gradient(top, #5bc0de, #2f96b4);
+    background-image: -ms-linear-gradient(top, #5bc0de, #2f96b4);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#2f96b4));
+    background-image: -webkit-linear-gradient(top, #5bc0de, #2f96b4);
+    background-image: -o-linear-gradient(top, #5bc0de, #2f96b4);
+    background-image: linear-gradient(top, #5bc0de, #2f96b4);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5bc0de', endColorstr='#2f96b4', GradientType=0);
+    border-color: #2f96b4 #2f96b4 #1f6377;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    *background-color: #2f96b4;
+    /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.info:hover,
+.info:active,
+.info.active,
+.info.disabled,
+.info[disabled] {
+  background-color: #2f96b4;
+  *background-color: #2a85a0;
+}
+.info:active,
+.info.active {
+  background-color: #24748c;
+}
+
+.warn {
+    background-color: #faa732;
+    background-image: -moz-linear-gradient(top, #fbb450, #f89406);
+    background-image: -ms-linear-gradient(top, #fbb450, #f89406);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fbb450), to(#f89406));
+    background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
+    background-image: -o-linear-gradient(top, #fbb450, #f89406);
+    background-image: linear-gradient(top, #fbb450, #f89406);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fbb450', endColorstr='#f89406', GradientType=0);
+    border-color: #f89406 #f89406 #ad6704;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    *background-color: #f89406;
+    /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.warn:hover,
+.warn:active,
+.warn.active,
+.warn.disabled,
+.warn[disabled] {
+  background-color: #f89406;
+  *background-color: #df8505;
+}
+.warn:active,
+.warn.active {
+  background-color: #c67605 \9;
+}
+
+/**
+    Green Gradient Background
+*/
+.good {
+    background-color: #5bb75b;
+    background-image: -moz-linear-gradient(top, #62c462, #51a351);
+    background-image: -ms-linear-gradient(top, #62c462, #51a351);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#51a351));
+    background-image: -webkit-linear-gradient(top, #62c462, #51a351);
+    background-image: -o-linear-gradient(top, #62c462, #51a351);
+    background-image: linear-gradient(top, #62c462, #51a351);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#62c462', endColorstr='#51a351', GradientType=0);
+    border-color: #51a351 #51a351 #387038;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    *background-color: #51a351;
+    /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.good:hover,
+.good:active,
+.good.active,
+.good.disabled,
+.good[disabled] {
+    background-color: #51a351;
+}
+
+.good:active,
+.good.active {
+    background-color: #408140;
+}
+/**
+    Labels and Badges
+*/
+
+.note {
+    background-color: #999999;
+    border-radius: 4px;
+}
+
+.note8 {
+    border-radius: 8px;
+}
+
+/*
+ Grey 
+*/
+
+/*
+  Green
+*/
+.note.good {
+    background-color: #468847;
+}
+
+/*
+  Orange
+*/
+.note.warn
+{
+ background-color: #F89406;
+}
+/*
+  Red
+*/
+.note.fail {
+    background-color: #B94A48;
+}
+
+/*
+  Pale Blue
+*/
+.note.info {
+    background-color: #3A87AD;
+}
+
+/*
+  White on Black
+*/
+.note.flip {
+    background-color: #333333;
+    color: #FFFFFF;
+}/*
+    Vertical and Horizontal Menu
+*/
+
+
+div.menu-main {
+    background-color: #2c2c2c;
+    background-image: -moz-linear-gradient(top, #333, #222);
+    background-image: -ms-linear-gradient(top, #333, #222);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#333), to(#222));
+    background-image: -webkit-linear-gradient(top, #333, #222);
+    background-image: -o-linear-gradient(top, #333, #222);
+    background-image: linear-gradient(top, #333, #222);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#333333', endColorstr='#222222', GradientType=0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1);
+    color: #999;
+    font-size:16px;
+    left: 0;
+    line-height:24px;
+    margin-bottom: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 1030;
+}
+
+/*
+    Horizontal Menu Bar
+*/
+div.menu-hbar:after
+{
+    content:"";
+}
+
+div.menu-hbar ul
+{
+    display: block;
+    float: left;
+    left: 0;
+    list-style: none;
+    margin: 0 0 0 16px;
+    padding:0;
+    position: relative;
+}
+
+div.menu-hbar ul li
+{
+    display:block;
+    float:left;
+}
+
+/* Split hbar menu splitter */
+div.menu-hbar ul li.sep
+{
+    height: 40px;
+    width: 1px;
+    margin: 0 8px;
+    overflow: hidden;
+    background-color: #222;
+    border-right: 1px solid #333;
+}
+
+div.menu-hbar ul li a
+{
+    display: block;
+    float: none;
+    padding: 9px 10px 11px;
+    text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+div.menu-hbar ul li a:hover
+{
+    background-color: #222;
+    color: white;
+    text-decoration: none;
+}

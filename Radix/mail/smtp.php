@@ -36,6 +36,7 @@ class radix_mail_smtp
         // Non Blocking IO
         stream_set_blocking($this->_s, false);
     }
+
     /**
         Sends EHLO
         @param hostname, auto-detected
@@ -57,6 +58,7 @@ class radix_mail_smtp
         // }
         return $res;
     }
+
     /**
         Uses AUTH LOGIN to authenticate
         @return array of response line data
@@ -85,6 +87,7 @@ class radix_mail_smtp
         return $res;
 
     }
+
     /**
         @param $e email address, hopefully properly formatted for SMTP
         @return array of response line data
@@ -99,6 +102,7 @@ class radix_mail_smtp
         $res = $this->_recv();
         return $res;
     }
+
     /**
         @param $e email address, hopefully properly formatted for SMTP
         @return array of response line data
@@ -113,6 +117,7 @@ class radix_mail_smtp
         $res = $this->_recv();
         return $res;
     }
+
     /**
         @param $d string data which is hopefully properly formatted for SMTP
         @return array of response line data
@@ -151,6 +156,7 @@ class radix_mail_smtp
 
         return $ret;
     }
+
     /**
         Terminate the connection
         @return true
@@ -163,6 +169,7 @@ class radix_mail_smtp
         $this->_s = null;
         return $ret;
     }
+
     /**
         Send data to Server
         @return bytes written
@@ -171,12 +178,12 @@ class radix_mail_smtp
     {
         // echo "_send($data)\n";
         if (empty($this->_s)) {
-            error_log("SMTP Shutdown $data?");
+            die("SMTP Shutdown\n$data?");
         }
-
         $ret = fwrite($this->_s,$data);
         return $ret;
     }
+
     /**
         Read Data
         @return false | data array
@@ -197,16 +204,17 @@ class radix_mail_smtp
             $r = array($this->_s);
             $w = null;
             $e = null;
-            $c = stream_select($r,$w,$e,1);
+            echo 'w';
+            $c = stream_select($r,$w,$e,1,500000);
             // If our one socket is ready
             if ($c == 1) {
                 // Stream Select may think something is there, but then fgets fails WTF?
                 $buf = fgets($this->_s,1024);
+                echo "_recv($buf)\n";
                 if ($buf === false) {
                     $c = false;
                     break;
                 }
-                // echo "_recv($buf)\n";
                 // Parse out SMTP Response Lines
                 if (preg_match('/^(\d{3})([ \-])(.+)/',$buf,$m)) {
                     $ret[] = array(
@@ -215,10 +223,12 @@ class radix_mail_smtp
                     );
                 }
             }
-        } while ($c != false);
+            echo '#' . intval($c);
+        } while ($c != 0);
         // echo "_recv()=$ret\n";
         return $ret;
     }
+
     /**
         Does an MX Lookup for the Given Email Address
         @param $e email address
@@ -245,6 +255,7 @@ class radix_mail_smtp
         }
         return false;
     }
+
     /**
         Send using our Mail Server
     */
@@ -281,6 +292,7 @@ class radix_mail_smtp
 
         return $ret;
     }
+
     /**
         Sends directly to the Recipient MX, using $rctp MX for their domain
         @param $rcpt = Recipeint

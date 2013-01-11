@@ -14,7 +14,7 @@ class radix_aws_mturk
     const VERSION = '2012-03-25';
     const REST_URI = 'https://mechanicalturk.amazonaws.com/onca/xml';
     const SOAP_URI = 'https://mechanicalturk.amazonaws.com/onca/soap';
-    const UA = 'Radix AWS v2012.28';
+    const UA = 'Edoceo Radix AWS v2012.28';
 
     private $_access;
     private $_secret;
