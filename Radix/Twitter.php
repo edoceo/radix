@@ -2,9 +2,8 @@
 /**
     @file
     @brief Tools for interacting with Twitter
-    $Id$
 
-    @package Radix
+    @package radix
 
     @see https://dev.twitter.com/docs/twitter-libraries
     @see https://github.com/jdp/twitterlibphp/blob/master/twitter.lib.php
@@ -49,6 +48,7 @@ class radix_twitter
         $this->_consumer_key = $c_key;
         $this->_consumer_secret = $c_secret;
     }
+
     /**
         @param $t Token
         @param $s Secret
@@ -58,6 +58,7 @@ class radix_twitter
         $this->_oauth_token = $t;
         $this->_oauth_token_secret = $s;
     }
+
     /**
         Get the URI from Twitter
     */
@@ -67,6 +68,7 @@ class radix_twitter
         parse_str($x['body'],$t);
         return self::AUTH_URI . '?oauth_token=' . $t['oauth_token'];
     }
+
     /**
         @param $a = somethign?
     */
@@ -76,6 +78,7 @@ class radix_twitter
         parse_str($x['body'],$t);
         return self::URI_AUTHORIZE . '?oauth_token=' . $t['oauth_token'];
     }
+
     /**
         @param $a the token passed back from the oAuth Provider, typically $_GET['oauth_token']
     */
@@ -90,6 +93,7 @@ class radix_twitter
         parse_str($r['body'],$t);
         return $t;
     }
+
     /**
         Returns a Request Token
         @param $a = something?
@@ -99,6 +103,7 @@ class radix_twitter
         $r = $this->_curl('POST',self::TOKEN_REQUEST_URI,$a);
         return $r;
     }
+
     /**
         @deprecated
     */
@@ -126,6 +131,7 @@ class radix_twitter
         $r = json_decode($r['body']);
         return $r; // new EpiTwitterJson(call_user_func(array($this, 'httpRequest'), $method, "{$this->apiUrl}{$path}", $args));
     }
+
     /**
         Do a Tweet, Updates the authenticated user's status.
 
@@ -137,6 +143,7 @@ class radix_twitter
     {
         return $this->_curl('POST','http://api.twitter.com/1/statuses/update.json',array('status' => $t));
     }
+
     /**
         Gets the User Time Line
     */
@@ -147,6 +154,7 @@ class radix_twitter
         $json = json_decode($feed['body']);
         return $json;
     }
+
     /**
         Twitter Link
         @return <a> tag
@@ -161,49 +169,7 @@ class radix_twitter
         $ret.= ' data-hashtags="' . $tag . '">Tweet</a>';
         return $ret;
     }
-    /**
-        Get Button HTML/Code
-    */
 
-
-    /**
-    * Executes an API call
-    * @param string $twitter_method The Twitter method to call
-    * @param string $http_method The HTTP method to use
-    * @param string $format Return format
-    * @param array $options Options to pass to the Twitter method
-    * @param boolean $require_credentials Whether or not credentials are required
-    * @return string
-    */
-    // protected function apiCall($twitter_method, $http_method = 'get', $format = 'json', $options, $require_credentials = true)
-    // {
-    //     $http_method = strtolower($http_method);
-    //     $ch = curl_init();
-    //     $api_url = sprintf('http://api.twitter.com/1/%s.%s', $twitter_method, $format);
-    //     if (($http_method == 'get') && (count($options) > 0)) {
-    //         $api_url .= '?' . http_build_query($options);
-    //     }
-    //     //echo $api_url . "\n";
-    //     curl_setopt($ch, CURLOPT_URL, $api_url);
-    //     // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
-    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //     curl_setopt($ch, CURLOPT_VERBOSE, true);
-    //
-    //     if (!empty($this->_pass)) {
-    //         curl_setopt($ch, CURLOPT_USERPWD, $this->_auth);
-    //     }
-    //
-    //     if ($http_method == 'post') {
-    //         curl_setopt($ch, CURLOPT_POST, true);
-    //         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($options));
-    //     }
-    //     $this->_ret_data = curl_exec($ch);
-    //     $this->_ret_http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    //     $this->_uri = $api_url;
-    //     curl_close($ch);
-    //     Radix::dump($this);
-    //     return $ret;
-    // }
     /**
         @param $verb GET, POST, DELETE
         @param $uri
@@ -263,6 +229,7 @@ class radix_twitter
         curl_close($ch);
         return $ret;
     }
+
     /**
         @param $uri
         @return sanatized URI
@@ -289,37 +256,7 @@ class radix_twitter
 
         return $ret;
     }
-    /**
-    */
-    // private function _prepareArgs($verb,$uri,$args)
-    // {
-    //     // if (empty($args['request'])) {
-    //     //     $args['request'] = array();
-    //     // }
-    //     // if (empty($args['oauth'])) {
-    //     //     $args['oauth'] = array();
-    //     // }
-    //     // unset($args['oauth']['oauth_secret']);
-    //
-    //     $sign_args = $args;
-    //     $sign_args['oauth_consumer_key'] = $this->_consumer_key;
-    //     $sign_args['oauth_nonce'] = '1234567890'; // md5(openssl_random_pseudo_bytes(128));
-    //     $sign_args['oauth_signature_method'] = 'HMAC-SHA1';
-    //     $sign_args['oauth_timestamp'] = $_SERVER['REQUEST_TIME'];
-    //     if (!empty($this->_oauth_token_secret)) $sign_args['oauth_token'] = $this->_oauth_token_secret;
-    //     $sign_args['oauth_version'] = '1.0';
-    //     // encoding
-    //     // array_walk($sign_args, array($this, 'encode_rfc3986'));
-    //     // signing
-    //     $sign_args['oauth_signature'] = $this->_makeSignature($verb, $uri, $sign_args);
-    //     ksort($sign_args);
-    //
-    //     $ret = array(
-    //         'oauth' => $sign_args,
-    //         'request' => $args,
-    //     );
-    //     return $ret;
-    // }
+
     /**
         @param $verb
         @param $uri
@@ -338,6 +275,7 @@ class radix_twitter
         // echo "base:$base\n";
         return $this->_sign($base);
     }
+
     /**
         Sign the String with the current Secrets & Keys
         @param $s the string to sign
