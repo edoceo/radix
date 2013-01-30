@@ -388,6 +388,12 @@ class Radix
         return $path;
     }
 
+    public static function isAjax($ua=null)
+    {
+        $chk = strtolower($ua == null ? $_SERVER['HTTP_X_REQUESTED_WITH'] : $ua);
+        return ('xmlhttprequest' == $chk);
+    }
+
     /**
         @param $data the stuff to dump
         @return debug dumping

@@ -58,7 +58,21 @@ class radix_db_mongo
     }
 
     /**
+        Run Command
+        @param $c code
+        @param $a args
+    */
+    function command($c,$a=null)
+    {
+        if ($a == null) $a = array();
+        $r = $this->_d->command($c,$a);
+        return $r;
+    }
+
+    /**
         Execute on Database
+        @param $c code
+        @param $a args
     */
     function execute($c,$a=null)
     {
@@ -108,12 +122,14 @@ class radix_db_mongo
     /**
         Update a Record
         @param $c collection name
-        @param $a the data array to upgrade, needs _id field
+        @param $a the data array to upgrade
+        @param $q query array for records to match, makes default _id
     */
-    function update($c,$a)
+    function update($c,$a,$q=null,$o=null)
     {
         $c = $this->_d->selectCollection($c);
-        $r = $c->update(array('_id'=>$a['_id']),$a);
+        if (empty($q)) $q = array('_id'=>$a['_id']);
+        $r = $c->update($q,$a,$o=null);
         return $r;
     }
 }

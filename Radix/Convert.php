@@ -111,7 +111,7 @@ class Radix_Convert
     }
     /**
         Convert Metric to Imperial
-        @param float Metric
+        @param $m float Metric
         @return float Imperial
     */
     public static function c2f($m) { return ( (9/5*$m) + 32 ); }
@@ -120,15 +120,18 @@ class Radix_Convert
     public static function l2qt($m) { return ($m * 1.05668821); }
     public static function m2ft($m) { return ($m * 3.2808399); }
     public static function km2mi($m) { return ($m * 0.621371192); }
+
     /**
         Convert Imperial to Metric
+        @param $ft Feet to Meters
     */
     public static function ft2m($ft) { return ($ft * 0.3048); }
     public static function in2cm($in) { return ($in * 2.54); }
+
     /**
         Convert Imperial to Imperial
-        @param Imperial Measure
-        @param other Imperial Measure
+        @param $m Imperial Measure
+        @return Different Imperial Valuie
     */
     public static function f2c($m) { return ( 5 / 9 * ( $f + 32 ) ); }
     public static function ft2in($ft) { return ($ft * 12); }
@@ -142,6 +145,7 @@ class Radix_Convert
     public static function mi2ch($mi) { return ($mi * 80); }
     public static function pt2qt($pt) { return ($pt * 0.5); }
     public static function qt2pt($qt) { return ($qt * 2); }
+
     /**
         Time Routines
         @param $s number of seconds

@@ -36,4 +36,8 @@ pre.hmax
   overflow-y: scroll;
 }
 
+article {
+    margin:8px 0px 4px 16px;
+}
+
 /* Leader Text Highlights */

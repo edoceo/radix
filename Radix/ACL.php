@@ -34,6 +34,7 @@ class Radix_ACL
             self::$_family = $_SESSION['_radix']['_acl']['family'];
         }
     }
+
     /**
         Return Array of Settings
     */
@@ -46,19 +47,21 @@ class Radix_ACL
         $ret['Family'] = self::$_family;
         return $ret;
     }
+
     /**
         Add and Actor (by name) to the List, with optional Parent
         @param $a = the Name of the Actor
         @param $p = null|the Name of the Parent Actor
     */
-    // static function addActor($a,$p=true)
-    // {
-    //     // self is parent if no parent
-    //     if (empty($p)) {
-    //         $p = $a;
-    //     }
-    //     self::$_family[$a] = $p;
-    // }
+    static function addActor($a,$p=true)
+    {
+        // self is parent if no parent
+        if (empty($p)) {
+            $p = $a;
+        }
+        self::$_family[$a] = $p;
+    }
+
     /**
         Determine if Actor may Asset
         @param $actor
@@ -119,6 +122,7 @@ class Radix_ACL
 
         return false;
     }
+
     /**
         Open a Path for an Actor to an Asset
         @param $actor
@@ -136,6 +140,7 @@ class Radix_ACL
         self::$_assets[ $asset ][ $actor ] = 'permit';
         self::$_actors[ $actor ][ $asset ] = 'permit';
     }
+
     /**
         Shut a Path for an Actor to an Asset
         @param $actor
@@ -153,6 +158,7 @@ class Radix_ACL
         self::$_assets[ $asset ][ $actor ] = 'reject';
         self::$_actors[ $actor ][ $asset ] = 'reject';
     }
+
     /**
         Save to the Session
     */
@@ -165,6 +171,7 @@ class Radix_ACL
             'family' => self::$_family,
         );
     }
+
     /**
         Set the Default Actor
         @param $a Actor
@@ -173,6 +180,7 @@ class Radix_ACL
     {
         self::$_default_actor = self::_normalize($a);
     }
+
     /**
         Normalizes the Object Passed
         @param mixed $o

@@ -298,7 +298,7 @@ class radix_aws_mturk
     }
 
     /**
-        @param Hit ID
+        @param $hid Hit ID
     */
     public function GetReviewResultsForHIT($hid)
     {
@@ -412,19 +412,19 @@ class radix_aws_mturk
     public function RevokeQualification() {}
 
     /**
-        @param SortProperty
-        @param SortDirection
-        @param PageSize
-        @param PageNumber
+        @param $sp SortProperty
+        @param $sd SortDirection
+        @param $ps PageSize; default:25
+        @param $pn PageNumber
     */
-    public function SearchHITs()
+    public function SearchHITs($sp=null,$sd=null,$ps=25,$pn=null)
     {
         $arg = array(
             'Operation' => 'SearchHITs',
-            'SortProperty' => null,
-            'SortDirection' => null,
-            'PageSize' => null,
-            'PageNumber' => null,
+            'SortProperty' => $sp,
+            'SortDirection' => $sd,
+            'PageSize' => $ps,
+            'PageNumber' => $pn,
         );
         $r = $this->_http($arg);
         return $r;
@@ -531,7 +531,7 @@ class radix_aws_mturk
         return $r;
     }
     /**
-        @param Request URI
+        @param $arg Request URI
         @return XML Data buffer
     */
     private function _http($arg)

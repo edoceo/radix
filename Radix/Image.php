@@ -7,6 +7,41 @@
 
 class Radix_Image
 {
+    static function toPNG($src,$dst)
+    {
+        $er = error_reporting(0);
+        list($img_w, $img_h, $type, $attr) = getimagesize($src);
+        switch ($type) {
+        case IMAGETYPE_GIF:
+            $src_i = imagecreatefromgif($src);
+            break;
+        case IMAGETYPE_JPEG:
+            $src_i = imagecreatefromjpeg($src);
+            break;
+        case IMAGETYPE_PNG:
+            $src_i = imagecreatefrompng($src);
+            break;
+        default:
+            error_reporting($er);
+            throw new Exception("Invalid Image Type: $type",__LINE__);
+        }
+        imagealphablending($src_i, true);
+
+        $dst_i = imagecreatetruecolor($img_w,$img_h);
+        // And Make a Transparent Background
+        imagealphablending($dst_i, false);
+        imagesavealpha($dst_i, true);
+        $tbg = imagecolorallocatealpha($dst_i, 255, 255, 255, 127);
+        imagefilledrectangle($dst_i, 0, 0, $img_w, $img_h, $tbg);
+        // Copy & Center
+        imagecopyresampled($dst_i,$src_i,0,0,0,0,$img_w,$img_h,$img_w,$img_h);
+        $ret = imagepng($dst_i,$dst);
+        imagedestroy($src_i);
+        imagedestroy($dst_i);
+    }
+
+    /**
+    */
     static function makeThumb($src,$dst,$dst_w,$dst_h)
     {
         $er = error_reporting(0);

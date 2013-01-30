@@ -2,19 +2,18 @@
 /**
     @file
     @brief Tools for interacting with Facebook
-    $Id$
 
     This file took major influence from the Facebook provided PHP libs
 
     @see http://www.php.net/manual/en/function.mcrypt-create-iv.php
     @see http://stackoverflow.com/questions/1220751/how-to-choose-an-aes-encryption-mode-cbc-ecb-ctr-ocb-cfb
 
-    @package Radix
+    @package radix
 */
 
 class radix_api_facebook
 {
-    const USER_AGENT = 'Edoceo Radix Facebook v2012.31';
+    const USER_AGENT = 'Edoceo Radix Facebook v2013.03';
 
     private static $__app_id;
     private static $__secret;
@@ -54,8 +53,24 @@ class radix_api_facebook
     */
     public function __construct($app=null,$key=null)
     {
+        if ($app == null) $app = self::$__app_id;
+        if ($key == null) $key = self::$__secret;
         $this->_app_id = $app;
         $this->_secret = $key;
+    }
+
+    /**
+        Uses the Graph API to get likes for a URI
+        @param $uri the URI to check
+        @return like count
+    */
+    function like_count($uri)
+    {
+        $res = radix_http::get('http://graph.facebook.com/?ids=' . rawurlencode($uri));
+        if ($res['info']['http_code'] == 200) {
+            $res = json_decode($res['body'],true);
+            return intval($res[$uri]['shares']);
+        }
     }
 
     /**

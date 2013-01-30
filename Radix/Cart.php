@@ -26,6 +26,7 @@ class Radix_Cart implements ArrayAccess, Iterator
     /**
         Add Item to the Cart
         @param $p string or array('name','size','rate','data')
+        @param $q quantity to add
         @return current quantity
     */
     function add($p,$q=1)
@@ -105,7 +106,7 @@ class Radix_Cart implements ArrayAccess, Iterator
     }
     /**
         Sets tax to the fractional value, like 0.095
-        @param full or fractional value like 9.5 or 0.095
+        @param $tax full or fractional value like 9.5 or 0.095
     */
     function setTax($tax)
     {

@@ -59,60 +59,22 @@ class Radix_Google
         return $ch;
 
     }
+
     /**
+        Map an Address using Google Maps Geo API
+        @return map data array
     */
     static function mapAddress($address)
     {
         // Initialize delay in geocode speed
-        // $delay = 0;
-        $base = 'http://maps.google.com/maps/geo';
+         $base = 'http://maps.google.com/maps/geo';
         //$args['key'] = self::$_opts['api_key'];
         //$args['output'] = 'xml';
         $args['q'] = $address;
-        // $geocode_pending = true;
-        //while ($geocode_pending) {
-        //$id = $row["id"];
-        // $url = $base_url . "&q=" . urlencode($address);
-        //$xml = simplexml_load_file($url) or die("url not loading");
-        //$http = new Zend_Http_Client($url);
-        //$hres = $http->request();
         $page = Radix_HTTP::get( sprintf('%s?%s',$base,http_build_query($args)) );
-        //Radix::dump($page);
-        //$xml = simplexml_load_string($page['body']);
         return json_decode($page['body']);
-        // return $xml->Response;
-        // $status = $xml->Response->Status->code;
-        // if (strcmp($status, "200") == 0) {
-        // // Successful geocode
-        // $geocode_pending = false;
-        // $ret = $xml->Response->Placemark->Point->coordinates;
-        // return $ret;
-        /*
-        // Format: Longitude, Latitude, Altitude
-        $lat = $coordinatesSplit[1];
-        $lng = $coordinatesSplit[0];
-
-        $query = sprintf("UPDATE markers " .
-           " SET lat = '%s', lng = '%s' " .
-           " WHERE id = '%s' LIMIT 1;",
-           mysql_real_escape_string($lat),
-           mysql_real_escape_string($lng),
-           mysql_real_escape_string($id));
-        $update_result = mysql_query($query);
-        if (!$update_result) {
-        die("Invalid query: " . mysql_error());
-        }
-        } else if (strcmp($status, "620") == 0) {
-        // sent geocodes too fast
-        $delay += 100000;
-        } else {
-        // failure to geocode
-        $geocode_pending = false;
-        echo "Address " . $address . " failed to geocoded. ";
-        echo "Received status " . $status . "\n";
-        }
-        */
     }
+
     /**
         Page Rank
         @see https://github.com/phurix/pagerank/
@@ -135,6 +97,7 @@ class Radix_Google
 		}
         return -1;
     }
+
     /**
         Perform a Google Search
         @return array of results
@@ -172,6 +135,7 @@ class Radix_Google
         //     }
         // }
     }
+
     /**
         Does some magic I saw on the internet
     */
@@ -194,6 +158,7 @@ class Radix_Google
 		}
 		return $Check;
     }
+
     /**
         Does some magic I saw on the internet
     */
@@ -212,6 +177,7 @@ class Radix_Google
 
 		return ($T1 | $T2);
     }
+
     /**
         Does some magic I saw on the internet
     */

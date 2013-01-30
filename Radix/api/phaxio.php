@@ -53,8 +53,8 @@ class radix_api_phaxio
 
     /**
         Retrieve Number List
-        @param $ac
-        @param $pn
+        @param $ad Alpha Date - Start Timestamp of Query
+        @param $od Omega Date - End of List
     */
     public function faxList($ad=null,$od=null)
     {

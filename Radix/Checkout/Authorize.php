@@ -246,8 +246,9 @@ class radix_checkout_authorize
         file_put_contents($file,$data);
     }
     /**
-        @param $cim_cpi - CIM Custoimer Profile Id
+        @param $cim_id - CIM Custoimer Profile Id
         @param $full_cost
+        @param $tax 
     */
     function cimCreateCustomerPaymentProfileRequest($cim_id,$full_cost,$tax)
     {
