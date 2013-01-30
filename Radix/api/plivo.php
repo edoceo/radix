@@ -8,7 +8,7 @@
 
 class radix_api_plivo
 {
-    const URI_BASE = 'https://%s:%s@api.plivo.com/v1';
+    const URI_BASE = 'https://%s:%s@api.plivo.com/v1/Account/%s/';
     const UA = 'Radix Plivo API v2012.44';
 
     private $_auth_id; // Authe ID
@@ -24,6 +24,18 @@ class radix_api_plivo
     {
         $this->_auth_id = $a;
         $this->_auth_tk = $b;
+    }
+    
+    function api($cmd,$arg=null)
+    {
+        $uri = self::_uri('/Account/' . $this->_auth_id . '/' . $cmd . '/');
+        $uri.= '?' . http_build_query($arg);
+        $ch = self::_curl_init($uri);
+        $ret = self::_curl_exec($ch);
+        if (($ret['info']['http_code'] == 200) && ($ret['info']['content_type'] == 'application/json')) {
+            $ret = json_decode($ret['body'],true);
+        }
+        return $ret;
     }
     
     /**
@@ -60,13 +72,55 @@ class radix_api_plivo
     // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/?status=live
     
     // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/
+    /**
+        List of Texts
+        @param $page Page Number, 0
+        @param $size Page Size, 100
+    
+    */
+    function textList($arg)
+    {
+        $uri = self::_uri('Message');
+        $arg = array(
+            'limit' => 20,
+            'offset' => 0,
+        );
+        $uri.= '?' . http_build_query($arg);
+        $ch = self::init($uri);
+        $ret = self::_curl_exec($ch);
+        if (($ret['info']['http_code'] == 200) && ($ret['info']['content_type'] == 'application/json')) {
+            $ret = json_decode($ret['body'],true);
+        }
+        return $ret;
+    }
+    
+    /**
+        Send a Text Message
+    */
+    function textSend($arg)
+    {
+        $uri = self::_uri('Message');
+        $arg = json_encode($arg);
+        $ch = self::_curl_init($uri);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+            'Content-Type: application/json',                                                                                
+            'Content-Length: ' . strlen($arg    ))                                                                       
+        );
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $arg);
+        $ret = self::_curl_exec($ch);
+        if (($ret['info']['http_code'] == 200) && ($ret['info']['content_type'] == 'application/json')) {
+            $ret = json_decode($ret['body'],true);
+        }
+        return $ret;
+    }
 
     /**
         @param $apiep like /
     */
     private function _uri($apiep)
     {
-        $uri = sprintf(self::URI_BASE,$this->_auth_id,$this->_auth_tk);
+        $uri = sprintf(self::URI_BASE,$this->_auth_id,$this->_auth_tk,$this->_auth_id);
         $uri = trim($uri,'/');
         $uri.= '/';
         $uri.= trim(trim($apiep,'/'));
