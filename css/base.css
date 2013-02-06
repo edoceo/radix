@@ -571,7 +571,7 @@ table
 }
 table tbody td
 {
-    border-top: 1px solid #ddd;
+    border:none;
 }
 
 table td, table th

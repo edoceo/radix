@@ -15,7 +15,7 @@ blockquote.r
 
 div.hero
 {
-    font-size:56px;
+    font-size:52px;
     margin:16px;
     padding:32px;
 }
@@ -26,9 +26,6 @@ p.lead {
     font-size:120%;
 }
 
-pre.prettyprint {
-    margin-bottom: 18px;
-}
 /* Limit Height */
 pre.hmax
 {

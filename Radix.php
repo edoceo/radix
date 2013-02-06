@@ -39,7 +39,9 @@ class Radix
     public static $host; // Hostname
     public static $base; // Web-Base of Application ( "/" or "/something" )
     public static $path; // Path of Request in Application "/" is main page
-    public static $module; // Module of Request?
+    public static $m; // Module of Request?
+    public static $c; // Controller
+    public static $a = 'index'; // Action *index
 
     // Other's can set more Public Stuff on this Object
     public static $view; // The View Object
@@ -74,7 +76,7 @@ class Radix
         self::$path = Radix::path();
         // Possible Module Name? /(\w+)/.+
         if (preg_match('|^/(\w+)/.+|',self::$path,$m)) {
-            self::$module = $m[1];
+            self::$m = $m[1];
         }
 
         if (!empty($opts['theme'])) {
@@ -144,11 +146,13 @@ class Radix
     */
     public static function view()
     {
-        //syslog(LOG_DEBUG,'Radix::view()');
         $list = array();
         // Module View
-        if (!empty(self::$_module_list[self::$module])) {
-            $list[sprintf('%s/view/%s.php',self::$_module_list[self::$module],self::$path)] = -1;
+        if (!empty(self::$m)) {
+            $list[sprintf('%s/view/%s.php',self::$m,self::$path)] = -1;
+        }
+        if (self::$a == 'index') {
+            $list[] = sprintf('%s/view/%s/index.php',self::$root,self::$path);
         }
         // Theme Specific View
         $list[] = sprintf('%s/theme/%s/view/%s.php',self::$root,self::$theme_name,self::$path);
@@ -428,7 +432,7 @@ class Radix
         foreach (self::$_route_list as $k=>$v) {
             $html.= ('@' . htmlspecialchars($v['src']) . ' = ' . htmlspecialchars($v['dst']) . '<br>');
         }                                                                                                                                                      
-        // $html.= 'module:self::$module"; // Module of Request?
+        // $html.= 'module:self::$m"; // Module of Request?
         // $html.= "view:$view; // The View Object
         if (php_sapi_name() == 'cli') {
             $html = strip_tags(str_replace('<br>',"\n",$html));
