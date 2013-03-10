@@ -89,6 +89,9 @@
   background-color: #24748c;
 }
 
+/*
+    Orange/Yellow
+*/
 .warn {
     background-color: #faa732;
     background-image: -moz-linear-gradient(top, #fbb450, #f89406);

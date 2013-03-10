@@ -107,7 +107,14 @@ class radix_db_mongo
         return $r;
     }
     
-    function find_and_modify($c,$q,$u,$f,$o=null)
+    /**
+        @param $c collection
+        @param $q Query
+        @param $u Update Data
+        @param $f fields to return
+        @param $o options
+    */
+    function find_and_modify($c,$q,$u,$f=null,$o=null)
     {
         $c = $this->_d->selectCollection($c);
         if ($o == null) $o = array();

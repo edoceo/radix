@@ -10,7 +10,7 @@
 
 */
 
-class Radix_Auth_HTTP
+class radix_auth_http
 {
     /**
         Initialise the Auth Settings
@@ -38,6 +38,7 @@ class Radix_Auth_HTTP
         
         self::$_realm = $opts['realm'];
     }
+
     /**
         Auth Check the HTTP Based Auth (basic only)
         @return true/false
@@ -60,11 +61,87 @@ class Radix_Auth_HTTP
         header('HTTP/1.1 401 Unauthorized');
         header('WWW-Authenticate: Basic realm="' . self::$_realm . '"');
         if (class_exists('Radix_Session')) {
+            radix_session::flash('fail','Access Denied');
+        }
+
+        return false;
+    }
+
+    /**
+        Auth Check the HTTP Based Auth (basic only)
+        @return true/false
+    */
+    public static function basic($r)
+    {
+        if (empty($_SERVER['PHP_AUTH_USER'])) {
+            header('HTTP/1.1 401 Unauthorized');
+            header('WWW-Authenticate: Basic realm="' . $r . '"');
+            exit(0);
+        }
+
+        $u = strtolower($_SERVER['PHP_AUTH_USER']);
+        $p = $_SERVER['PHP_AUTH_PW'];
+        return array($u,$p);
+
+        if (self::$_auth[$u] == $p) {
+            return $u;
+        }
+
+        header('HTTP/1.1 401 Unauthorized');
+        header('WWW-Authenticate: Basic realm="' . $r . '"');
+        if (class_exists('Radix_Session')) {
             Radix_Session::flash('fail','Access Denied');
         }
 
         return false;
     }
+
+    /**
+        Digest Authentication Handler
+    */
+    static function digest()
+    {
+        $auth = $_SERVER['PHP_AUTH_DIGEST'];
+        if (empty($auth)) {
+            header('HTTP/1.1 401 Unauthorized');
+            header('WWW-Authenticate: Digest realm="isvaliduser",qop="auth",nonce="'.uniqid().'",opaque="'.md5('isvaliduser').'"');
+            exit;
+        }
+    }
+
+    /**
+        Parses Digest Data
+        @see http://php.net/manual/en/features.http-auth.php
+    */
+    static function digest_parse()
+    {
+        $txt = $_SERVER['PHP_AUTH_DIGEST'];
+        // protect against missing data
+        $needed_parts = array(
+            'nonce'=>1,
+            'nc'=>1,
+            'cnonce'=>1,
+            'qop'=>1,
+            'username'=>1,
+            'uri'=>1,
+            'response'=>1
+        );
+        $data = array();
+
+        $keys = implode('|', array_keys($needed_parts));
+
+        preg_match_all('@(' . $keys . ')=(?:([\'"])([^\2]+?)\2|([^\s,]+))@', $txt, $matches, PREG_SET_ORDER);
+        // radix::dump($matches);
+
+        foreach ($matches as $m) {
+            $data[$m[1]] = $m[3] ? $m[3] : $m[4];
+            unset($needed_parts[$m[1]]);
+        }
+    
+        return $needed_parts ? false : $data;
+
+    }
+
     /**
         Add a User
         @param $u username

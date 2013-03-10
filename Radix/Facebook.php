@@ -14,36 +14,29 @@
 
 class radix_facebook
 {
-    const USER_AGENT = 'Edoceo Radix Facebook v2011.35';
+    const USER_AGENT = 'Edoceo Radix Facebook v2012.31';
 
     private static $_app_id;
     private static $_secret;
     private static $_obj;
 
     private $_access_token = null;
-    
+
     // private $_auth;
-    private $_user;
-    private $_pass;
-    private $_format = 'json';
+    protected $_user;
+    protected $_pass;
+    protected $_format = 'json';
 
     /**
-    * Maps aliases to Facebook domains.
+        Maps aliases to Facebook domains.
     */
-    public static $DOMAIN_MAP = array(
+    public static $domain_map = array(
         'api'      => 'https://api.facebook.com/',
         'api_read' => 'https://api-read.facebook.com/',
         'graph'    => 'https://graph.facebook.com/',
         'www'      => 'https://www.facebook.com/',
     );
-    /**
-        Create an Instance
-    */
-    public function __construct($app_id=null,$secret=null)
-    {
-        self::$_app_id = $app_id;
-        self::$_secret = $secret;
-    }
+
     /**
         Init the Static Object
     */
@@ -64,6 +57,18 @@ class radix_facebook
         self::$_obj = new self();
         return self::$_obj;
     }
+
+    /**
+        Create an Instance
+        @param $app_id
+        @param $secret
+    */
+    public function __construct($app_id=null,$secret=null)
+    {
+        self::$_app_id = $app_id;
+        self::$_secret = $secret;
+    }
+
     public static function fql($fql)
     {
         $fb = new Facebook(array(
@@ -197,10 +202,10 @@ class radix_facebook
         );
     }
 
-    
+
     private function _signRequest()
     {
-        
+
     }
 }
 
@@ -949,6 +954,7 @@ abstract class BaseFacebook
    * @throws FacebookApiException
    */
   protected function _oauthRequest($url, $params) {
+      echo "_oauthRequest($url, $params)\n";
     if (!isset($params['access_token'])) {
       $params['access_token'] = $this->getAccessToken();
     }
@@ -998,6 +1004,7 @@ abstract class BaseFacebook
     }
 
     curl_setopt_array($ch, $opts);
+    print_r($opts);
     $result = curl_exec($ch);
 
     if (curl_errno($ch) == 60) { // CURLE_SSL_CACERT

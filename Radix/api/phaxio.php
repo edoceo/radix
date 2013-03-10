@@ -7,18 +7,43 @@ class radix_api_phaxio
 {
     const UA = 'Radix Phaxio API v2012.28';
 
+    private static $__init = false;
+    private static $__user;
+    private static $__auth;
+    
     private $_apiuri = 'https://api.phaxio.com/v1';
 
     private $_apikey;
     private $_secret;
 
-    public function __construct($k,$s)
-    {
-        $this->_apikey = $k;
-        $this->_secret = $s;
-    }
-    
     /**
+        Init the Static World
+        @param $u Twilio Account SID
+        @param $a Twilio Auth Token
+    */
+    public static function init($u,$a)
+    {
+        self::$__user = $u;
+        self::$__auth = $a;
+        // $b = sprintf(self::URI_BASE . self::URI_PATH,$u,$a);
+        // if (strlen($b) > strlen(self::URI_BASE)) {
+        // }
+        self::$__init = true;
+    }
+
+    // public function __construct($k,$s)
+    public function __construct($u=null,$a=null)
+    {
+        if (null===$u && null===$a && self::$__init) {
+            $u = self::$__user;
+            $a = self::$__auth;
+        }
+        $this->_apikey = $u;
+        $this->_secret = $a;
+    }
+
+    /**
+        Make the Actual API Call
     */
     public function api($api,$post)
     {
@@ -37,7 +62,7 @@ class radix_api_phaxio
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         return self::_curl_exec($ch);
     }
-    
+
     /**
         @param $id fax ID
         @param $ft File Type s => 129x167 jpeg, l => 300x388jpeg, p => full PDF
@@ -62,17 +87,25 @@ class radix_api_phaxio
             'start' => $ad,
             'end' => $od,
         );
-        return $this->api('/faxList',$pd);
+        $r = $this->api('/faxList',$pd);
+        if ($r['info']['http_code']==200) {
+            $r = json_decode($r['body'],true);
+        }
+        return $r;
     }
-    
+
     /**
     */
     public function faxStatus($id)
     {
         $pd = array('id' => $id);
-        return $this->api('/faxStatus',$pd);
+        $r = $this->api('/faxStatus',$pd);
+        if ($r['info']['http_code']==200) {
+            $r = json_decode($r['body'],true);
+        }
+        return $r;
     }
-    
+
     /**
         Retrieve Number List
         @param $ac
@@ -84,11 +117,11 @@ class radix_api_phaxio
             'area_code' => $ac,
             'number' => $pn,
         );
-        $ret = $this->api('/numberList',$pd);
-        if ($ret['info']['http_code']==200) {
-            $ret = json_decode($ret['body'],true);
+        $r = $this->api('/numberList',$pd);
+        if ($r['info']['http_code']==200) {
+            $r = json_decode($r['body'],true);
         }
-        return $ret;
+        return $r;
     }
 
     /**
@@ -105,9 +138,10 @@ class radix_api_phaxio
     /**
         Sends a Fax
     */
-    public function send($rcpt,$file)
+    public function send($from,$rcpt,$file)
     {
         $post = array(
+            'caller_id' => $from,
             'to' => $rcpt,
             'filename' => sprintf('@%s',ltrim($file,'@')),
             'string_data' => null,
@@ -117,7 +151,6 @@ class radix_api_phaxio
             'batch_collision_avoidancd' => true,
             'callback_url' => null, 
         );
-
         return $this->api('/send',$post);
 
     }
@@ -152,7 +185,7 @@ class radix_api_phaxio
         curl_setopt($ch, CURLOPT_NETRC, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);

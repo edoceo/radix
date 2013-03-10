@@ -50,3 +50,10 @@
     background-color: #333333;
     color: #FFFFFF;
 }
+
+/*
+  Pill Shapes are Rounded Corners
+*/
+.pill {
+  border-radius:8px; padding: 2px 4px;
+}

@@ -13,6 +13,7 @@
 */
 class Radix_Format
 {
+
     /**
         niceDate
         @param $date - date to get formatted "nicely"
@@ -52,6 +53,7 @@ class Radix_Format
         }
         return '<span title="' . $full . '">' . $nice . '</span>';
     }
+
     /**
         Returns a nicely formatted time, like what Google Mail (and many others) do
         @return nicely formatted string
@@ -84,6 +86,7 @@ class Radix_Format
 
 		return self::niceDate($time);
     }
+
     /**
         Formats a decimal number into 1024 base sizes to "binary prefix
         @see http://en.wikipedia.org/wiki/Binary_prefix

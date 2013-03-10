@@ -32,16 +32,17 @@ class Radix
     private static $_exec_res; // Result of exec()
     private static $_view_res; // Result of view()
 
+    protected static $_m; // Module
+    protected static $_c; // Controller
+    protected static $_a = 'index'; // Action
+
     public static $theme_name = 'html';
     public static $theme_bail = 'bail';
 
-    public static $root; // Root Path of Application
+    public static $root; // Filesystem root of Application
     public static $host; // Hostname
     public static $base; // Web-Base of Application ( "/" or "/something" )
     public static $path; // Path of Request in Application "/" is main page
-    public static $m; // Module of Request?
-    public static $c; // Controller
-    public static $a = 'index'; // Action *index
 
     // Other's can set more Public Stuff on this Object
     public static $view; // The View Object
@@ -151,7 +152,7 @@ class Radix
         if (!empty(self::$m)) {
             $list[sprintf('%s/view/%s.php',self::$m,self::$path)] = -1;
         }
-        if (self::$a == 'index') {
+        if (self::$_a == 'index') {
             $list[] = sprintf('%s/view/%s/index.php',self::$root,self::$path);
         }
         // Theme Specific View
@@ -217,8 +218,8 @@ class Radix
         if (empty(self::$view)) {
             self::$view = new Radix();
         }
-
         self::$view->body = ob_get_clean();
+        self::$_view_res = self::OK;
         // ob_end_flush();
 
         if ($opt === null) $opt = 500;

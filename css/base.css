@@ -1,12 +1,21 @@
 /*
-radix.css
+  @file 
+  @brief radix.css
 
-Based From https://github.com/necolas/normalize.css
-Updated with info from:
+  Influenced by:
+    https://github.com/necolas/normalize.css
+    Bootstrap CSS
+    Foundation CSS
+
+  Updated with info from:
     http://www.javascriptkit.com/dhtmltutors/csshacks3.shtml
     http://kyleschaeffer.com/best-practices/css-font-size-em-vs-px-vs-pt-vs/
 
 */
+
+* {
+    box-sizing: border-box;
+}
 
 /* Base ============================================================ */
 html {
@@ -21,7 +30,9 @@ html {
 
 body
 {
-    margin:0; padding:0;
+    border:none;
+    margin:0;
+    padding:0;
 }
 
 /* */
@@ -41,6 +52,7 @@ summary {
 
 /* Corrects `inline-block` display not defined in IE6/7/8/9 & FF3. */
 audio { display:inline; margin:0px; padding:0px; }
+
 canvas,
 video
 {
@@ -141,6 +153,7 @@ h5 small,
 h6 small
 {
     color: #999;
+    font-size: 100%;
     font-weight: normal;
 }
 
@@ -224,9 +237,8 @@ pre {
     border-radius: 4px;
     padding: 2px;
     white-space: pre;
-    white-space: pre-wrap;
-    word-break: break-all;
-    word-wrap: break-word;
+    word-break: normal;
+    word-wrap: normal;
 }
 
 code, pre
@@ -336,6 +348,13 @@ nav ol {
 }
 
 /* Horizontal Style DL */
+dl.h:after, ol.h:after, ul.h:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
 dl.h dt
 {
     clear:left;
@@ -358,18 +377,18 @@ ul.h
 {
     list-style:none;
 }
-ul.h li
+
+ol.h li, ul.h li
 {
     display:block;
     float:left;
-    padding:8px 16px;
+    padding:4px 8px;
 }
 
 ul.h li a
 {
     display: block;
     float: none;
-    padding: 8px;
     text-decoration: none;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
@@ -427,7 +446,7 @@ form {
  */
 
 fieldset {
-    border: 1px solid #c0c0c0;
+    border:none;
     margin: 4px;
     padding: 8px;
 }
