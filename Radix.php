@@ -77,7 +77,7 @@ class Radix
         self::$path = Radix::path();
         // Possible Module Name? /(\w+)/.+
         if (preg_match('|^/(\w+)/.+|',self::$path,$m)) {
-            self::$m = $m[1];
+            self::$_m = $m[1];
         }
 
         if (!empty($opts['theme'])) {
