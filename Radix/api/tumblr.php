@@ -1,34 +1,11 @@
 <?php
 /**
-
-    // https://dev.twitter.com/discussions/11494
-
     @file
-    @brief Tools for interacting with Twitter
-
-    @todo would be cool to get listed on https://dev.twitter.com/docs/twitter-libraries
-    
-    @package radix
-
-    @see https://dev.twitter.com/docs/twitter-libraries
-    @see https://github.com/jdp/twitterlibphp/blob/master/twitter.lib.php
-    @see https://github.com/abraham/twitteroauth
-    @see https://github.com/jmathai/twitter-async
-    @see http://pear.php.net/package/Services_Twitter
-
-    @see https://dev.twitter.com/docs/auth/implementing-sign-twitter
-
+    @brief Tools for interacting with Tumblr
 */
 
-class radix_api_twitter
+class radix_auth_tumblr // extends OAuth
 {
-    const API_URI = 'https://api.twitter.com/1.1/';
-    const AUTHENTICATE_URI = 'https://twitter.com/oauth/authenticate';
-    const AUTHORIZE_URI = 'https://api.twitter.com/oauth/authorize';
-    const TOKEN_REQUEST_URI = 'https://api.twitter.com/oauth/request_token';
-    const TOKEN_ACCESS_URI = 'https://api.twitter.com/oauth/access_token';
-    const USER_AGENT = 'Edoceo Radix Twitter';
-
     private static $_oauth_keys = array(
         'oauth_callback',
         'oauth_consumer_key',
@@ -39,8 +16,12 @@ class radix_api_twitter
         'oauth_token',
         'oauth_version'
     );
-
-    private $_format = 'json';
+    
+    const API_URI = 'https://api.tumblr.com/v2';
+    const REQUEST_TOKEN_URI = 'https://www.tumblr.com/oauth/request_token';
+    const AUTHORIZE_URI = 'https://www.tumblr.com/oauth/authorize';
+    const ACCESS_TOKEN_URI = 'https://www.tumblr.com/oauth/access_token';
+    const USER_AGENT = 'Edoceo Radix Auth Tumbler v2013.14';
 
     private $_consumer_key;
     private $_consumer_secret;
@@ -70,6 +51,36 @@ class radix_api_twitter
     }
 
     /**
+        Returns a Request Token
+        @param $a = array('oauth_callback'=>URI)
+    */
+    public function getRequestToken($a=null)
+    {
+        $r = $this->_curl('POST',self::REQUEST_TOKEN_URI,$a);
+        if ($r['info']['http_code'] == 200) {
+            $x = null;
+            parse_str($r['body'],$x);
+            if (!empty($x['oauth_token']) && !empty($x['oauth_token_secret'])) {
+                $r = $x;
+            }
+        }
+        return $r;
+    }
+
+    /**
+        Get the URI
+        @param $a = array('oauth_callback' => URI, &c)
+        @return URI on Tumblr
+    */
+    public function getAuthorizeURI($a=null)
+    {
+        $ret = array();
+        $ret['tok'] = $this->getRequestToken($a);
+        $ret['uri'] = self::AUTHORIZE_URI . '?oauth_token=' . $ret['tok']['oauth_token'];
+        return $ret;
+    }
+
+    /**
         @param $a the token passed back from the oAuth Provider, typically $_GET['oauth_token']
     */
     public function getAccessToken($a=null)
@@ -79,70 +90,11 @@ class radix_api_twitter
         }
         if (empty($a['oauth_token']))    $a['oauth_token'] =    $_GET['oauth_token'];
         if (empty($a['oauth_verifier'])) $a['oauth_verifier'] = $_GET['oauth_verifier'];
-        $r = $this->_curl('post',self::TOKEN_ACCESS_URI,$a);
+        $r = $this->_curl('post',self::ACCESS_TOKEN_URI,$a);
         parse_str($r['body'],$t);
         return $t;
     }
 
-    /**
-        Get the URI from Twitter
-        @param $a = array('oauth_callback' => URI, &c)
-        @return URI on Twitter
-    */
-    public function getAuthenticateURI($a=null)
-    {
-        $x = $this->getRequestToken($a);
-        parse_str($x['body'],$t);
-        return self::AUTHENTICATE_URI . '?oauth_token=' . $t['oauth_token'];
-    }
-
-    /**
-        getAuthorizeURI()
-        @param $a = array('oauth_callback' => URI, &c)
-        @return URI on Twitter
-    */
-    public function getAuthorizeURI($a=null)
-    {
-        $x = $this->getRequestToken($a);
-        parse_str($x['body'],$t);
-        return self::AUTHORIZE_URI . '?' . http_build_query(array(
-            'oauth_callback' => $a['oauth_callback'],
-            'oauth_token' => $t['oauth_token'],
-        ));
-    }
-
-    /**
-        Returns a Request Token
-        @param $a = args
-    */
-    public function getRequestToken($a=null)
-    {
-        $r = $this->_curl('POST',self::TOKEN_REQUEST_URI,$a);
-        return $r;
-    }
-
-    /**
-        Do a Tweet, Updates the authenticated user's status.
-
-        @param string $t Text of the status, no URL encoding necessary
-        @return string
-    */
-    public function tweet($t)
-    {
-        return $this->_curl('POST','http://api.twitter.com/1/statuses/update.json',array('status' => $t));
-    }
-
-    /**
-        Gets the User Time Line
-    */
-    public static function getUserTimeline($user,$size=10)
-    {
-        $uri = sprintf('http://api.twitter.com/1/statuses/user_timeline/%s.json?count=%d',$user,$size);
-        $feed = Radix_HTTP::get($uri);
-        $json = json_decode($feed['body']);
-        return $json;
-    }
-    
     /**
         Call Any API
         @param $uri to GET or POST
@@ -150,8 +102,8 @@ class radix_api_twitter
         @return data array
     */
     public function api($uri,$arg=null)
-    {   
-        $uri = self::API_URI . trim($uri,'/');
+    {
+        $uri = self::API_URI . $uri;
         // if ('.json' != substr($uri,-5)) $uri .= '.json';
         $v = ( (!empty($arg) && is_array($arg)) ? 'post' : 'get');
         $r = $this->_curl($v,$uri,$arg);
@@ -163,33 +115,12 @@ class radix_api_twitter
     }
 
     /**
-        Twitter Link
-        @param $t text to share
-        @param $uri link to share
-        @param $via a via option
-        @param $dc = horizontal|vertical
-        @param $tag hashtag?
-        @return <a> tag
-    */
-    public static function share_link($t,$uri,$via,$dc='vertical')
-    {
-        $ret = '<a href="https://twitter.com/share" class="twitter-share-button"';
-        $ret.= ' data-count="' . $dc . '"';
-        $ret.= ' data-text="' . $t . '"'; // Blstr is a awesome tool for social status broadcasting"
-        $ret.= ' data-url="' . $uri . '"'; // http://radix.edoceo.com
-        $ret.= ' data-via="' . $via . '" data-related="' . $via . '"';
-        $ret.= ' data-hashtags="' . $tag . '">Tweet</a>';
-        return $ret;
-    }
-
-    /**
         @param $verb GET, POST, DELETE
         @param $uri
         @param $args array of POST arguments
     */
     private function _curl($verb,$uri,$args=null)
     {
-        // echo "_curl($verb,$uri,$args)\n";
         $verb = strtolower($verb);
 
         $post_args = $args;
@@ -208,10 +139,7 @@ class radix_api_twitter
                 if (empty($sign_args[$k])) $sign_args[$k] = $v;
             }
         }
-        // Have to Strip 'user_id' parameter from the URI
         $sign_args['oauth_signature'] = $this->_makeSignature($verb, $uri, $sign_args);
-        // ksort($sign_args);
-        // print_r($sign_args);
 
         // Create Headers
         $head = array('Expect:');
@@ -228,12 +156,11 @@ class radix_api_twitter
         );
 
         $ch = curl_init($uri);
-        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
         curl_setopt($ch, CURLOPT_USERAGENT, self::USER_AGENT);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
-        if ($verb == 'post') {
+        if ( ($verb == 'post') && (is_array($post_args)) ) {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_args));
         }
@@ -267,7 +194,6 @@ class radix_api_twitter
     }
 
     /**
-        @see https://dev.twitter.com/docs/auth/creating-signature
         @param $verb
         @param $uri
         @param $args
@@ -293,8 +219,7 @@ class radix_api_twitter
             }
         }
         ksort($args);
-        // print_r($args);
-        
+
         // @see https://dev.twitter.com/docs/auth/creating-signature / Creating the signature base string / Step 5
         $buf = array();
         foreach($args as $k=>$v) {
