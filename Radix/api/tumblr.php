@@ -4,7 +4,7 @@
     @brief Tools for interacting with Tumblr
 */
 
-class radix_auth_tumblr // extends OAuth
+class radix_api_tumblr // extends OAuth
 {
     private static $_oauth_keys = array(
         'oauth_callback',
@@ -194,9 +194,9 @@ class radix_auth_tumblr // extends OAuth
     }
 
     /**
-        @param $verb
-        @param $uri
-        @param $args
+        @param $verb HTTP Verb: GET|POST
+        @param $uri URI we're requesting (will sanatize internally)
+        @param $args POST arguments
         @return base64 string
     */
     private function _makeSignature($verb,$uri,$post=null)
