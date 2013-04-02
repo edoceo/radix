@@ -18,7 +18,10 @@ class radix_db_sql
 
     /**
         Initialize a Database Connection, same args as PDO::__construct()
-        @param $args array ('dsn'=>$,'user','pass','opts');
+        @param $dns array ('dsn'=>$,
+        @param $user Username
+        @param $pass Password
+        @param $opts Options
         @return void
     */
     public static function init($dsn,$user=null,$pass=null,$opts=null)
@@ -202,6 +205,8 @@ class radix_db_sql
         // @todo add 'returning id' only if it's PGSQL?
         $sql = sprintf('INSERT INTO %s (%s) VALUES (%s)',$t,implode(',',$col_name),implode(',',$col_hold));
         $res = self::_sql_query($sql,$col_data);
+        // For MS-SQL
+        // $res = self::_sql_query('SELECT @@IDENTITY',null);
         return $res->fetchColumn(0);
     }
 
@@ -277,7 +282,7 @@ class radix_db_sql
     /**
         Describe the Tables or one Table
 
-        @param $t, specific Table, null or empty for list of views
+        @param $t specific Table, null or empty for list of views
     */
     public static function describeTable($t=null)
     {

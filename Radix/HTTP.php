@@ -41,6 +41,7 @@ class Radix_HTTP
         }
         self::$_opts = array_merge(self::$_opts,$opts);
     }
+
     /**
         Performs HTTP GET on the URI
         @param $uri
@@ -52,6 +53,7 @@ class Radix_HTTP
         curl_setopt($ch, CURLOPT_HTTPGET, true);
         return self::_curl_exec($ch);
     }
+
     /**
         Performs HTTP HEAD on the URI
         @param $uri
@@ -197,7 +199,10 @@ class Radix_HTTP
 
         return self::$_ch;
     }
+
     /**
+        @param $ch Curl Handle
+        @param $async do an async HTTP?
     */
     private static function _curl_exec($ch,$async=false)
     {
@@ -219,6 +224,7 @@ class Radix_HTTP
             );
         }
     }
+
     /**
     */
     private static function _curl_head($ch,$line)

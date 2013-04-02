@@ -122,6 +122,39 @@ class Radix
         // die( $src );
         // if (preg_match(
     }
+    
+    /**
+    
+    */
+    public static function stat()
+    {
+        // Check Controller
+        $path = self::$path;
+        while ( (!empty($path)) && ('/' != $path) ) {
+            $file = sprintf('%s/controller/%s.php',self::$root,trim($path,'/'));
+            if (is_file($file)) return true;
+            $path = dirname($path);
+        }
+
+        // Check Views
+        $list = array();
+        // Module View
+        if (!empty(self::$m)) {
+            $list[sprintf('%s/view/%s.php',self::$m,self::$path)] = -1;
+        }
+        if (self::$_a == 'index') {
+            $list[] = sprintf('%s/view/%s/index.php',self::$root,self::$path);
+        }
+        // Theme Specific View
+        $list[] = sprintf('%s/theme/%s/view/%s.php',self::$root,self::$theme_name,self::$path);
+        // Standard View
+        $list[] = sprintf('%s/view/%s.php',self::$root,self::$path);
+        foreach ($list as $file) {
+            if (is_file($file)) return true;
+        }
+        
+        return false;
+    }
 
     /**
         Execute the Controller for the Request

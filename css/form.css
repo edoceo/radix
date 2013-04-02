@@ -1,5 +1,6 @@
 /**
-
+    @file
+    @brief Form Elements for Radix and other stuff
 */
 
 /* Inputs */
@@ -31,14 +32,23 @@ textarea
     font-size: 14px;
     margin: 0 0 12px 0;
     padding: 6px;
-    height: 32px;
     width: 100%;
     -webkit-transition: all 0.15s linear;
     -moz-transition: all 0.15s linear;
     -o-transition: all 0.15s linear;
     transition: all 0.15s linear;
 }
-input[type="text"]:focus, input[type="password"]:focus, input[type="date"]:focus, input[type="datetime"]:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="time"]:focus, input[type="url"]:focus, textarea:focus {
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+input[type="datetime"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="time"]:focus,
+input[type="url"]:focus,
+textarea:focus {
     background: #fafafa;
     border-color: #b3b3b3;
 }

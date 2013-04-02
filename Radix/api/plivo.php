@@ -14,7 +14,7 @@ class radix_api_plivo
     private $_auth_id; // Authe ID
     private $_auth_tk; // Auth Token
 
-    // 
+    //
     // https://api.plivo.com/v1/Account/{auth_id}/Call
     /**
         @param $a AUTH ID
@@ -25,7 +25,7 @@ class radix_api_plivo
         $this->_auth_id = $a;
         $this->_auth_tk = $b;
     }
-    
+
     function api($cmd,$arg=null)
     {
         $uri = self::_uri('/Account/' . $this->_auth_id . '/' . $cmd . '/');
@@ -37,7 +37,7 @@ class radix_api_plivo
         }
         return $ret;
     }
-    
+
     /**
     */
     function auth()
@@ -52,8 +52,8 @@ class radix_api_plivo
         }
         return $ret;
     }
-    
-    
+
+
     function callOut($fr,$to,$answer_uri)
     {
         // https://api.plivo.com/v1/Account/{auth_id}/Call/
@@ -68,22 +68,23 @@ class radix_api_plivo
     /**
     */
     // https://api.plivo.com/v1/Account/{auth_id}/Call/?status=live
-    
+
     // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/?status=live
-    
+
     // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/
     /**
         List of Texts
-        @param $page Page Number, 0
-        @param $size Page Size, 100
-    
+        @param $l 20
+        @param $o 0
+        @return array of
+
     */
-    function textList($arg)
+    function textList($l=20,$o=0)
     {
         $uri = self::_uri('Message');
         $arg = array(
-            'limit' => 20,
-            'offset' => 0,
+            'limit' => $l,
+            'offset' => $o,
         );
         $uri.= '?' . http_build_query($arg);
         $ch = self::init($uri);
@@ -93,7 +94,7 @@ class radix_api_plivo
         }
         return $ret;
     }
-    
+
     /**
         Send a Text Message
     */
@@ -102,9 +103,9 @@ class radix_api_plivo
         $uri = self::_uri('Message');
         $arg = json_encode($arg);
         $ch = self::_curl_init($uri);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
-            'Content-Type: application/json',                                                                                
-            'Content-Length: ' . strlen($arg    ))                                                                       
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($arg))
         );
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $arg);
@@ -127,9 +128,11 @@ class radix_api_plivo
         $uri.= '/'; // Needs Trailing Slash
         return $uri;
     }
-    
+
     /**
         Executes the Single or Multiple Requests
+        @param $uri URI to
+        @return Curl Handle
     */
     private static function _curl_init($uri)
     {
@@ -157,15 +160,18 @@ class radix_api_plivo
     }
 
     /**
+        Internal Curl Executor
+        @param $ch Curl Handle
+        @return array of body, info, fail
     */
-    private static function _curl_exec($ch,$async=false)
+    private static function _curl_exec($ch)
     {
         $r = array(
             'body' => curl_exec($ch),
             'info' => curl_getinfo($ch),
         );
-        if (curl_errno($ch)) {
-            $r['fail'] = sprintf('%d:%s',curl_errno($ch),curl_error($ch));
+        if ($x = curl_errno($ch)) {
+            $r['fail'] = sprintf('%d:%s',$x,curl_error($ch));
         }
         return $r;
     }

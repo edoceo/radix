@@ -174,8 +174,8 @@ class radix_db_mongo
 
     /**
         Find and Return a File
-        @param $q Query
-        @return 
+        @param $f File ID
+        @return null|File Result
     */
     function grid_find($f)
     {

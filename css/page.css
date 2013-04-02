@@ -15,9 +15,9 @@ blockquote.r
 
 div.hero
 {
-    font-size:52px;
+    font-size:256%;
     margin:16px;
-    padding:32px;
+    padding:16px;
 }
 
 p.lead {
@@ -37,4 +37,3 @@ article {
     margin:8px 0px 4px 16px;
 }
 
-/* Leader Text Highlights */
