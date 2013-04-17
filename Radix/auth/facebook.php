@@ -4,75 +4,105 @@
     @brief Auth/Facebook - Tools for Google OAuth2
 
     @see https://developers.google.com/accounts/docs/OAuth2
+    @see https://developers.facebook.com/docs/howtos/login/server-side-login/
 */
 
 class radix_auth_facebook
 {
-    private static $__client_id;
-    private static $__client_sk;
-    private $_client_id; // OAuth2 ID
-    private $_client_sk; // Secret Key
+    const AUTHENTICATE_URI = 'https://www.facebook.com/dialog/oauth/';
+    const ACCESS_TOKEN_URI = 'https://graph.facebook.com/oauth/access_token';
+    const USER_AGENT = 'Edoceo radix_auth_facebook v2013.14';
 
-    static function init($id,$sk)
-    {
-        self::$__client_id = $id;
-        self::$__client_sk = $sk;
-    }
+    private $_oauth_client_id;
+    private $_oauth_client_secret;
+
     /**
+        Create an Instance
+        @param $a Consumer Key
+        @param $b Consumer Secret
     */
-    public function __construct($id=null,$sk=null)
+    public function __construct($a,$b)
     {
-        if (empty($id)) $id = self::$__client_id;
-        if (empty($sk)) $sk = self::$__client_sk;
-        $this->_client_id = $id;
-        $this->_client_sk = $sk;
+        $this->_oauth_client_id = $a;
+        $this->_oauth_client_secret = $b;
+        $this->_oauth = new OAuth($a,$b,OAUTH_SIG_METHOD_HMACSHA1,OAUTH_AUTH_TYPE_URI);
+        $this->_oauth->enableDebug();
     }
+
     /**
-        Get the OAuth2.0 Login Link
-        @param array $arg
-
-        @see https://developers.google.com/accounts/docs/OAuth2Login
+        @param $arg 
+        @return URI on 4Sq
     */
-    function auth_link($arg)
+    public function getAuthenticateURI($opt)
     {
-        $one = array(
-            // 'approval_prompt' => 'force', // Forces user to re-auth the application
-            'client_id' => null, // $this->_client_id, // From Google
-            'redirect_uri' => null, // Must be in lst on https://code.google.com/apis/console/
-            'scope' => null, // 'https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile',
-            'response_type' => 'code', // Code or Token
-            'state' => 'radix', // Round-Trip Parameter
-        );
-        if (empty($arg['client_id'])) {
-            $arg['client_id'] = $this->_client_id;
-        }
-
-        $arg = array_merge($one,$arg);
-
-        $uri = 'https://accounts.google.com/o/oauth2/auth?';
-        $uri.= http_build_query($arg);
-
-        return $uri;
-    }
-    /**
-        @param $code the OAuth2 Code
-        @param $page the Redirect to URI
-        @see https://developers.google.com/accounts/docs/OAuth2WebServer
-    */
-    function auth_token($code,$page)
-    {
-        $uri = 'https://accounts.google.com/o/oauth2/token';
+        $uri = self::AUTHENTICATE_URI;
         $arg = array(
-            'code' => $code,
-            'client_id' => $this->_client_id,
-            'client_secret' => $this->_client_sk,
-            'redirect_uri' => $page,
-            'grant_type' => 'authorization_code',
+            'client_id' => $this->_oauth_client_id,
+            'state' => md5(serialize($_SESSION).microtime()),
+            'response_type' => 'code',
         );
+        $arg = array_merge($arg,$opt);
 
-        // POST it
-        $ret = radix_http::post($uri,$arg);
+        $ret = $uri . '?' . http_build_query($arg);
         return $ret;
 
     }
+
+    /**
+        @param $a the token passed back from the oAuth Provider, typically $_GET['oauth_token']
+    */
+    public function getAccessToken($opt)
+    {
+        $uri = self::ACCESS_TOKEN_URI;
+        $arg = array(
+            'client_id' => $this->_oauth_client_id,
+            'client_secret' => $this->_oauth_client_secret,
+            'code' => $opt['code'],
+            'redirect_uri' => $opt['redirect_uri'],
+        );
+
+        if (empty($arg['code'])) $arg['code'] = $_GET['code'];
+
+        $uri = $uri . '?' . http_build_query($arg);
+        
+        $ret = false;
+        try {
+            $ret = $this->_oauth->getAccessToken($uri);
+        } catch (Exception $e) {
+            radix::dump($this->_oauth->debugInfo);
+        }
+        return $ret;
+    }
+
+    /**
+    */
+    function setAccessToken($a)
+    {
+        return $this->_oauth->setToken($a,null);
+    }
+
+    function fetch($uri,$post=null,$verb=null,$head=null)
+    {
+        if (empty($post)) $post = array();
+        if (empty($verb)) $verb = 'GET';
+        if (empty($head)) $head = array(
+            'User-Agent' => USER_AGENT,
+        );
+        try {
+            // $ret = $this->_oauth->getAccessToken($uri);
+            $this->_oauth->fetch($uri,$post,$verb,$head);
+            // radix::dump($this->_oauth->debugInfo);
+            // $inf = $this->_oauth->getLastResponseInfo();
+            $res = $this->_oauth->getLastResponse();
+            return json_decode($res,true);
+        } catch (Exception $e) {
+            radix::dump($this->_oauth->debugInfo);
+        }
+        
+    }
+
+    // function getLastResponse() { $this->_oauth->getLastResponse(); }
+    // 
+    // function getLastResponseInfo() { $this->_oauth->getLastResponseInfo(); }
+
 }

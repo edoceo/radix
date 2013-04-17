@@ -54,6 +54,7 @@ class radix_auth_twitter
 
         return $uri;
     }
+
     /**
         @param $code the OAuth2 Code
         @param $page the Redirect to URI
