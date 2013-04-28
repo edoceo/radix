@@ -3,6 +3,7 @@
 cat \
   base.css \
   grid.css \
+  list.css \
   form.css \
   page.css \
   info.css \
