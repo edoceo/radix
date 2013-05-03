@@ -53,10 +53,27 @@ class radix_api_plivo
         return $ret;
     }
 
-
-    function callOut($fr,$to,$answer_uri)
+    /**
+        @param $arg array fr, to, answer_url
+    */
+    function callInit($arg)
     {
         // https://api.plivo.com/v1/Account/{auth_id}/Call/
+        $uri = self::_uri('Call');
+        $arg = json_encode($arg);
+        $ch = self::_curl_init($uri);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($arg))
+        );
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $arg);
+        $ret = self::_curl_exec($ch);
+        if (($ret['info']['http_code'] == 200) && ($ret['info']['content_type'] == 'application/json')) {
+            $ret = json_decode($ret['body'],true);
+        }
+        return $ret;
+
     }
     function callStat()
     {
@@ -87,7 +104,7 @@ class radix_api_plivo
             'offset' => $o,
         );
         $uri.= '?' . http_build_query($arg);
-        $ch = self::init($uri);
+        $ch = self::_curl_init($uri);
         $ret = self::_curl_exec($ch);
         if (($ret['info']['http_code'] == 200) && ($ret['info']['content_type'] == 'application/json')) {
             $ret = json_decode($ret['body'],true);
