@@ -39,7 +39,7 @@ class radix_mail_smtp
 
     /**
         Sends EHLO
-        @param hostname, auto-detected
+        @param $hostname to say helo as, auto-detected
         @return array of response line data
     */
     function ehlo($hostname=null)

@@ -9,10 +9,12 @@
 
 class radix_auth_facebook
 {
+    const API_URI = 'https://graph.facebook.com/';
     const AUTHENTICATE_URI = 'https://www.facebook.com/dialog/oauth/';
     const ACCESS_TOKEN_URI = 'https://graph.facebook.com/oauth/access_token';
     const USER_AGENT = 'Edoceo radix_auth_facebook v2013.14';
 
+    private $_access_token;
     private $_oauth_client_id;
     private $_oauth_client_secret;
 
@@ -68,6 +70,7 @@ class radix_auth_facebook
         $ret = false;
         try {
             $ret = $this->_oauth->getAccessToken($uri);
+            $this->_access_token = $ret['access_token'];
         } catch (Exception $e) {
             radix::dump($this->_oauth->debugInfo);
         }
@@ -80,7 +83,27 @@ class radix_auth_facebook
     {
         return $this->_oauth->setToken($a,null);
     }
+    
+    /**
+        Easy Wrapper for Fetch
+    */
+    function api($uri,$post=null,$head=null)
+    {
+        $verb = 'GET';
+        $post = array();
 
+        $post = array(
+            'format' => 'json',
+        );
+
+        $uri = self::API_URI . ltrim($uri,'/') . '?access_token=' . $this->_access_token;
+        $ret = $this->fetch($uri,$post,$verb,$head);
+        return $ret;
+
+    }
+    
+    /**
+    */
     function fetch($uri,$post=null,$verb=null,$head=null)
     {
         if (empty($post)) $post = array();
