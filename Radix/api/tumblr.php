@@ -196,7 +196,7 @@ class radix_api_tumblr // extends OAuth
     /**
         @param $verb HTTP Verb: GET|POST
         @param $uri URI we're requesting (will sanatize internally)
-        @param $args POST arguments
+        @param $post POST arguments
         @return base64 string
     */
     private function _makeSignature($verb,$uri,$post=null)

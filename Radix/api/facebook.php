@@ -48,8 +48,8 @@ class radix_api_facebook
 
     /**
         Create an Instance
-        @param $app_id
-        @param $secret
+        @param $app Client ID from Facebook 
+        @param $key Client Secret
     */
     public function __construct($app=null,$key=null)
     {
