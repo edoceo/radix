@@ -170,8 +170,7 @@ class radix_irc
     /**
         Wait for a Specific IRC Condition
 
-        @param $cmd is a regex match of any command that would trigger it
-        @param $cmd or an array of regex to match in that order, all must be true for success
+        @param $pat is a regex match of any command that would trigger it
         @param $max is how many lines to wait for this truth
         @return true on success, false on failure
     */
@@ -227,10 +226,8 @@ class radix_irc
 
     /**
         Quickly Send a Message to a Host and Channel
-        @param $host hostname
-        @param $nick your nick name
-        @param $room the room to talk to
         @param $text message to send, does not need 'PRIVMSG #room' - automatically prefixes if necessary
+        @param $opts array of options
           If it starts with PRIVMSG then we'll use as-is
     */
     public static function yell($text,$opts=null)

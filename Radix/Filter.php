@@ -28,10 +28,13 @@ class Radix_Filter
         }
         return false;
     }
+
     /**
         Extracts and returns match(es)
         @param $pat the pattern of characters to accept
         @param $val the value to filter
+        @param $def default
+        @return sanatized value
     */
     static function match($pat,$val,$def=false)
     {
@@ -49,6 +52,7 @@ class Radix_Filter
         }
         return $ret;
     }
+
     /**
         Returns a String with only the specified characters
         @param $pat the pattern of characters to accept
@@ -62,6 +66,7 @@ class Radix_Filter
         $ret = preg_replace($pat,null,$val);
         return $ret;
     }
+
     /**
         @param $val string to read
         @param $pat pattern to match to, use ()
@@ -87,9 +92,10 @@ class Radix_Filter
         }
         return $ret;
     }
+
     /**
         Makes a stub from the text
-        @param text
+        @param $t input text
         @param $s seperator, default '_'
     */
     static function stub($t,$s='_')
@@ -100,6 +106,8 @@ class Radix_Filter
         // Radix::dump("2:$t");
         // $t = preg_replace('/\b([a-z0-9])' . preg_quote($s) . '/ims','$1',$t);
         // Radix::dump("r:$t");
+        $t = trim($t);
+        $t = strtolower($t);
         return $t;
     }
 

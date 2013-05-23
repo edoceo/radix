@@ -91,6 +91,7 @@ class Radix_Format
         Formats a decimal number into 1024 base sizes to "binary prefix
         @see http://en.wikipedia.org/wiki/Binary_prefix
         @param $size large number
+        @param $fmt sprintf value of %d (size) and %s (measurement)
         @return formatted string like, 21MiB
     */
     static function niceSize($size,$fmt='%d %s')
