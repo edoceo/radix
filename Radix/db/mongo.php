@@ -126,6 +126,7 @@ class radix_db_mongo
         Insert a Record
         @param $c collection name
         @param $a the data array to insert
+        @param $opt options
     */
     function insert($c,$a,$opt=array())
     {

@@ -18,7 +18,7 @@ class radix_db_sql
 
     /**
         Initialize a Database Connection, same args as PDO::__construct()
-        @param $dns array ('dsn'=>$,
+        @param $dsn array ('dsn'=>$,
         @param $user Username
         @param $pass Password
         @param $opts Options
@@ -302,7 +302,7 @@ class radix_db_sql
     /**
         List of Views
 
-        @param $v, specific view, null or empty for list of views
+        @param $v specific view, null or empty for list of views
     */
     public static function describeView($v=null)
     {
