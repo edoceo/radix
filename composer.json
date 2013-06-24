@@ -1,0 +1,25 @@
+{
+    "name": "edoceo/radix",
+    "type": "library",
+    "description": "Simple MVC and Toolkit for Rapid Application Prototyping",
+    "keywords": ["mvc","toolkit"],
+    "homepage": "http://radix.edoceo.com/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Busby",
+            "email": "code@edoceo.com",
+            "homepage": "http://edoceo.com/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "ext-apc": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Monolog": "src"
+        }
+    }
+}
