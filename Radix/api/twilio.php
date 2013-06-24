@@ -87,6 +87,18 @@ class radix_api_twilio
         $api = sprintf('SMS/Messages.json?Page=%d&PageSize=%d',$page,$size);
         return $this->api($api);
     }
+    
+    /**
+        Send
+    */
+    public function textSend($a)
+    {
+        // $api = sprintf('SMS/Messages/%s.json',$sid);
+        $r = $this->post('SMS/Messages.json',$a);
+        radix::dump($r);
+        return $r;
+    }
+
     /**
         Stat One Message or Stat List
         @param $sid the message to get

@@ -11,7 +11,7 @@ class radix_api_plivo
     const URI_BASE = 'https://%s:%s@api.plivo.com/v1/Account/%s/';
     const UA = 'Radix Plivo API v2012.44';
 
-    private $_auth_id; // Authe ID
+    private $_auth_id; // Auth ID
     private $_auth_tk; // Auth Token
 
     //
@@ -25,11 +25,19 @@ class radix_api_plivo
         $this->_auth_id = $a;
         $this->_auth_tk = $b;
     }
-
+    
+    /**
+        @param $cmd Command
+        @param $arg Arguments for POST
+        @return Data Array
+    */
     function api($cmd,$arg=null)
     {
-        $uri = self::_uri('/Account/' . $this->_auth_id . '/' . $cmd . '/');
-        $uri.= '?' . http_build_query($arg);
+        $cmd = trim(trim($cmd,'/'));
+        $uri = $this->_uri('/' . $cmd . '/');
+        if (!empty($arg)) {
+            $uri.= '?' . http_build_query($arg);
+        }
         $ch = self::_curl_init($uri);
         $ret = self::_curl_exec($ch);
         if (($ret['info']['http_code'] == 200) && ($ret['info']['content_type'] == 'application/json')) {
@@ -39,10 +47,11 @@ class radix_api_plivo
     }
 
     /**
+        Checks it
     */
     function auth()
     {
-        $uri = self::_uri('/Account/' . $this->_auth_id);
+        $uri = $this->_uri('');
         $ch = self::_curl_init($uri);
         // curl_setopt($ch, CURLOPT_POST, true);
         // curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
@@ -52,6 +61,15 @@ class radix_api_plivo
         }
         return $ret;
     }
+    
+    /**
+        List of the Phaxio Numbers
+    */
+    public function listNumbers()
+    {
+        return $this->api('Number');
+    }
+
 
     /**
         @param $arg array fr, to, answer_url
@@ -59,7 +77,7 @@ class radix_api_plivo
     function callInit($arg)
     {
         // https://api.plivo.com/v1/Account/{auth_id}/Call/
-        $uri = self::_uri('Call');
+        $uri = $this->_uri('Call');
         $arg = json_encode($arg);
         $ch = self::_curl_init($uri);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -78,27 +96,22 @@ class radix_api_plivo
     function callStat()
     {
         // https://api.plivo.com/v1/Account/{auth_id}/Call/
-
+        // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/
+        // https://api.plivo.com/v1/Account/{auth_id}/Call/?status=live
+        // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/?status=live
         // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/
     }
 
     /**
-    */
-    // https://api.plivo.com/v1/Account/{auth_id}/Call/?status=live
-
-    // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/?status=live
-
-    // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/
-    /**
-        List of Texts
-        @param $l 20
+        List of Texts, Oldest First
         @param $o 0
+        @param $l 20
         @return array of
 
     */
-    function textList($l=20,$o=0)
+    function textList($o=0,$l=20)
     {
-        $uri = self::_uri('Message');
+        $uri = $this->_uri('Message');
         $arg = array(
             'limit' => $l,
             'offset' => $o,
@@ -113,11 +126,27 @@ class radix_api_plivo
     }
 
     /**
+        Read a Message by UUID
+        @return Text Object
+    */
+    function textRead($id)
+    {
+        $uri = self::_uri('Message/' . $id);
+        $ch = self::_curl_init($uri);
+        $ret = self::_curl_exec($ch);
+        radix::dump($ret);
+        if (($ret['info']['http_code'] == 200) && ($ret['info']['content_type'] == 'application/json')) {
+            $ret = json_decode($ret['body'],true);
+        }
+        return $ret;
+    }
+
+    /**
         Send a Text Message
     */
     function textSend($arg)
     {
-        $uri = self::_uri('Message');
+        $uri = $this->_uri('Message');
         $arg = json_encode($arg);
         $ch = self::_curl_init($uri);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -134,7 +163,7 @@ class radix_api_plivo
     }
 
     /**
-        @param $apiep like /
+        @param $apiep like Number or
     */
     private function _uri($apiep)
     {

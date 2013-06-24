@@ -1,6 +1,7 @@
 <?php
 /**
-
+    @file
+    @brief Provides and Interface to Phaxio
 */
 
 class radix_api_phaxio
@@ -10,7 +11,7 @@ class radix_api_phaxio
     private static $__init = false;
     private static $__user;
     private static $__auth;
-    
+
     private $_apiuri = 'https://api.phaxio.com/v1';
 
     private $_apikey;
@@ -31,7 +32,11 @@ class radix_api_phaxio
         self::$__init = true;
     }
 
-    // public function __construct($k,$s)
+    /**
+        Create an Instance Object, if $u and $a are not provied use the static ones
+        @param $u Twilio Account SID
+        @param $a Twilio Auth Token
+    */
     public function __construct($u=null,$a=null)
     {
         if (null===$u && null===$a && self::$__init) {
@@ -44,6 +49,8 @@ class radix_api_phaxio
 
     /**
         Make the Actual API Call
+        @param $api the path, like /faxFile
+        @param $post Post Data as array
     */
     public function api($api,$post)
     {
@@ -60,10 +67,12 @@ class radix_api_phaxio
         $ch = self::_curl_init($uri);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+
         return self::_curl_exec($ch);
     }
 
     /**
+        Send a Fax
         @param $id fax ID
         @param $ft File Type s => 129x167 jpeg, l => 300x388jpeg, p => full PDF
     */
@@ -77,7 +86,7 @@ class radix_api_phaxio
     }
 
     /**
-        Retrieve Number List
+        Retrieve Fax List
         @param $ad Alpha Date - Start Timestamp of Query
         @param $od Omega Date - End of List
     */
@@ -88,21 +97,18 @@ class radix_api_phaxio
             'end' => $od,
         );
         $r = $this->api('/faxList',$pd);
-        if ($r['info']['http_code']==200) {
-            $r = json_decode($r['body'],true);
-        }
         return $r;
     }
 
     /**
+        Status of Fax
+        @param $id of Fax
+        @return API Data Array
     */
     public function faxStatus($id)
     {
         $pd = array('id' => $id);
         $r = $this->api('/faxStatus',$pd);
-        if ($r['info']['http_code']==200) {
-            $r = json_decode($r['body'],true);
-        }
         return $r;
     }
 
@@ -110,8 +116,9 @@ class radix_api_phaxio
         Retrieve Number List
         @param $ac
         @param $pn
+        @return Array of Number Arrays
     */
-    public function numberList($ac=null,$pn=null)
+    public function listNumbers($ac=null,$pn=null)
     {
         $pd = array(
             'area_code' => $ac,
@@ -125,6 +132,10 @@ class radix_api_phaxio
     }
 
     /**
+        Allocate a New Number
+        @param $ac Area Code
+        @param $cb Call Back URI
+        @return API Data Array
     */
     public function provisionNumber($ac,$cb=null)
     {
@@ -137,6 +148,10 @@ class radix_api_phaxio
 
     /**
         Sends a Fax
+        @param $from From Number, eg: 12062826500
+        @param $rcpt Recipient Number, eg: 12025551212
+        @param $file A file on the Local Filesystem
+        @return API Data Array
     */
     public function send($from,$rcpt,$file)
     {
@@ -149,7 +164,7 @@ class radix_api_phaxio
             'batch' => false,
             'batch_delay' => 600, // Time in Seconds
             'batch_collision_avoidancd' => true,
-            'callback_url' => null, 
+            'callback_url' => null,
         );
         return $this->api('/send',$post);
 
@@ -167,6 +182,8 @@ class radix_api_phaxio
 
     /**
         Executes the Single or Multiple Requests
+        @param $uri
+        @return CURL Handle
     */
     private static function _curl_init($uri)
     {
@@ -201,16 +218,35 @@ class radix_api_phaxio
     }
 
     /**
+        Execute the CURL request
+        @param $ch CURL Handle
+        @return API data
     */
-    private static function _curl_exec($ch,$async=false)
+    private static function _curl_exec($ch)
     {
-        $r = array(
+        $res = array(
             'body' => curl_exec($ch),
             'info' => curl_getinfo($ch),
         );
+        $ret = $res;
+        $ret['code'] = 200;
+
         if (curl_errno($ch)) {
-            $r['fail'] = sprintf('%d:%s',curl_errno($ch),curl_error($ch));
+            return array(
+                'success' => false,
+                'message' => sprintf('%d:%s',curl_errno($ch),curl_error($ch)),
+            );
         }
-        return $r;
+        // radix::dump($r);
+
+        if ('application/json' == $res['info']['content_type']) {
+            $ret = json_decode($res['body'],true);
+        }
+
+        if (200 != $res['info']['http_code']) {
+            $ret['code'] = $res['info']['http_code'];
+        }
+
+        return $ret;
     }
 }
