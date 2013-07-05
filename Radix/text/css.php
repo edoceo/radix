@@ -16,6 +16,7 @@ class radix_text_css
         $css = preg_replace('/(\w): /','$1:',$css); // "x: " to "x:"
         $css = preg_replace('/{\s+/m','{',$css); // Strip Leading Spaces
         $css = preg_replace('/(\w);\s+/m','$1;',$css); // "; " => ";"
+        $css = str_replace("\n",'',$css);
         return $css;
     }
 }
