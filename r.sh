@@ -5,6 +5,28 @@
 app_dir=$(pwd)
 radix_dir=$(dirname $(readlink -f $0))
 
+function find_uidgid()
+{
+    # try httpd
+    chk=$(getent passwd httpd |cut -d: -f1)
+    if [ -n "$chk" ]
+    then
+        echo "httpd:httpd"
+        return
+    fi
+
+    # try www-data
+    chk=$(getent passwd www-data |cut -d: -f1)
+    if [ -n "$chk" ]
+    then
+        echo "www-data:www-data"
+        return
+    fi
+
+    # default to apache
+    echo "apache:apache"
+}
+
 #
 # Directory Structure
 mkdir \
@@ -13,15 +35,15 @@ mkdir \
     ./controller \
     ./etc \
     ./lib \
+    ./sbin \
     ./theme \
     ./var \
     ./vendor \
     ./view \
     ./webroot
 
-#
-# Get Compzer
-# curl -sS https://getcomposer.org/installer | php
+uidgid=$(find_uidgid)
+chown -R "$uidgid" "./var"
 
 #
 # Make a Bootstrapper
@@ -44,7 +66,7 @@ define('APP_ROOT',dirname(__FILE__));
 define('APP_SALT','MyApp Has a Secret to Keep'); // if changed previously Salted things will not match
 
 // Radix
-require_once('Radix.php');
+require_once('radix.php');
 require_once('Radix/Session.php');
 radix_session::init(array('name'=>APP_NAME));
 
@@ -84,8 +106,7 @@ header('Content-Type: text/html; charset="utf-8"');
 <html>
 <head>
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/css/app.css">
@@ -105,8 +126,9 @@ EOP
 cat >./webroot/index.php <<EOP
 <?php
 
-radix::init(\$opts);
+require_once(dirname(dirname(__FILE__)) . '/boot.php');
 
+radix::init(\$opts);
 // radix::\$view->mdb = new radix_db_mongo();
 // radix::route('some/path?or=pattern','/real/action');
 radix::exec();
@@ -130,4 +152,10 @@ cat >apache.conf.example <<EOC
 
 </Directory>
 
+EOC
+
+cat >nginx.conf.radix <<EOC
+server {
+
+}
 EOC

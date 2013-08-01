@@ -2,7 +2,6 @@
 /**
     @file
     @brief Provides an SMTP Interface to a specific server
-    @version $Id$
 
     @see http://www.dcsc.utfsm.cl/redes/webhosting/class.smtp.php.txt
     @see http://www.linuxscope.net/articles/mailAttachmentsPHP.html
@@ -176,7 +175,7 @@ class radix_mail_smtp
     */
     private function _send($data)
     {
-        // echo "_send($data)\n";
+        echo "_send($data)\n";
         if (empty($this->_s)) {
             die("SMTP Shutdown\n$data?");
         }
@@ -204,7 +203,6 @@ class radix_mail_smtp
             $r = array($this->_s);
             $w = null;
             $e = null;
-            echo 'w';
             $c = stream_select($r,$w,$e,1,500000);
             // If our one socket is ready
             if ($c == 1) {
@@ -223,7 +221,7 @@ class radix_mail_smtp
                     );
                 }
             }
-            echo '#' . intval($c);
+            // echo '#' . intval($c);
         } while ($c != 0);
         // echo "_recv()=$ret\n";
         return $ret;

@@ -8,10 +8,11 @@
 
 class radix_auth_bitbucket
 {
+    const API_URI = 'https://api.bitbucket.org/1.0';
     const AUTHENTICATE_URI  = 'https://bitbucket.org/!api/1.0/oauth/authenticate';
     const REQUEST_TOKEN_URI = 'https://bitbucket.org/!api/1.0/oauth/request_token';
     const ACCESS_TOKEN_URI  = 'https://bitbucket.org/!api/1.0/oauth/access_token';
-    // const USER_AGENT = 'Edoceo Radix Twitter';
+    const USER_AGENT = 'Edoceo radix_auth_bitbucket v2013.19';
 
     private $_oauth;
     private $_oauth_client_id;
@@ -80,18 +81,68 @@ class radix_auth_bitbucket
         // $ret = json_decode($res['body'],true);
         try {
             $res = $this->_oauth->getAccessToken($uri);
-            radix::dump($res);
+            $this->_oauth->setToken($res['oauth_token'],$res['oauth_token_secret']);
+            // radix::dump($res);
+            // exit;
+            return $res;
         } catch (Exception $e) {
             radix::dump($this->_oauth->debugInfo);
             return false;
         }
         return $ret;
     }
-    
+
     /**
     */
     function setToken($a,$b)
     {
         $this->_oauth->setToken($a,$b);
     }
+
+    /**
+        Easy Wrapper for Fetch
+    */
+    function api($uri,$post=null,$head=null)
+    {
+        $verb = 'GET';
+        // $post = array();
+
+        // $post = array(
+        //     'format' => 'json',
+        // );
+
+        $uri = self::API_URI . ltrim($uri,'/') . '?access_token=' . $this->_access_token;
+        // $ret = $this->fetch($uri,$post,$verb,$head);
+        if (!empty($post)) {
+            die('I do not handle this yet');
+        }
+        $res = radix_http::get($uri);
+        if ($res['info']['content_type'] == 'application/json') {
+            $res = json_decode($res['body'],true);
+        }
+        return $res;
+    }
+
+    /**
+    */
+    function fetch($uri,$post=null,$verb=null,$head=null)
+    {
+        if (empty($post)) $post = array();
+        if (empty($verb)) $verb = 'GET';
+        if (empty($head)) $head = array(
+            'User-Agent' => USER_AGENT,
+        );
+        try {
+            // $ret = $this->_oauth->getAccessToken($uri);
+            $this->_oauth->fetch($uri,$post,$verb,$head);
+            // radix::dump($this->_oauth->debugInfo);
+            // $inf = $this->_oauth->getLastResponseInfo();
+            $res = $this->_oauth->getLastResponse();
+            return json_decode($res,true);
+        } catch (Exception $e) {
+            radix::dump($this->_oauth->debugInfo);
+        }
+
+    }
+
 }

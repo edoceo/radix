@@ -5,7 +5,7 @@ It also includes basic tools for caching (file, memcache), databases (postgresql
 API interfaces exist for dozens of services such as AWS, Facebook, eNom, Twitter, Twilio.
 
 * Official Site: http://radix.edoceo.com/
-* API Documentation: http://radix.edoceo.com/dox/
+* API Documentation: http://radix.edoceo.com/api/
 * Download: http://radix.edoceo.com/radix.tgz
 
 ## History

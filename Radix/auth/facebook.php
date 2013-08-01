@@ -32,7 +32,7 @@ class radix_auth_facebook
     }
 
     /**
-        @param $arg 
+        @param $arg
         @return URI on 4Sq
     */
     public function getAuthenticateURI($opt)
@@ -66,7 +66,7 @@ class radix_auth_facebook
         if (empty($arg['code'])) $arg['code'] = $_GET['code'];
 
         $uri = $uri . '?' . http_build_query($arg);
-        
+
         $ret = false;
         try {
             $ret = $this->_oauth->getAccessToken($uri);
@@ -83,7 +83,7 @@ class radix_auth_facebook
     {
         return $this->_oauth->setToken($a,null);
     }
-    
+
     /**
         Easy Wrapper for Fetch
     */
@@ -101,7 +101,7 @@ class radix_auth_facebook
         return $ret;
 
     }
-    
+
     /**
     */
     function fetch($uri,$post=null,$verb=null,$head=null)
@@ -121,11 +121,11 @@ class radix_auth_facebook
         } catch (Exception $e) {
             radix::dump($this->_oauth->debugInfo);
         }
-        
+
     }
 
     // function getLastResponse() { $this->_oauth->getLastResponse(); }
-    // 
+    //
     // function getLastResponseInfo() { $this->_oauth->getLastResponseInfo(); }
 
 }

@@ -77,8 +77,8 @@ class Radix_HTML
             // Analyse Specific Node Name
             switch ($cn->nodeName) {
             case 'a': // used to create a hyperlink
-                $node_text.= $cn->getAttribute('href');
-                $cn->removeChild( $cn->firstChild );
+                // $node_text.= $cn->getAttribute('href');
+                // $cn->removeChild( $cn->firstChild );
                 break;
             // case 'abbr':
             case 'acronym':
@@ -110,7 +110,7 @@ class Radix_HTML
             // case 'col':  // @todo Check Align, Width
             // case 'colgroup': // @todo Check Align, Width
             case 'dd':
-                $node_text.= "\n";
+                $node_text.= "    ";
                 $node_post = "\n";
                 break;
             // case 'del':
@@ -118,11 +118,12 @@ class Radix_HTML
             // case 'dir': // deprecated
             // case 'div': // div - offers a generic way of grouping areas of content.
             case 'dl': // used to create a list where each item in the list comprises two parts: a term and a description.
-                $node_text.= "\n";
+                // $node_text.= "\n";
                 $node_post = "\n";
+                $node_pads = '  ';
                 break;
             case 'dt': // dt - is a definition term for an item in a definition list
-                $node_text.= "\n";
+                $node_text.= "  ";
                 $node_post = "\n";
                 break;
             // case 'em': // em - is used to indicate emphasis.
@@ -132,28 +133,28 @@ class Radix_HTML
             // case 'form': // is used to create data entry forms.
             // @todo Check Action && Method
             case 'h1':
-                $node_text.= "\n======";
-                $node_post = "======\n";
+                $node_text.= "\n# ";
+                $node_post = "#\n";
                 break;
             case 'h2':
-                $node_text.= "\n=====";
-                $node_post = "=====\n";
+                $node_text.= "\n## ";
+                $node_post = "##\n";
                 break;
             case 'h3':
-                $node_text.= "\n====";
-                $node_post = "====\n";
+                $node_text.= "\n### ";
+                $node_post = "###\n";
                 break;
             case 'h4':
-                $node_text.= "\n===";
-                $node_post = "===\n";
+                $node_text.= "\n#### ";
+                $node_post = "####\n";
                 break;
             case 'h5':
-                $node_text.= "\n==";
-                $node_post = "==\n";
+                $node_text.= "\n##### ";
+                $node_post = "#####\n";
                 break;
             case 'h6':
-                $node_text.= "\n=";
-                $node_post = "=\n";
+                $node_text.= "\n###### ";
+                $node_post = "######\n";
                 break;
             case 'hr': // used to separate sections of content
                 $node_text.= sprintf("\n%s\n", str_repeat('-',72) );
@@ -232,7 +233,7 @@ class Radix_HTML
                 $node_post = '_ ';
                 break;
             case 'ul':
-                $node_text.= "\n";
+                // $node_text.= "\n";
                 $node_post = "\n";
                 break;
             // case 'var':
@@ -241,7 +242,7 @@ class Radix_HTML
             // case 'menu':
             // case 'noembed':
             // Default Handler!
-        default:
+            default:
                 if ($cn->nodeType == XML_TEXT_NODE) {
                     $x = trim(html_entity_decode($cn->nodeValue));
                     if (!empty($x)) {
@@ -250,18 +251,22 @@ class Radix_HTML
                     $node_text.= ' ';
                 }
             }
+
             // Sub-Routine to Check Children Elements
             if ($cn->nodeType == XML_ELEMENT_NODE) {
                 $node_text.= self::_html2text_node($cn);
+                if (strlen($node_post)) {
+                    $node_text.= $node_post;
+                    $node_post = null;
+                }
             }
+
+
         }
         // Close an Open Node
         //if (count($this->_node_post)) {
         //    $this->_text.= array_pop($this->_node_post);
         //}
-        if (strlen($node_post)) {
-            $node_text.= $node_post;
-        }
         //if (count($this->_node_open)) {
         //  $this->_page_dump.= sprintf('</%s>',array_pop($this->_node_open));
         //}
