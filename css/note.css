@@ -5,42 +5,15 @@
 .note {
     background-color: #999999;
     border-radius: 4px;
+    font-size:12px;
+    padding: .25em .6em;
+	white-space: nowrap;
+	vertical-align: middle;
 }
 
-.note8 {
-    border-radius: 8px;
-}
-
-/*
- Grey 
-*/
-
-/*
-  Green
-*/
-.note.good {
-    background-color: #468847;
-}
-
-/*
-  Orange
-*/
-.note.warn
-{
- background-color: #F89406;
-}
-/*
-  Red
-*/
-.note.fail {
-    background-color: #B94A48;
-}
-
-/*
-  Pale Blue
-*/
-.note.info {
-    background-color: #3A87AD;
+.pill {
+	border-radius: 16px;
+    padding: .25em 1em;
 }
 
 /*
@@ -54,6 +27,3 @@
 /*
   Pill Shapes are Rounded Corners
 */
-.pill {
-  border-radius:8px; padding: 2px 4px;
-}

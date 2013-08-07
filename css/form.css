@@ -3,6 +3,9 @@
     @brief Form Elements for Radix and other stuff
 */
 
+@import "base.less";
+
+
 /* Inputs */
 input[type="text"],
 input[type="password"],
@@ -59,19 +62,58 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"]
 {
+	border: 1px solid rgba(0, 0, 0, 0);
+	border-radius:4px;
+	color: #FFF;
     cursor: pointer;
-    -webkit-appearance: button;
+	background-color: @grey;
+	border-color: @grey;
+	font-size: 14px;
+    min-width: 128px;
+	padding: 8px 12px;
+	text-align: center;
+    text-decoration:none;
+	white-space: nowrap;
+	vertical-align: middle;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
 }
 
-/*
-.btn-primary:hover,
-.btn-primary:active,
-.btn-primary.active,
-.btn-primary.disabled,
-.btn-primary[disabled] {
+button:active, button:hover,
+input[type="button"]:active, input[type="button"]:hover,
+input[type="reset"]:active, input[type="reset"]:hover,
+input[type="submit"]:active, input[type="submit"]:hover
+{
+	background-color: #3A3C3C;
+	border-color: #2E2F2F;
 }
 
-.btn-primary:active,
-.btn-primary.active {
+button.l,
+input[type="button"].l,
+input[type="reset"].l,
+input[type="submit"].l
+{
+	border-radius:8px;
+	font-size:24px;
 }
-*/
+
+button.s,
+input[type="button"].s,
+input[type="reset"].s,
+input[type="submit"].s
+{
+	font-size:12px;
+	padding:4px 8px;
+}
+
+.pushbar-h {
+	
+}
+
+.pushbar-v {
+	
+}
+

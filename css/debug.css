@@ -2,18 +2,79 @@
     Debug Highlighting
 */
 
-.g .r .c1,
-.g .r .c2,
-.g .r .c3,
-.g .r .c4,
-.g .r .c5,
-.g .r .c6,
-.g .r .c7,
-.g .r .c8,
-.g .r .c9,
-.g .r .c10,
-.g .r .c11,
-.g .r .c12
-{
-    outline:1px solid #ccc;
+@import "base.less";
+
+.g {
+    .c1, .c2, .c3, .c4, .c5, .c6, .c7, .c8, .c9, .c10, .c11, .c12
+    {
+        outline:1px solid #ccc;
+    }
+}
+
+.grid {
+    .c1, .c2, .c3, .c4, .c5, .c6, .c7, .c8, .c9, .c10, .c11, .c12, .c20, .c25, .c30, .c35, .c40, .c45, .c50, .c55, .c60, .c65, .c70, .c75, .c80
+    {
+        outline:1px solid #ccc;
+    }
+}
+
+.debug {
+	div {
+		border:none;
+		display:block;
+		float:left;
+		height:64px;
+		margin:4px;
+		width:64px;
+	}
+	div.grey {
+		background:@grey;
+	}
+	div.grey_hi {
+		background:@grey_hi;
+	}
+	div.grey_lo {
+		background:@grey_lo;
+	}
+	
+	div.exec {
+		background:@exec;
+	}
+	div.exec_hi {
+		background:@exec_hi;
+	}
+	div.exec_lo {
+		background:@exec_lo;
+	}
+
+	div.good {
+		background:@good;
+	}
+	div.good_hi {
+		background:@good_hi;
+	}
+	div.good_lo {
+		background:@good_lo;
+	}
+
+	div.info {
+		background:@info;
+	}
+	div.info_hi {
+		background:@info_hi;
+	}
+	div.info_lo {
+		background:@info_lo;
+	}
+
+	div.warn {
+		background:@warn;
+	}
+	div.warn_hi {
+		background:@warn_hi;
+	}
+	div.warn_lo {
+		background:@warn_lo;
+	}
+
 }

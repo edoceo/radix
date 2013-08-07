@@ -1,0 +1,92 @@
+/* Lists =========================================================== */
+
+dl, menu, ol, ul {
+    margin: 1em 0;
+}
+ol, ul {
+    padding: 0;
+    margin: 0 0 8px 24px;
+}
+/* Children */
+ol ol, ol ul, ul ol, ul ul {
+    padding: 0;
+    margin: 0 0 0 20px;
+}
+nav ul, nav ol {
+    list-style: none;
+    list-style-image: none;
+    margin:0;
+    padding:0;
+}
+
+ul { 
+    list-style: disc;
+}
+
+/* Horizontal */
+ol.h:after, ul.h:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+dd, dt {
+    line-height:22px;
+}
+
+dd {
+    margin: 0 0 0 40px;
+}
+dt {
+    font-weight:700;
+}
+
+/*
+Horizonal DL
+*/
+dl.h:before, dl.h:after {
+    display:table;
+}
+dl.h:after {
+    clear:both;
+}
+dl.h dt
+{
+    clear:left;
+    float:left;
+    font-weight:700;
+    margin-right:16px;
+    overflow:hidden;
+    text-align:right;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    width:192px;
+}
+
+dl.h dd
+{
+    display:block;
+    margin-left:200px;
+}
+
+ul.h
+{
+    list-style:none;
+}
+
+ol.h li, ul.h li
+{
+    display:block;
+    float:left;
+    padding:4px 8px;
+}
+
+ul.h li a
+{
+    display: block;
+    float: none;
+    text-decoration: none;
+}
+
