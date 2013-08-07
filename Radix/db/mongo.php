@@ -151,6 +151,20 @@ class radix_db_mongo
     }
     
     /**
+        Return Distinct List
+        @param $c Collection
+        @param $k Key
+        @param $q Optional Query Parameters
+        @return Array
+    */
+    function distinct($c,$k,$q=null)
+    {
+        $c = $this->_d->selectCollection($c);
+        $r = $c->distinct($k,$q);
+        return $r;
+    }
+    
+    /**
         @param $file the local file to insert
         @param $meta meta-data array
     */

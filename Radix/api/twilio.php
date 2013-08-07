@@ -13,7 +13,7 @@ class radix_api_twilio
 {
     const URI_BASE = 'https://%s:%s@api.twilio.com';
     const URI_PATH = '/2010-04-01';
-    const UA = 'Radix Twilio API v2012.28';
+    const UA = 'Radix Twilio API v2013.25';
 
     private static $__init = false;
     private static $__user;
