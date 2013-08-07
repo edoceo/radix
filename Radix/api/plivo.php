@@ -9,21 +9,42 @@
 class radix_api_plivo
 {
     const URI_BASE = 'https://%s:%s@api.plivo.com/v1/Account/%s/';
-    const UA = 'Radix Plivo API v2012.44';
+    const UA = 'Radix Plivo API v2013.25';
+
+    private static $__init = false;
+    private static $__user;
+    private static $__auth;
 
     private $_auth_id; // Auth ID
     private $_auth_tk; // Auth Token
 
-    //
-    // https://api.plivo.com/v1/Account/{auth_id}/Call
     /**
-        @param $a AUTH ID
-        @param $b AUTH TOKEN
+        Init the Static World
+        @param $u Twilio Account SID
+        @param $a Twilio Auth Token
     */
-    public function __construct($a,$b)
+    public static function init($u,$a)
     {
-        $this->_auth_id = $a;
-        $this->_auth_tk = $b;
+        self::$__user = $u;
+        self::$__auth = $a;
+        $b = sprintf(self::URI_BASE ,$u,$a,$u);
+        if (strlen($b) > strlen(self::URI_BASE)) {
+            self::$__init = true;
+        }
+    }
+
+    /**
+        @param $u AUTH ID
+        @param $a AUTH TOKEN
+    */
+    public function __construct($u=null,$a=null)
+    {
+        if (null===$u && null===$a && self::$__init) {
+            $u = self::$__user;
+            $a = self::$__auth;
+        }
+        $this->_auth_id = $u;
+        $this->_auth_tk = $a;
     }
     
     /**
@@ -91,8 +112,20 @@ class radix_api_plivo
             $ret = json_decode($ret['body'],true);
         }
         return $ret;
-
     }
+    
+    /**
+        @param $page
+        @param $size = 20
+    */
+    function listCalls($page=0,$size=20)
+    {
+        return $this->api('Call',array(
+            'offset' => 0,
+            'limit' => $size,
+        ));
+    }
+
     function callStat()
     {
         // https://api.plivo.com/v1/Account/{auth_id}/Call/
