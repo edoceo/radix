@@ -60,22 +60,18 @@ cat > boot.php <<EOP
 \$path[] = get_include_path(); // Include System Libs
 set_include_path(implode(PATH_SEPARATOR,\$path));
 
-define('APP_NAME','MyApp');
-define('APP_SITE','http://myapp.com');
-define('APP_ROOT',dirname(__FILE__));
-define('APP_SALT','MyApp Has a Secret to Keep'); // if changed previously Salted things will not match
-
 // Radix
 require_once('radix.php');
 require_once('Radix/Session.php');
 radix_session::init(array('name'=>APP_NAME));
 
-require_once('Radix/Cache.php');
+// Caching?
+// require_once('Radix/Cache.php');
 // Radix_Cache::init(array('path'=>APP_ROOT . '/var/cache'));
 // Radix_Cache::init(array('host'=>'localhost:11211'));
 
 // Include some Database?
-require_once('Radix/db/sql.php');
+// require_once('Radix/db/sql.php');
 // require_once('Radix/db/mongo.php');
 // require_once('Radix/Cache.php');
 // require_once('Radix/Cache.php');
@@ -100,17 +96,22 @@ EOP
 # Make a Theme
 cat >./theme/html.php <<EOP
 <?php
+/**
+    Primary Theme for the Radix Application, HTML output
+*/
+
 header('Content-Type: text/html; charset="utf-8"');
 
 ?><!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="description" content="">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="/css/app.css">
-<script src="/js/app.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="//gcdn.org/radix/radix.css" rel="stylesheet" media="screen">
+<!-- <link rel="stylesheet" href="/css/app.css"> -->
+<!-- <script src="/js/app.js"></script> -->
 <title><?php echo \$_ENV['title']; ?></title>
 </head>
 <body>
@@ -125,9 +126,19 @@ EOP
 
 cat >./webroot/index.php <<EOP
 <?php
+/**
+    Front Controller for Application
+*/
+
+define('APP_INIT',microtime(true));
+define('APP_NAME','MyApp');
+define('APP_SITE','http://myapp.com');
+define('APP_ROOT',dirname(__FILE__));
+define('APP_SALT','MyApp Has a Secret to Keep'); // if changed previously Salted things will not match
 
 require_once(dirname(dirname(__FILE__)) . '/boot.php');
 
+\$opts = array();
 radix::init(\$opts);
 // radix::\$view->mdb = new radix_db_mongo();
 // radix::route('some/path?or=pattern','/real/action');
@@ -141,14 +152,20 @@ cat >apache.conf.example <<EOC
 
 <Directory "$app_dir">
 
-    RewriteRule
-    
+    Header unset Pragma
 
-    php_value
-    php_flag
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule .* /index.php [QSA,L]
 
-    php_admin_flag
-    php_admin_value
+    php_flag display_errors on
+    php_flag display_startup_errors on
+
+    php_value error_reporting -1
+
+    # php_admin_flag
+    # php_admin_value
 
 </Directory>
 
@@ -156,6 +173,48 @@ EOC
 
 cat >nginx.conf.radix <<EOC
 server {
+    location / {
+
+        root "$app_dir";
+
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+
+        # fastcgi_split_path_info ^/(.+\.php)(/?.+)$;
+
+        fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+
+        fastcgi_param  SERVER_ADDR        \$server_addr;
+        fastcgi_param  SERVER_PORT        \$server_port;
+        fastcgi_param  SERVER_NAME        \$server_name;
+        fastcgi_param  SERVER_SOFTWARE    nginx/\$nginx_version;
+        fastcgi_param  SERVER_PROTOCOL    \$server_protocol;
+
+        fastcgi_param  REMOTE_ADDR        \$remote_addr;
+        fastcgi_param  REMOTE_PORT        \$remote_port;
+
+        fastcgi_param  REQUEST_METHOD     \$request_method;
+        fastcgi_param  REQUEST_URI        \$request_uri;
+        fastcgi_param  QUERY_STRING       \$query_string;
+        # fastcgi_param  CONTENT_TYPE       \$content_type;
+        # fastcgi_param  CONTENT_LENGTH     \$content_length;
+
+        fastcgi_param  DOCUMENT_URI       \$document_uri;
+        fastcgi_param  DOCUMENT_ROOT      \$document_root;
+
+        fastcgi_param  SCRIPT_NAME        \$fastcgi_script_name;
+        fastcgi_param  PATH_INFO          \$fastcgi_path_info;
+        # fastcgi_param  SCRIPT_FILENAME    $app_dir/\$fastcgi_script_name;
+        fastcgi_param  SCRIPT_FILENAME    $app_dir/webroot/index.php;
+
+        # PHP only, required if PHP was built with --enable-force-cgi-redirect
+        # fastcgi_param  REDIRECT_STATUS    200;
+
+    }
 
 }
 EOC
+
+# make_dirs;
+# make_boot;
+# make_conf;
