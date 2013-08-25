@@ -129,7 +129,7 @@ class radix_api_twitter
     */
     public function tweet($t)
     {
-        return $this->_curl('POST','http://api.twitter.com/1/statuses/update.json',array('status' => $t));
+        return $this->_curl('POST','https://api.twitter.com/1.1/statuses/update.json',array('status' => $t));
     }
 
     /**
@@ -137,7 +137,7 @@ class radix_api_twitter
     */
     public static function getUserTimeline($user,$size=10)
     {
-        $uri = sprintf('http://api.twitter.com/1/statuses/user_timeline/%s.json?count=%d',$user,$size);
+        $uri = sprintf('https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=%s&count=%d',$user,$size);
         $feed = Radix_HTTP::get($uri);
         $json = json_decode($feed['body']);
         return $json;

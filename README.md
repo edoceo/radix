@@ -41,15 +41,17 @@ Due to it's simplistic nature Radix can be used to create these systems pretty q
 
 ## Radix MVC Structures
 
-Radix has a pretty hard coded method for it's MVC
+Radix has a pretty typical directory structure, very simple
 
-* ./boot.php
+* ./block - Blocks
 * ./controller - Controllers
 * ./etc - Configuration
 * ./lib - Libraries or Models
 * ./view - Guess!
+
+* ./boot.php
 * ./webroot/index.php
-'
+
 ## Radix Provided Interfaces
 
 * Basics: Caching, Cart, IPC, MRU, Session
