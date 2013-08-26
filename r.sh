@@ -124,6 +124,8 @@ echo \$this->body
 
 EOP
 
+#
+# The Front Controller
 cat >./webroot/index.php <<EOP
 <?php
 /**

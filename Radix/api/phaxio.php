@@ -125,9 +125,10 @@ class radix_api_phaxio
             'number' => $pn,
         );
         $r = $this->api('/numberList',$pd);
-        if ($r['info']['http_code']==200) {
-            $r = json_decode($r['body'],true);
-        }
+        // if (200 == $res['info']['http_code']) {
+        //     $ret = json_decode($r['body'],true);
+        // }
+        // $ret['code'] = $res['info']['http_code'];
         return $r;
     }
 
@@ -229,7 +230,6 @@ class radix_api_phaxio
             'info' => curl_getinfo($ch),
         );
         $ret = $res;
-        $ret['code'] = 200;
 
         if (curl_errno($ch)) {
             return array(
@@ -241,6 +241,7 @@ class radix_api_phaxio
 
         if ('application/json' == $res['info']['content_type']) {
             $ret = json_decode($res['body'],true);
+            $ret['code'] = 200;
         }
 
         if (200 != $res['info']['http_code']) {

@@ -208,7 +208,7 @@ class radix_mail_smtp
             if ($c == 1) {
                 // Stream Select may think something is there, but then fgets fails WTF?
                 $buf = fgets($this->_s,1024);
-                echo "_recv($buf)\n";
+                // echo "_recv($buf)\n";
                 if ($buf === false) {
                     $c = false;
                     break;
