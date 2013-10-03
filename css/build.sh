@@ -10,9 +10,11 @@ cat \
   info.css \
   note.css \
   menu.css \
-  debug.css \
+  pbar.less \
   > radix.less
 
+#  debug.css \
+  
 # perl -MCSS::Minifier -e 'print CSS::Minifier::minify(input => *STDIN)' < radix-full.css > radix.css
 # sed -e :a -e '$!N; s/,\n/,/; ta' < radix-full.css > radix.css
 
@@ -26,4 +28,4 @@ cat \
 lessc \
 	--compress \
 	--strict-units=on \
-	radix.less radix.css
+	radix.less > radix.css

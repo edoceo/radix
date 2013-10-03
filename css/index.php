@@ -54,9 +54,10 @@ Use use <a href="http://lesscss.org">less</a> to make it go.
 <ul>
 <li>Grid</li>
 <li>Text</li>
-<li><a ref="#list">Lists</a></li>
-<li><a ref="#form">Forms</a></li>
+<li><a href="#list">Lists</a></li>
+<li><a href="#form">Forms</a></li>
 <li><a href="?css=less">Less</a></li>
+<li><a href="#pbar">Progress</a></li>
 </ul>
 </nav>
 
@@ -151,11 +152,22 @@ Radix provide styling for Headings, Inline-Elements.
 
 <h2>Inline Indicators</h2>
 <p>
-<abbr>abbr<abbr> and <abbr title="Abbreviation">abbr+title</abbr>,
-<b>&lt;b&gt;</b>, <code>code</code>, <del>del</del>, <em>em</em>, <i>i</i>, <ins>ins</ins>, <kbd>kbd</kbd>, <small>small</small>, <strong>strong</strong>, <sub>sub</sub>, <sup>sup</sup>, <u>u</u>.</p>
-<p><address>address</address></p>
+<abbr>abbr</abbr> and <abbr title="Abbreviation">abbr+title</abbr>,
+<b>&lt;b&gt; is just bold</b>,
+<code>&lt;code&gt;</code>,
+<del>&lt;del&gt;</del>,
+<em>&lt;em&gt;</em>,
+<i>&lt;i&gt;</i>,
+<ins>&lt;ins&gt;</ins>,
+<kbd>&lt;kbd&gt;</kbd>,
+<small>&lt;small&gt;</small>,
+<strong>&lt;strong&gt;</strong>,
+<sub>&lt;sub&gt;</sub>,
+<sup>&lt;sup&gt;</sup>,
+<u>&lt;u&gt;</u>.</p>
+<p><address>&lt;address&gt;</address></p>
 
-, bdi, bdo, blockquote, br, hr, mark, pre, q, s, samp</p>
+<p>, bdi, bdo, blockquote, br, hr, mark, pre, q, s, samp</p>
 
 <h2>Tables</h2>
 <p>caption, col, colgroup, table, tbody, td, tfoot, th, thead, tr.</p>
@@ -238,6 +250,7 @@ Simply adding a <em>class</em> of <em>h</em> to them makes them horizontal.
 <li>But, you likely want to use a <code>ul</code>.</li>
 </ul>
 
+<!-- Form Elements -->
 <h2 id="form">Form Elements</h2>
 <p>Button, Command, Fieldset, Form, input, label, legend, menu, optgroup, option, output, progress, select, textarea, time, var</p>
 
@@ -263,14 +276,23 @@ Simply adding a <em>class</em> of <em>h</em> to them makes them horizontal.
 <input type="submit" value="Submit">
 <input type="reset" value="Reset">
 </div>
-<div>
 
+<h3>Packing Elements</h3>
+<div class="pack">
+	<input type="url"><button>A Button</button>
+</div>
+<div class="pack">
+	<input type="text"><button>A Button</button>
+</div>
+
+
+<div>
 <h3>Checkboxes</h3>
 <label><input type="checkbox"> Checkbox One</label>
 <label><input type="checkbox"> Checkbox Two</label>
 </div>
-<div>
 
+<div>
 <h3>Radios</h3>
 <label><input type="radio"> Checkbox One</label>
 <label><input type="radio"> Checkbox Two</label>
@@ -278,7 +300,7 @@ Simply adding a <em>class</em> of <em>h</em> to them makes them horizontal.
 
 <div><textarea>Textarea</textarea></div>
 
-<h3 id="button">Buttons</h3>
+<h3 id="button">Special Buttons</h3>
 <div>
 <button class="grey">Default</button>
 <button class="exec">Exec</button>
@@ -288,7 +310,7 @@ Simply adding a <em>class</em> of <em>h</em> to them makes them horizontal.
 <button class="fail">Fail</button>
 </div>
 
-<h4>Larger / Smaller</h4>
+<h4>Larger / Smaller Buttons</h4>
 <p>Just add the <em>.l</em> or <em>.s</em> attribute.</p>
 <div>
 <button class="l grey">Default</button>
@@ -317,6 +339,8 @@ Simply adding a <em>class</em> of <em>h</em> to them makes them horizontal.
 <button disabled class="warn">Warn</button>
 <button disabled class="fail">Fail</button>
 </div>
+
+<h2>
 
 
 
@@ -350,6 +374,28 @@ Simply adding a <em>class</em> of <em>h</em> to them makes them horizontal.
 <span class="note fail">Fail</span>
 </div>
 
+<h2 id="pbar">Progress Bars</h2>
+<div class="pbar">
+	<div class="fill exec" style="width:30%;">.pbar .fill 30%</div>
+</div>
+<div class="pbar">
+	<div class="fill info" style="width:30%;">.pbar .fill 30%</div>
+</div>
+<div class="pbar">
+	<div class="fill good" style="width:30%;">.pbar .fill 30%</div>
+</div>
+<div class="pbar">
+	<div class="fill warn" style="width:30%;"></div>
+</div>
+<div class="pbar">
+	<div class="fill fail" style="width:30%;"></div>
+</div>
+<div class="pbar">
+	<div class="fill" style="width:30%;"></div>
+</div>
+<div class="pbar pill">
+	<div class="fill" style="width:30%;"></div>
+</div>
        
 <footer>
 <p>Footer Paragraphs are Easy</p>

@@ -1,5 +1,6 @@
 /**
     The Baseline for HTML, Resets all stuff to a nice uniform layout
+    :mode=css:
 */
 
 @import "base.less";
@@ -10,14 +11,11 @@
 	padding:0;
 }
 
-/* Base ============================================================ */
 html {
-    /* Corrects text resizing oddly in IE6/7 when body `font-size` is set using `em` units. */
     font-family: sans-serif;
     font-size: 100%; /* 1 */
-    /* Prevents iOS text size adjust after orientation change, without disabling user zoom. */
-    -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
     text-rendering: optimizelegibility;
 }
 
@@ -43,11 +41,7 @@ summary {
     display: block;
 }
 
-/* Corrects `inline-block` display not defined in IE6/7/8/9 & FF3. */
-audio {
-	display:inline;
-}
-
+audio,
 canvas,
 video
 {
@@ -404,6 +398,7 @@ input[type="submit"] {
 
 button,
 input[type="button"],
+input[type="reset"],
 input[type="submit"]
 {
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
@@ -412,6 +407,7 @@ input[type="submit"]
 
 button:hover,
 input[type="button"]:hover,
+input[type="reset"]:hover,
 input[type="submit"]:hover
 {
 

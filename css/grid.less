@@ -1,10 +1,13 @@
 /**
     @file
     @brief 12 column grid system - Inspired by Foundation CSS
+    :mode=css:
 */
 
-/* Rows */ 
-.g, .grid {
+/* Rows */
+.grid
+{
+	/* After the Grid */
     &:after {
         content: ".";
         display: block;
@@ -14,10 +17,11 @@
     }
 
     .hbox {
+
         clear:left;
         max-width: 100%;
         margin: 0 auto;
-        
+
         div {
             float:left;
         }
@@ -36,6 +40,18 @@
         div.c11 { width: 91.66667%; }
         div.c12 { width: 100%; }
 
+		div.o1 { margin-left:8.33333%; }
+		div.o2 { margin-left: 16.66667%; }
+		div.o3 { margin-left: 25%; }
+		div.o4 { margin-left: 33.33333%; }
+		div.o5 { margin-left: 41.66667%; }
+		div.o6 { margin-left: 50%; }
+		div.o7 { margin-left: 58.33333%; }
+		div.o8 { margin-left: 66.66667%; }
+		div.o9 { margin-left: 75%; }
+		div.o10 { margin-left: 83.33333%; }
+		div.o11 { margin-left: 91.66667%; }
+
         /* 20% - 80% Columns */
         div.c20 { width: 20%; }
         div.c25 { width: 25%; }
@@ -47,21 +63,15 @@
         div.c75 { width: 75%; }
         div.c80 { width: 80%; }
 
+        div.o20 { margin-left: 20%; }
+        div.o25 { margin-left: 25%; }
+        div.o30 { margin-left: 30%; }
+        div.o40 { margin-left: 40%; }
+        div.o50 { margin-left: 50%; }
+        div.o60 { margin-left: 60%; }
+        div.o70 { margin-left: 70%; }
+        div.o75 { margin-left: 75%; }
+        div.o80 { margin-left: 80%; }
+
     }
 }
-
-/*
-.grid div.r > div { float:left; }
-.grid div.r div.c1 { width: 8.33333%; }
-*/
-
-.grid div.r div.o1 { margin-left:8.33333%; }
-.grid div.r div.o2 { margin-left: 16.66667%; }
-.grid div.r div.o3 { margin-left: 25%; }
-.grid div.r div.o4 { margin-left: 33.33333%; }
-.grid div.r div.o5 { margin-left: 41.66667%; }
-.grid div.r div.o6 { margin-left: 50%; }
-.grid div.r div.o7 { margin-left: 58.33333%; }
-.grid div.r div.o8 { margin-left: 66.66667%; }
-.grid div.r div.o9 { margin-left: 75%; }
-.grid div.r div.o10 { margin-left: 83.33333%; }

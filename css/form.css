@@ -40,6 +40,7 @@ textarea
     -moz-transition: all 0.15s linear;
     -o-transition: all 0.15s linear;
     transition: all 0.15s linear;
+    vertical-align: bottom;
 }
 input[type="text"]:focus,
 input[type="password"]:focus,
@@ -69,12 +70,13 @@ input[type="submit"]
 	background-color: @grey;
 	border-color: @grey;
 	font-size: 14px;
+	font-weight:bold;
     min-width: 128px;
 	padding: 8px 12px;
 	text-align: center;
     text-decoration:none;
 	white-space: nowrap;
-	vertical-align: middle;
+	vertical-align: bottom;
 	user-select: none;
 	-webkit-user-select: none;
 	-moz-user-select: none;
@@ -106,6 +108,7 @@ input[type="reset"].s,
 input[type="submit"].s
 {
 	font-size:12px;
+	font-weight:normal;
 	padding:4px 8px;
 }
 
@@ -115,5 +118,37 @@ input[type="submit"].s
 
 .pushbar-v {
 	
+}
+
+div.pack {
+
+	input[type="text"],
+	input[type="password"],
+	input[type="date"],
+	input[type="datetime"],
+	input[type="email"],
+	input[type="number"],
+	input[type="search"],
+	input[type="tel"],
+	input[type="time"],
+	input[type="url"],
+	{
+		display: inline;
+		font-size: 14px;
+		margin: 0 0 12px 0;
+		padding: 6px;
+		width:auto;
+	}
+
+	button,
+	input[type="button"],
+	input[type="reset"],
+	input[type="submit"]
+	{
+		display:inline;
+		font-size: 14px;
+		margin:0 0 12px 0;
+		width:auto;
+	}
 }
 
