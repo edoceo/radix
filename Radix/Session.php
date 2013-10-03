@@ -180,30 +180,35 @@ class Radix_Session
     */
     static function flash($what=null,$html=null)
     {
+    	if (empty($_SESSION['_radix']['_flash'])) {
+			$_SESSION['_radix']['_flash'] = array();
+		}
+
         // Add Message
-        if ( ($what != null) && ($html != null) ) {
-            $_SESSION['_radix'][$what][] = $html;
+        if ( ($what !== null) && ($html !== null) ) {
+            $_SESSION['_radix']['_flash'][$what][] = $html;
             return true;
         }
 
         // Or Clear it Out
-        if ( ($what != null) && ($html == null) ) {
-            $_SESSION['_radix'][$what] = array();
+        if ( ($what !== null) && ($html === null) ) {
+            $_SESSION['_radix']['_flash'][$what] = array();
             return true;
         }
 
         // Or Output
         $out = null;
-        foreach (array('fail','warn','info') as $key) {
+        $keys = array_keys($_SESSION['_radix']['_flash']);
+        foreach ($keys as $key) {
             // Skip?
-            if (empty($_SESSION['_radix'][$key])) {
+            if (empty($_SESSION['_radix']['_flash'][$key])) {
                 continue;
             }
-            if (count($_SESSION['_radix'][$key])==0) {
+            if (count($_SESSION['_radix']['_flash'][$key])==0) {
                 continue;
             }
             // Convert single item array to string
-            $buf = $_SESSION['_radix'][$key];
+            $buf = $_SESSION['_radix']['_flash'][$key];
             if ( (is_array($buf)) && (count($buf)==1) ) {
                 $buf = $buf[0];
             }
@@ -225,9 +230,8 @@ class Radix_Session
                 }
             }
             $out.= '</div>';
-            unset($_SESSION['_radix'][$key]);
-            unset($_SESSION[$key]); // legacy
         }
+        unset($_SESSION['_radix']['_flash']);
         return $out;
     }
 }
