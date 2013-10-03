@@ -113,7 +113,19 @@ class radix_api_plivo
         }
         return $ret;
     }
-    
+
+    /**
+		@param $offset starting record number
+		@param $limit default/max = 20
+    */
+    function listApplications($offset=0,$limit=20)
+    {
+        return $this->api('Application',array(
+            'offset' => $offset,
+            'limit' => $limit,
+        ));
+    }
+
     /**
         @param $page
         @param $size = 20
@@ -126,13 +138,17 @@ class radix_api_plivo
         ));
     }
 
-    function callStat()
+    /**
+		@param $uuid Call UUID
+    */
+    function callStat($uuid)
     {
         // https://api.plivo.com/v1/Account/{auth_id}/Call/
         // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/
         // https://api.plivo.com/v1/Account/{auth_id}/Call/?status=live
         // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/?status=live
         // https://api.plivo.com/v1/Account/{auth_id}/Call/{call_uuid}/
+        return $this->api('Call/' . $uuid);
     }
 
     /**
@@ -176,6 +192,7 @@ class radix_api_plivo
 
     /**
         Send a Text Message
+        @param $arg src, dst, text
     */
     function textSend($arg)
     {
