@@ -31,7 +31,6 @@ class Radix_HTTP
             'head'     => array(),
             'async'    => false,
             'cookie'   => null, // Path to Cookie File
-            'referrer' => null,
             'timeout'  => 30, // Seconds
             'user-agent' => 'Edoceo Radix/HTTP 0.2',
             'verbose'  => null, // Verbose Log File Handle
@@ -78,6 +77,7 @@ class Radix_HTTP
         $ch = self::_curl_init($uri);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
         return self::_curl_exec($ch);
     }
 
@@ -171,11 +171,12 @@ class Radix_HTTP
         curl_setopt(self::$_ch, CURLOPT_NETRC, false);
         curl_setopt(self::$_ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt(self::$_ch, CURLOPT_SSL_VERIFYPEER, false);
+        // curl_setopt(self::$_ch, CURLOPT_VERBOSE, false);
+        // if ( (!empty(self::$_opts['verbose'])) && (is_resource(self::$_opts['verbose'])) ) {
+        //     curl_setopt(self::$_ch, CURLOPT_VERBOSE, true);
+        //     curl_setopt(self::$_ch, CURLOPT_STDERR, self::$_opts['verbose']);
+        // }
         curl_setopt(self::$_ch, CURLOPT_VERBOSE, false);
-        if ( (!empty(self::$_opts['verbose'])) && (is_resource(self::$_opts['verbose'])) ) {
-            curl_setopt(self::$_ch, CURLOPT_VERBOSE, true);
-            curl_setopt(self::$_ch, CURLOPT_STDERR, self::$_opts['verbose']);
-        }
 
         curl_setopt(self::$_ch, CURLOPT_BUFFERSIZE, 16384);
         curl_setopt(self::$_ch, CURLOPT_CONNECTTIMEOUT, 15);
@@ -216,12 +217,21 @@ class Radix_HTTP
             self::$_mc_list[] = $ch;
             return self::$_mc_exec;
         } else {
-            return array(
+            $r = array(
                 'body' => curl_exec($ch),
                 'fail' => sprintf('%d:%s',curl_errno($ch),curl_error($ch)),
                 'info' => curl_getinfo($ch),
                 'head' => self::$_ch_head,
             );
+			switch ($r['head']['content-encoding']) {
+			case 'deflate':
+				$r['body'] = gzinflate($r['body']);
+				break;
+			case 'gzip':
+				$r['body'] = gzinflate(substr($r['body'],10));
+				break;
+			}
+			return $r;
         }
     }
 

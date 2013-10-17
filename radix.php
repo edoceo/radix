@@ -168,6 +168,10 @@ class Radix
             $list[] = sprintf('%s/controller/%s.php',self::$root,trim($path,'/'));
             $path = dirname($path);
         }
+        if (self::$_a == 'index') {
+            $list[] = sprintf('%s/controller/%s/index.php',self::$root,self::$path);
+        }
+
         ob_start();
         $res = self::$view->_include($list);
         self::$view->body.= ob_get_clean();

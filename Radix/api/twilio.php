@@ -71,7 +71,7 @@ class radix_api_twilio
         @param $page Page Number, 0
         @param $size Page Size, 100
     */
-    public function listCalls($page=0,$size=100)
+    public function callList($page=0,$size=100)
     {
         $api = sprintf('Calls.json?Page=%d&PageSize=%d',$page,$size);
         return $this->api($api);
@@ -155,7 +155,6 @@ class radix_api_twilio
         $uri = $this->fixURI($api,$arg);
         $this->_stat['post']++;
         $res = radix_http::post($uri,$arg);
-        // radix::dump($res);
         $ret = json_decode($res['body'],true);
         // radix::dump($ret);
         return $ret;
