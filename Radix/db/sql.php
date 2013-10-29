@@ -88,6 +88,13 @@ class radix_db_sql
         }
         return $ret;
     }
+    /**
+		Canonical Name for fetch_all
+    */
+    public static function fetchAll($sql, $arg=null)
+    {
+    	return self::fetch_all($sql, $arg);
+    }
 
     /**
         @param $sql
@@ -119,6 +126,11 @@ class radix_db_sql
 	    return $ret;
     }
 
+    public static function fetchMix($sql,$arg=null)
+    {
+    	return self::fetch_mix($sql, $arg);
+    }
+
     /**
         fetch_one()
 
@@ -146,6 +158,10 @@ class radix_db_sql
         @param $arg bindable array
         @return one row as associative arary
     */
+    public static function fetchRow($sql,$arg=null)
+    {
+    	return self::fetch_row($sql, $arg);
+    }
     public static function fetch_row($sql,$arg=null)
     {
         $res = self::_sql_query($sql,$arg);

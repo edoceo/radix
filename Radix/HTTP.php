@@ -46,9 +46,9 @@ class Radix_HTTP
         @param $uri
         @return Response Array
     */
-    static function get($uri)
+    static function get($uri,$head=null)
     {
-        $ch = self::_curl_init($uri);
+        $ch = self::_curl_init($uri,$head);
         curl_setopt($ch, CURLOPT_HTTPGET, true);
         return self::_curl_exec($ch);
     }
@@ -72,7 +72,7 @@ class Radix_HTTP
         @param $post array or data string
         @return Response Array
     */
-    static function post($uri,$post)
+    static function post($uri,$post,$head=null)
     {
         $ch = self::_curl_init($uri);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -153,7 +153,7 @@ class Radix_HTTP
     /**
         Executes the Single or Multiple Requests
     */
-    private static function _curl_init($uri)
+    private static function _curl_init($uri,$head=null)
     {
         self::$_ch = curl_init($uri);
         self::$_ch_head = null;
@@ -171,12 +171,12 @@ class Radix_HTTP
         curl_setopt(self::$_ch, CURLOPT_NETRC, false);
         curl_setopt(self::$_ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt(self::$_ch, CURLOPT_SSL_VERIFYPEER, false);
+        // curl_setopt(self::$_ch, CURLOPT_VERBOSE, true);
         // curl_setopt(self::$_ch, CURLOPT_VERBOSE, false);
         // if ( (!empty(self::$_opts['verbose'])) && (is_resource(self::$_opts['verbose'])) ) {
         //     curl_setopt(self::$_ch, CURLOPT_VERBOSE, true);
         //     curl_setopt(self::$_ch, CURLOPT_STDERR, self::$_opts['verbose']);
         // }
-        curl_setopt(self::$_ch, CURLOPT_VERBOSE, false);
 
         curl_setopt(self::$_ch, CURLOPT_BUFFERSIZE, 16384);
         curl_setopt(self::$_ch, CURLOPT_CONNECTTIMEOUT, 15);
@@ -187,8 +187,9 @@ class Radix_HTTP
         curl_setopt(self::$_ch, CURLOPT_TIMEOUT, self::$_opts['timeout']);
         curl_setopt(self::$_ch, CURLOPT_USERAGENT, self::$_opts['user-agent']);
 
-        if ( (!empty(self::$_opts['head'])) ) {
-            curl_setopt(self::$_ch, CURLOPT_HTTPHEADER, self::$_opts['head']);
+        // radix::dump($head);
+        if ( (!empty($head)) && (is_array($head)) ) {
+            curl_setopt(self::$_ch, CURLOPT_HTTPHEADER, $head);
         }
 
         if (!empty(self::$_opts['cookie'])) {
