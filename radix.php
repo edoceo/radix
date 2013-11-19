@@ -164,16 +164,24 @@ class Radix
     public static function exec()
     {
         $path = self::$path;
-        while ( (!empty($path)) && ('/' != $path) ) {
-            $list[] = sprintf('%s/controller/%s.php',self::$root,trim($path,'/'));
-            $path = dirname($path);
+        $list = array();
+        $temp = array();
+        foreach (explode('/', $path) as $x) {
+        	$x = trim($x);
+        	if (empty($x)) continue;
+        	$temp[] = $x;
+        	$list[] = sprintf('%s/controller/%s.php', self::$root, implode('/', $temp));
         }
+        // while ( (!empty($path)) && ('/' != $path) ) {
+        //     $list[] = sprintf('%s/controller/%s.php',self::$root,trim($path,'/'));
+        //     $path = dirname($path);
+        // }
         if (self::$_a == 'index') {
             $list[] = sprintf('%s/controller/%s/index.php',self::$root,self::$path);
         }
 
         ob_start();
-        $res = self::$view->_include($list);
+        $res = self::$view->_include($list, false);
         self::$view->body.= ob_get_clean();
         self::$_exec_res = $res;
         return self::$_exec_res;
@@ -382,6 +390,10 @@ class Radix
                 }
             }
         }
+        // Apache:
+        // [SCRIPT_FILENAME] => /opt/edoceo/app/imperium.git/webroot/index.php
+        // [SCRIPT_NAME] => /imperium.git/index.php
+
         // Dirname of the Path of the SCRIPT_NAME which is the handler
         $base.= dirname(parse_url($_SERVER['SCRIPT_NAME'],PHP_URL_PATH));
         return rtrim($base,'/');;
@@ -719,10 +731,9 @@ class Radix
                 // 1 to promote include() success to HTTP OK
                 if ( ($r === 0) || ($r === 1) ) $r = self::OK;
                 self::$_file_list[$file] = sprintf('load:%d',$r);
-                return($r);
+                if ($once) return($r);
             }
         }
-        return self::NOT_FOUND;
     }
 
     /**

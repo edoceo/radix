@@ -5,8 +5,9 @@ It also includes basic tools for caching (file, memcache), databases (postgresql
 API interfaces exist for dozens of services such as AWS, Facebook, eNom, Twitter, Twilio.
 
 * Official Site: http://radix.edoceo.com/
-* API Documentation: http://radix.edoceo.com/api/
-* Download: http://radix.edoceo.com/radix.tgz
+* API/SDK Documentation: http://radix.edoceo.com/api/
+* Git: git clone https://github.com/edoceo/radix.git
+* Packagist: https://packagist.org/packages/edoceo/radix
 
 ## History
 
@@ -16,7 +17,7 @@ I like them, will embrace them and use them on a weekly basis.
 
 However, some use-cases I kept coming back to, where those didn't fit
 
-* Exisiting Custom Apps
+* Exisiting Custom Apps needing improvement
 * Rapid Prototype / LoFi MVP
 
 ### Existing Apps
@@ -37,7 +38,6 @@ Due to it's simplistic nature Radix can be used to create these systems pretty q
 
 * Automatic table creation from some magic markup
 * Fancy inherited modeling
-* Command line tools
 
 ## Radix MVC Structures
 
@@ -47,6 +47,7 @@ Radix has a pretty typical directory structure, very simple
 * ./controller - Controllers
 * ./etc - Configuration
 * ./lib - Libraries or Models
+* ./lib/vendor - Vendor supplied Libraries
 * ./view - Guess!
 
 * ./boot.php
@@ -63,3 +64,7 @@ Radix has a pretty typical directory structure, very simple
 * Amazon: MTurk, S3, SQS
 * Email: SMTP, IMAP
 * Network: Telnet, IRC, XMPP
+
+## Todo
+
+https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
