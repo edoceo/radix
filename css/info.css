@@ -59,6 +59,14 @@
 	border-color: @fail_lo;
 }
 
+button.exec,
+input[type="button"].exec,
+input[type="reset"].exec,
+input[type="submit"].exec 
+{
+	.exec
+}
+
 button.good,
 input[type="button"].good,
 input[type="reset"].good,

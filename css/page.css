@@ -37,3 +37,16 @@ article {
     margin:8px 0px 4px 16px;
 }
 
+code.exec {
+	background:#ccc;
+	color:#0f0;
+}
+code.path {
+	background:#ccc;
+	color:#00c;
+}
+
+code.file {
+	background:#ccc;
+	color:#eee;
+}

@@ -112,6 +112,10 @@ input[type="submit"].s
 	padding:4px 8px;
 }
 
+input[type="number"] {
+	text-align:right;
+}
+
 .pushbar-h {
 	
 }
