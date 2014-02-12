@@ -67,6 +67,20 @@ class radix_html_form
 	/**
 		@return HTML
 	*/
+	static function date($n,$v, $opt = null)
+	{
+		$arg = array(
+			'type'  => 'date',
+			'id'    => $n,
+			'name'  => $n,
+			'value' => $v,
+		);
+		return self::_element($arg, $opt);
+	}
+
+	/**
+		@return HTML
+	*/
 	static function checkbox($n,$v, $opt = null)
 	{
 		$arg = array(
