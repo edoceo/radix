@@ -66,7 +66,7 @@ class Radix_SQL_Record implements ArrayAccess, Iterator
             // }
             $sql = "SELECT * FROM {$this->_table} WHERE {$this->_pkcol} = ?";
             // Radix::dump($sql);
-            $this->_data = Radix_SQL::fetch_row($sql,array($this->_pkval));
+            $this->_data = radix_db_sql::fetch_row($sql,array($this->_pkval));
         }
 
         // Copy properties from Given object to me!
@@ -84,7 +84,7 @@ class Radix_SQL_Record implements ArrayAccess, Iterator
     function delete()
     {
         $sql = "DELETE FROM {$this->_table} WHERE {$this->_pkcol} = ?";
-        Radix_SQL::query($sql,array($this->_pkval));
+        radix_db_sql::query($sql,array($this->_pkval));
 
     }
     /**
@@ -95,10 +95,10 @@ class Radix_SQL_Record implements ArrayAccess, Iterator
         // Update or Insert
         $r = null;
         if (!empty($this->_data['id'])) {
-            $r = Radix_SQL::update($this->_table,$this->_data,"id={$this->_data['id']}");
+            $r = radix_db_sql::update($this->_table,$this->_data,"id={$this->_data['id']}");
         } else {
             unset($this->_data['id']);
-            $r = $this->_data['id'] = Radix_SQL::insert($this->_table,$this->_data);
+            $r = $this->_data['id'] = radix_db_sql::insert($this->_table,$this->_data);
         }
         return $r;
     }

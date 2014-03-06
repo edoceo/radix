@@ -41,8 +41,9 @@ class radix_image
 
         // Copy
         imagecopyresampled($dst_i,$src_i,0,0,0,0,$img_w,$img_h,$img_w,$img_h);
-        $ret = imagepng($dst_i,$dst);
         imagedestroy($src_i);
+
+        $ret = imagepng($dst_i,$dst);
         imagedestroy($dst_i);
 
         return $ret;

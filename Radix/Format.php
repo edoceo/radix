@@ -101,17 +101,6 @@ class Radix_Format
 
         while($total-- && $size > 1024) $size /= 1024;
         return sprintf($fmt, $size,$sizes[$total]);
-
-        // $ret = $x;
-        // foreach (array('KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB') as $k) {
-        //   if ($x > 1024) {
-        //     $x = $x / 1024;
-        //     $ret = intval($x) . ' ' . $k;
-        //   } else {
-        //     break;
-        //   }
-        // }
-        // return $ret;
     }
 
     /**
@@ -194,6 +183,25 @@ class Radix_Format
       }
       return $ret.$ext;
     */
+// function e164_phone($x)
+// {
+//     // Assume it's OK
+//     if (substr($x,0,1)=='+') {
+//         return $x;
+//     }
+//
+//     $x = preg_replace('/[^\d]+/',null,$x);
+//
+//     // US 7 Digit Needs Default Area Code
+//     if (strlen($x)==7) {
+//         $x = $_ENV['locale']['prefix_area'] . $x;
+//     }
+//     // US 10 Digit Needs Default Country Code
+//     if (strlen($x)==10) {
+//         $x = '+' . $_ENV['locale']['prefix_intl'] . $x;
+//     }
+//     return $x;
+// }
         return $num;
     }
 
