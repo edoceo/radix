@@ -40,14 +40,15 @@ class Radix_Session
         'hash_function'             => null,
         'hash_bits_per_character'   => null,
     );
+
     /**
+    	@param $opts
     */
     static function init($opts=null)
     {
         // Check for Existing Session
         $x = session_id();
         if (empty($x)) {
-
             if (!is_array($opts)) {
                 $opts = array();
             }
@@ -56,12 +57,12 @@ class Radix_Session
             foreach (self::$_opts as $k => $v) {
 
                 // Merge Passed Options
-                if (!empty($opts[$k])) {
+                if (isset($opts[$k])) {
                     self::$_opts[$k] = $opts[$k];
                 }
 
-                if (!empty(self::$_opts[$k])) {
-                    ini_set("session.$k", $v);
+                if (isset(self::$_opts[$k])) {
+                    ini_set("session.$k", self::$_opts[$k]);
                 }
             }
 

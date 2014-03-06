@@ -4,7 +4,7 @@
     @brief Radix PHP Development Toolkit
     @see http://radix.edoceo.com/
 
-    @copyright 2001-2012 Edoceo, Inc.
+    @copyright 2001-2014 Edoceo, Inc.
     @package Radix
 
     @mainpage Radix PHP Toolkit Core Library
@@ -47,7 +47,7 @@ class Radix
     // Other's can set more Public Stuff on this Object
     public static $view; // The View Object
 
-    public $body; // Body of the Request
+    public $body; // Body of the Response
 
     private function __construct() { /*  Only I may dance */ }
 
@@ -177,7 +177,7 @@ class Radix
         //     $path = dirname($path);
         // }
         if (self::$_a == 'index') {
-            $list[] = sprintf('%s/controller/%s/index.php',self::$root,self::$path);
+            $list[] = sprintf('%s/controller/%s/index.php',self::$root,trim(self::$path, '/'));
         }
 
         ob_start();
@@ -263,7 +263,7 @@ class Radix
         if (empty(self::$view)) {
             self::$view = new Radix();
         }
-        self::$view->body = ob_get_clean();
+        // self::$view->body = ob_get_clean();
         self::$_view_res = self::OK;
         // ob_end_flush();
 
@@ -326,46 +326,64 @@ class Radix
     /**
         Engage trap handler for error and exceptions
         Also the routine that is used to trap errors and exceptions
+        @param $ecode Error or Exception, true to engage, false to disable
+
+        @param $ecode as Error Handler the Error Code
+        @see http://php.net/manual/en/function.set-error-handler.php
+
+        @param $etext Text Passed in when trap is called as Handler
+        @param $efile File Passed in when trap is called as Handler
+        @param $eline Line Passed in when trap is called as Handler
+        @param $edata Args Passed in when trap is called as Handler
     */
-    static function trap()
+    static function trap($ecode,$etext=null,$efile=null,$eline=null,$edata=null)
     {
 
         // Engage myself as the error handler
-        if ( ($e_code === true) && ($e_text === null) ) {
-            //set_error_handler(array(self,'trap'));
-            //set_exception_handler(array(self,'trap'));
+        // if ( ($e_code === true) && ($e_text === null) ) {
+        if (true === $ecode) {
+            set_error_handler(array('radix','trap'));
+            set_exception_handler(array('radix','trap'));
             return(true);
         }
 
-        //if ( (is_numeric($e_code) && (is_string($e_text)) ) {
-        syslog(LOG_ERR,"I have had a fatal error");
-        file_put_contents('/tmp/custos.err',print_r(debug_backtrace(),true));
-        die(__LINE__);
-        //}
+        $body = null;
 
-        //set_error_handler('Radix::error_handler',  int $error_types = E_ALL | E_STRICT  ] )
-        //set_exception_handler('Radix::hook_exception');
+        // An Error
+        if (is_numeric($ecode)) {
+            // Ignore Errors Not Being Shown
+            $er = error_reporting();
+            if (($ecode & $er) != $er) return false;
 
-        ob_end_clean();
-        set_exception_handler(null);
+            $_ENV['title'] = 'Error';
+            $body = "Error: $ecode: $etext in $efile@$eline\n";
+        }
+
+        // Exception
+        if (is_object($ecode)) {
+            $_ENV['title'] = 'Exception';
+            $body = "Exception: $ecode\n";
+        }
 
         try {
             // @todo reset view to 'error'
             // @todo insert 'error' layout as option
             // @todo insert 'error' theme as option
-            // @todo push E to error View
-            // Radix::dump($e);
-            self::$view = new Radix( 'error' );
-            self::$view->path = 'error';
-            //self::view();
-            //self::send();
+
+            self::$view = new Radix();
+            self::$_view_res = self::OK;
+            self::$view->body = $body;
+            self::send();
+
         } catch (Exception $e) {
             die('Really fatal error here');
         }
+
         die(sprintf('%s#%d',__FILE__,__LINE__));
     }
 
     /**
+    	@full true|false*, true to return full URI base
         @return uri base of the application
         @note site's at the root are '/' otherwise '/path/'
     */
@@ -442,6 +460,9 @@ class Radix
         return $path;
     }
 
+    /**
+		@return True if AJAX requested
+    */
     public static function isAjax($ua=null)
     {
         $chk = strtolower($ua == null ? $_SERVER['HTTP_X_REQUESTED_WITH'] : $ua);
@@ -562,8 +583,8 @@ class Radix
     }
 
     /**
-        @param string $uri to redirect to
-        @param int $code HTTP code, default 302, or full HTTP status line
+        @param $uri to redirect to
+        @param $code HTTP code, default 302, or full HTTP status line
     */
     public static function redirect($uri=null,$code=302)
     {
@@ -724,6 +745,7 @@ class Radix
 
         // Loop
         foreach ($list as $file) {
+        	$r = self::NOT_FOUND;
             self::$_file_list[$file] = 'fail:404';
             if (is_file($file)) {
                 $r = $this->_include_file($file);
@@ -734,6 +756,8 @@ class Radix
                 if ($once) return($r);
             }
         }
+
+        return ($r);
     }
 
     /**
