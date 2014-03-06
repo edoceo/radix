@@ -43,9 +43,22 @@ class radix_feed implements arrayaccess, iterator
         switch ($type) {
         case self::MIME_ATOM:
             $this->xml = simplexml_load_string($this->_body);
-            $this->_meta['title'] = strval($this->_xml->title);
-            $this->_meta['time_updated'] = strtotime($this->_xml->updated);
-            $this->_meta['author'] = strval($this->_xml->author->name);
+            $this->_meta['name'] = strval($this->xml->title);
+            $this->_meta['note'] = strval($this->xml->subtitle);
+            $this->_meta['time_updated'] = strtotime($this->xml->updated);
+            $this->_meta['author'] = strval($this->xml->author->name);
+            // radix::dump($this->xml);
+            // exit;
+            // foreach ($this->xml->category as $x) {
+            // 	// Category[] = strval($x['term']);
+            // }
+            foreach ($this->xml->entry as $x) {
+                $this->_list[] = array(
+					'name' => strval($x->title),
+					'note' => null,
+					'body' => strval($x->content),
+				);
+			}
             break;
         case self::MIME_RSS:
             $this->xml = simplexml_load_string($this->_body);
@@ -97,8 +110,13 @@ class radix_feed implements arrayaccess, iterator
     /**
         Iterator Access Functions
     */
-    function current() { return $this->_feed[$this->_idx]; }
-    function next() { $r = $this->_feed[$this->_idx]; $this->_idx++; }
+    function current() { return $this->_list[$this->_idx]; }
+    function next()
+    {
+		$r = $this->_list[$this->_idx];
+		$this->_idx++;
+		return $r;
+	}
     function key() { return $this->_idx; }
     function valid() { return $this->_idx < $this->_max; }
     function rewind() { return $this->_idx = 0; }
