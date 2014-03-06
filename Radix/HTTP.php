@@ -206,10 +206,10 @@ class Radix_HTTP
         @param $ch Curl Handle
         @param $async do an async HTTP?
     */
-    private static function _curl_exec($ch,$async=false)
-    {
-        if (self::$_opts['async']) {
-            self::$_mc_exec = 0;
+	private static function _curl_exec($ch,$async=false)
+	{
+		if (self::$_opts['async']) {
+			self::$_mc_exec = 0;
             if (empty(self::$_mc)) {
                 self::$_mc = curl_multi_init();
             }
@@ -217,24 +217,29 @@ class Radix_HTTP
             curl_multi_exec(self::$_mc,self::$_mc_exec);
             self::$_mc_list[] = $ch;
             return self::$_mc_exec;
-        } else {
-            $r = array(
-                'body' => curl_exec($ch),
-                'fail' => sprintf('%d:%s',curl_errno($ch),curl_error($ch)),
-                'info' => curl_getinfo($ch),
-                'head' => self::$_ch_head,
-            );
-			switch ($r['head']['content-encoding']) {
-			case 'deflate':
-				$r['body'] = gzinflate($r['body']);
-				break;
-			case 'gzip':
-				$r['body'] = gzinflate(substr($r['body'],10));
-				break;
+		} else {
+            $r = array();
+			$r['body'] = curl_exec($ch);
+			$r['head'] = self::$_ch_head;
+			if (empty($r['head']['content-encoding'])) $r['head']['content-encoding'] = null;
+			$r['info'] = curl_getinfo($ch);
+            $r['fail'] = sprintf('%d:%s',curl_errno($ch),curl_error($ch));
+
+            if (!empty($r['head']['content-encoding'])) {
+				switch ($r['head']['content-encoding']) {
+				case 'deflate':
+					$r['body'] = gzinflate($r['body']);
+					break;
+				case 'gzip':
+					$r['body'] = gzinflate(substr($r['body'],10));
+					// if (preg_match('/gzip/i',$res['head']['content-encoding'])) {
+					// $res['body'] = gzdecode($res['body']);
+					break;
+				}
 			}
 			return $r;
-        }
-    }
+		}
+	}
 
     /**
     */
