@@ -112,6 +112,20 @@ class radix_html_form
 	/**
 		@return HTML
 	*/
+	static function number($n,$v, $opt = null)
+	{
+		$arg = array(
+			'type'  => 'number',
+			'id'    => $n,
+			'name'  => $n,
+			'value' => $v,
+		);
+		return self::_element($arg, $opt);
+	}
+
+	/**
+		@return HTML
+	*/
 	static function password($n,$v, $opt = null)
 	{
 		$arg = array(

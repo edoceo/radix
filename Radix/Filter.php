@@ -2,7 +2,6 @@
 /**
     @file
     @brief Input Data Filter
-    $Id$
 
     @package Radix
 
@@ -112,6 +111,7 @@ class Radix_Filter
     }
 
     /**
+        @see http://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
         @return normalized URI, false on failure
     */
     static function uri($uri,$def=false)
