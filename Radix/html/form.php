@@ -111,6 +111,7 @@ class radix_html_form
 
 	/**
 		@return HTML
+		@see https://blog.isotoma.com/2012/03/html5-input-typenumber-and-decimalsfloats-in-chrome/
 	*/
 	static function number($n,$v, $opt = null)
 	{
@@ -118,6 +119,7 @@ class radix_html_form
 			'type'  => 'number',
 			'id'    => $n,
 			'name'  => $n,
+			'step'  => 'any',
 			'value' => $v,
 		);
 		return self::_element($arg, $opt);
