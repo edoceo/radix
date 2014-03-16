@@ -3,7 +3,7 @@
     @file
     @brief General Conversion Routeines
 
-    Converts Decimal number to different alphabetic numeric base, like 2, 8, 16, 32, 62 or 73
+    Converts Decimal number to different alphabetic numeric base, like 2, 8, 16, 32, 58, 62 or 73
     Converts Measurements
     Converts time sec2dhms()
 
@@ -21,11 +21,14 @@
 */
 
 class Radix_Convert
-{    
+{
     //! List of Base Characters to convert to, scramble as necessary
     public static $base_list = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$\'()*+,-._';
     // Have to manually move to $base_list if you want it, here for reference
     public static $safe_base = '0123456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
+    
+    // @see https://en.bitcoin.it/wiki/Base58Check_encoding
+    const BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
     //! helper for base62 conversion
     public static function toBase62($i)
@@ -45,23 +48,13 @@ class Radix_Convert
         if ( (intval($base)) > strlen(self::$base_list) ) {
             return $ant;
         }
-//        int iterator = number.length();
-//        int returnValue = 0;
-//        int multiplier = 1;
-//
-//        while( iterator > 0 ) {
-//            $c = number.substring( iterator - 1, iterator );
-//            returnValue = returnValue + ( baseDigits.indexOf( $c ) * multiplier );
-//            multiplier = multiplier * base;
-//            --iterator;
-//        }
-//        return returnValue;
+
         $i = strlen($ant);
         $r = 0;
         $m = 1;
         while ($i > 0) {
             // Current Value to Read
-            $c = substr($ant,$i-1,1); //   number.substring( iterator - 1, iterator );
+            $c = substr($ant,$i-1,1);
             // echo "+Cur: $c\n";
             // Map to Base
             $b = strpos(self::$base_list,$c);
@@ -70,8 +63,10 @@ class Radix_Convert
             $m = $m * $base;
             --$i;
         }
+
         return $r;
     }
+
     /**
         Convert from Decimal to BaseX Anteger numbers 
         @param $int the Integer value
