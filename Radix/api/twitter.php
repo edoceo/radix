@@ -1,14 +1,14 @@
 <?php
 /**
-
-    // https://dev.twitter.com/discussions/11494
-
     @file
     @brief Tools for interacting with Twitter
 
     @todo would be cool to get listed on https://dev.twitter.com/docs/twitter-libraries
     
     @package radix
+
+
+    // https://dev.twitter.com/discussions/11494
 
     @see https://dev.twitter.com/docs/twitter-libraries
     @see https://github.com/jdp/twitterlibphp/blob/master/twitter.lib.php
@@ -60,16 +60,6 @@ class radix_api_twitter
     }
 
     /**
-        @param $t Token
-        @param $s Secret
-    */
-    public function setToken($t,$s)
-    {
-        $this->_oauth_token = $t;
-        $this->_oauth_token_secret = $s;
-    }
-
-    /**
         @param $a the token passed back from the oAuth Provider, typically $_GET['oauth_token']
     */
     public function getAccessToken($a=null)
@@ -81,7 +71,19 @@ class radix_api_twitter
         if (empty($a['oauth_verifier'])) $a['oauth_verifier'] = $_GET['oauth_verifier'];
         $r = $this->_curl('post',self::TOKEN_ACCESS_URI,$a);
         parse_str($r['body'],$t);
+        // $this->setAccessToken($a['oauth_token'], $a['oauth_verifier']);
         return $t;
+    }
+
+
+    /**
+        @param $t Token
+        @param $s Secret
+    */
+    public function setAccessToken($t,$s)
+    {
+        $this->_oauth_token = $t;
+        $this->_oauth_token_secret = $s;
     }
 
     /**
@@ -231,7 +233,7 @@ class radix_api_twitter
         // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
         curl_setopt($ch, CURLOPT_USERAGENT, self::USER_AGENT);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_VERBOSE, true);
+        // curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
         if ($verb == 'post') {
             curl_setopt($ch, CURLOPT_POST, true);
