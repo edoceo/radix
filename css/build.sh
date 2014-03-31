@@ -4,6 +4,7 @@ cat \
   base.less \
   html.less \
   grid.less \
+  code.less \
   list.css \
   form.css \
   page.css \
@@ -25,7 +26,8 @@ cat \
 #   | sed -e 's/^[ \t]*//g; s/[ \t]*$//g; s/\([:{;,]\) /\1/g; s/ {/{/g; s/\/\*.*\*\///g; /^$/d' \
 #   | sed -e :a -e '$!N; s/\n\(.\)/\1/; ta' >target.css
 
-lessc \
-	--compress \
-	--strict-units=on \
-	radix.less > radix.css
+lessc radix.less > radix.css
+# \
+# 	--compress \
+# 	--strict-units=on \
+# 	radix.less > radix.css

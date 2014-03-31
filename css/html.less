@@ -16,7 +16,6 @@ html {
     font-size: 100%; /* 1 */
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
-    text-rendering: optimizelegibility;
 }
 
 body
@@ -199,7 +198,7 @@ mark {
 
 p,
 pre {
-    margin: .5em 0;
+    margin: .5em 0 0 0;
 }
 
 /*
@@ -219,35 +218,30 @@ samp {
  * Improves readability of pre-formatted text in all browsers.
  */
 
-pre {
-    background-color: #f5f5f5;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+code, pre
+{
+    padding: 2px;
     border-radius: 4px;
+}
+
+pre {
+    border: 1px solid #ccc;
     padding: 2px;
     white-space: pre;
     word-break: normal;
     word-wrap: normal;
 }
 
-code, pre
-{
-    padding: 2px;
-    color: #333333;
-    border-radius: 3px;
-}
 
 code {
-  padding: 2px 4px;
-  color: #d14;
-  background-color: #f7f7f9;
-  border: 1px solid #e1e1e8;
+	padding: 2px 4px;
 }
+
 pre code {
-  padding: 0;
-  color: inherit;
-  background-color: transparent;
-  border: 0;
+	padding: 0;
+	color: inherit;
+	background-color: transparent;
+	border: 0;
 }
 
 /*

@@ -12,7 +12,7 @@
         content: ".";
         display: block;
         height: 0;
-        clear: both;
+        clear: left;
         visibility: hidden;
     }
 
@@ -23,6 +23,70 @@
         margin: 0 auto;
 
         div {
+            float:left;
+        	margin:0;
+        	padding:0;
+        }
+
+        /* 12 Column Grid System */
+        div.c1 { width: 8.33333%; }
+        div.c2 { width: 16.66667%; }
+        div.c3 { width: 25%; }
+        div.c4 { width: 33.33333%; }
+        div.c5 { width: 41.66667%; }
+        div.c6 { width: 50%; }
+        div.c7 { width: 58.33333%; }
+        div.c8 { width: 66.66667%; }
+        div.c9 { width: 75%; }
+        div.c10 { width: 83.33333%; }
+        div.c11 { width: 91.66667%; }
+        div.c12 { width: 100%; }
+
+        /* 12 Column Grid Offset */
+		div.o1 { margin-left:8.33333%; }
+		div.o2 { margin-left: 16.66667%; }
+		div.o3 { margin-left: 25%; }
+		div.o4 { margin-left: 33.33333%; }
+		div.o5 { margin-left: 41.66667%; }
+		div.o6 { margin-left: 50%; }
+		div.o7 { margin-left: 58.33333%; }
+		div.o8 { margin-left: 66.66667%; }
+		div.o9 { margin-left: 75%; }
+		div.o10 { margin-left: 83.33333%; }
+		div.o11 { margin-left: 91.66667%; }
+
+        /* 20% - 80% Columns */
+        div.c20 { width: 20%; }
+        div.c25 { width: 25%; }
+        div.c30 { width: 30%; }
+        div.c40 { width: 40%; }
+        div.c50 { width: 50%; }
+        div.c60 { width: 60%; }
+        div.c70 { width: 70%; }
+        div.c75 { width: 75%; }
+        div.c80 { width: 80%; }
+
+        div.o20 { margin-left: 20%; }
+        div.o25 { margin-left: 25%; }
+        div.o30 { margin-left: 30%; }
+        div.o40 { margin-left: 40%; }
+        div.o50 { margin-left: 50%; }
+        div.o60 { margin-left: 60%; }
+        div.o70 { margin-left: 70%; }
+        div.o75 { margin-left: 75%; }
+        div.o80 { margin-left: 80%; }
+
+    }
+    
+    .r {
+
+        clear:left;
+        max-width: 100%;
+        margin: 0 auto;
+
+        div {
+        	margin:0;
+        	padding:0;
             float:left;
         }
 
@@ -74,4 +138,5 @@
         div.o80 { margin-left: 80%; }
 
     }
+
 }
