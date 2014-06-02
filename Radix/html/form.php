@@ -214,12 +214,31 @@ class radix_html_form
 	*/
 	static function textarea($n,$v, $opt = null)
 	{
-		$n = self::_element_nid($n);
+		// $n = self::_element_nid($n);
+		$arg = array(
+			'id' => self::_element_nid($n),
+			'name'=> self::_element_nid($n),
+		);
+		$opt = array_merge($arg, $opt);
 
 		$r = '<textarea ' . self::_element_arg($opt) . '>';
 		$r.= htmlspecialchars($v, ENT_QUOTES, 'utf-8', false);
 		$r.= '</textarea>';
 
 		return $r;
+	}
+	
+	/**
+		@param $chk false|string to test
+		@return HTML String on creation, true on success
+	*/
+	static function csrf($chk=false)
+	{
+		if (empty($_SESSION['_radix']['_csrf'])) {
+			$_SESSION['_radix']['_csrf'] = array();
+		}
+		// if (count($_SESSION['_radix']['_csrf'])) 
+		
+		
 	}
 }
