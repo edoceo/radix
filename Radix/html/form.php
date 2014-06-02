@@ -152,7 +152,7 @@ class radix_html_form
 		);
 		return self::_element($arg, $opt);
 	}
-	
+
 	/**
 		@param $nid Name and ID
 		@param $def Default Value
@@ -177,7 +177,7 @@ class radix_html_form
 
 		return $ret;
 	}
-	
+
 	/**
 		@return <input type="submit"
 	*/
@@ -214,7 +214,8 @@ class radix_html_form
 	*/
 	static function textarea($n,$v, $opt = null)
 	{
-		// $n = self::_element_nid($n);
+		if (empty($opt)) $opt = array();
+
 		$arg = array(
 			'id' => self::_element_nid($n),
 			'name'=> self::_element_nid($n),
@@ -227,7 +228,7 @@ class radix_html_form
 
 		return $r;
 	}
-	
+
 	/**
 		@param $chk false|string to test
 		@return HTML String on creation, true on success
@@ -237,8 +238,6 @@ class radix_html_form
 		if (empty($_SESSION['_radix']['_csrf'])) {
 			$_SESSION['_radix']['_csrf'] = array();
 		}
-		// if (count($_SESSION['_radix']['_csrf'])) 
-		
-		
+		// @todo Somethign
 	}
 }
