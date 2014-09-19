@@ -1,4 +1,6 @@
-<!doctype html>
+<?php
+header('Content-Type: text/html; charset=utf-8');
+?><!doctype html>
 <html lang="en-us">
 <head>
 <title>Radix CSS Example Overview</title>
@@ -8,6 +10,7 @@ $file_list = array(
 	'base.less',
 	'html.less',
 	'grid.less',
+	'code.less',
 	'list.css',
 	'form.css',
 	'page.css',
@@ -16,31 +19,20 @@ $file_list = array(
 	'menu.css',
 	'debug.css',
 );
-
 switch ($_GET['css']) {
 case 'less':
 	foreach ($file_list as $f) {
 		echo '<link href="' . $f . '" media="all" rel="stylesheet/less" type="text/css">';
 	}
+	echo '<script type="text/javascript" src="less.js"></script>';
 	break;
 default:
-	echo '<link href="radix.css" rel="stylesheet/less" type="text/css">';
+	// <!-- <link href="responsive.css" media="all" rel="stylesheet" type="text/css"> -->
+	echo '<link href="radix.css" rel="stylesheet" type="text/css">';
 	// echo '<link href="radix.less" rel="stylesheet/less" type="text/css">';
 }
 ?>
-<!-- <link href="responsive.css" media="all" rel="stylesheet" type="text/css"> -->
-<script type="text/javascript" src="less.js"></script>
-<style>
-body {
-	padding:16px;
-}
-h1 {
-	border-left:4px solid #f00;
-}
-h2 {
-	border-left:2px solid #0f0;
-}
-</style>
+
 </head>
 <body>
 <header>
@@ -49,9 +41,10 @@ h2 {
 Radix Style is a baseline CSS framework providing a style normalisation, a grid and flair for key elements.
 Use use <a href="http://lesscss.org">less</a> to make it go.
 </p>
+<p>View in <a href="?css=less">Less Mode</a></p>
 </header>
 <nav>
-<ul>
+<ul class="h">
 <li>Grid</li>
 <li>Text</li>
 <li><a href="#list">Lists</a></li>
@@ -81,53 +74,54 @@ A <code>div</code> with a class like <code>c#</code> will define the columns, at
 
 <div class="grid">
 
-<div class="hbox">
+<div class="r">
     <div class="c1">One <em>c1</em></div>
     <div class="c1 o1">One, Offset One <em>c1 o1</em></div>
     <div class="c3">Three <em>c3</em></div>
 </div>
 
-<div class="hbox">
+<div class="r">
     <div class="c5 o1">Five Columns, Offset One</div>
 </div>
 
-<div class="hbox">
+<div class="r">
     <div class="c10 o2">10 Columns, Offset Two</div>
 </div>
 
 </div>
 
-<h3>This Grid is With 600</h3>
+<h3>This Grid is Forced to 600px</h3>
 <div class="grid" style="width:600px;">
-
-<div class="hbox">
+<div class="r">
+    <div class="c12">12 Columns</div>
+</div>
+<div class="r">
     <div class="c1">One <em>c1</em></div>
     <div class="c1 o1">One, Offset One <em>c1 o1</em></div>
     <div class="c3">Three <em>c3</em></div>
 </div>
-
-<div class="hbox">
+<div class="r">
     <div class="c5 o1">Five Columns, Offset One</div>
 </div>
-
-<div class="hbox">
-    <div class="c10 o2">10 Columns, Offset Two</div>
+<div class="r">
+    <div class="c4">4 Col</div>
+    <div class="c2 o2">2 Col, 2 Off</div>
+    <div class="c4">4 Col</div>
 </div>
 
 </div>
 
 <h2>And Percentage Grids Too</h2>
 <div class="grid">
-<div class="hbox"><div class="c20">20</div><div class="c60">60</div><div class="c20">20</div></div> 
-<div class="hbox"><div class="c20">20</div><div class="c50">50</div><div class="c30">30</div></div> 
-<div class="hbox"><div class="c20">20</div><div class="c30">30</div><div class="c20">20</div><div class="c30">30</div></div> 
+<div class="r"><div class="c20">20</div><div class="c60">60</div><div class="c20">20</div></div>
+<div class="r"><div class="c20">20</div><div class="c50">50</div><div class="c30">30</div></div>
+<div class="r"><div class="c20">20</div><div class="c30">30</div><div class="c20">20</div><div class="c30">30</div></div>
 </div>
 
 <h2 id="text">Text and Body Elements</h2>
 <p>
 Radix provide styling for Headings, Inline-Elements.
 </p>
-
 
 <h2>Structure</h2>
 <p>article, aside, nav, section</p>
@@ -159,7 +153,7 @@ Radix provide styling for Headings, Inline-Elements.
 <em>&lt;em&gt;</em>,
 <i>&lt;i&gt;</i>,
 <ins>&lt;ins&gt;</ins>,
-<kbd>&lt;kbd&gt;</kbd>,
+<kbd>&lt;kbd&gt;</kbd>, 
 <small>&lt;small&gt;</small>,
 <strong>&lt;strong&gt;</strong>,
 <sub>&lt;sub&gt;</sub>,
@@ -396,7 +390,22 @@ Simply adding a <em>class</em> of <em>h</em> to them makes them horizontal.
 <div class="pbar pill">
 	<div class="fill" style="width:30%;"></div>
 </div>
-       
+
+<!-- Code and Terminal and Special Text -->
+<h2>Code and Terminal</h2>
+<p>We've included a bunch of styles for Code and Terminal and other text things.</p>
+<!-- Doesn't work :( @see http://stackoverflow.com/questions/667200/specifying-tab-width -->
+<pre class="term">
+	Some Tab Indented Text
+		Some Tab Indented Text
+			Some Tab Indented Text
+</pre>
+
+<p>And The <code>&gt;code&gt;</code> element has some special style too:</p>
+<p>For <code class="exec">Executables</code>, <code class="file">Files</code> and  <code class="path">Paths</code></p>
+
+
+
 <footer>
 <p>Footer Paragraphs are Easy</p>
 <addres>The Address gets a special look here</address>
