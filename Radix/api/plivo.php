@@ -130,12 +130,12 @@ class radix_api_plivo
         @param $page
         @param $size = 20
     */
-    function listCalls($page=0,$size=20)
+    function listCalls($offset, $size)
     {
-        return $this->api('Call',array(
-            'offset' => 0,
-            'limit' => $size,
-        ));
+        return $this->api('Call', array(
+			'offset' => $offset,
+			'limit' => $size,
+		));
     }
 
     /**
