@@ -340,9 +340,6 @@ class Radix
     */
     static function trap($ecode,$etext=null,$efile=null,$eline=null,$edata=null)
     {
-		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error', true, 500);
-		$_ENV['title'] = 'Server Error';
-
         // Engage myself as the error handler?
         if ((true === $ecode) && (null === $etext)) {
             set_error_handler(array('radix', 'trap'));
@@ -384,6 +381,9 @@ class Radix
         if (strlen($buf)) {
 			$body.= '<div><h3>Output Buffer</h3><pre>' . htmlspecialchars($buf, ENT_QUOTES, 'utf-8', false) . '</pre></div>';
         }
+
+		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error', true, 500);
+		$_ENV['title'] = 'Server Error';
 
         try {
             // @todo reset view to 'error'
