@@ -77,8 +77,7 @@ class Radix_HTML
             // Analyse Specific Node Name
             switch ($cn->nodeName) {
             case 'a': // used to create a hyperlink
-                // $node_text.= $cn->getAttribute('href');
-                // $cn->removeChild( $cn->firstChild );
+                $node_post.= ' <' . $cn->getAttribute('href') . '> ';
                 break;
             // case 'abbr':
             case 'acronym':

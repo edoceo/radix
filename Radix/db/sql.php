@@ -12,9 +12,17 @@
 */
 class radix_db_sql
 {
+	private $_c; // Connection Object
+
     private static $_pdo;
+    private static $_kind;
     private static $_sql_stat = array();
     private static $_sql_tick = 0;
+
+    function __construct($dst=null, $user=null, $pass=null, $opts=null)
+    {
+        $this->_c = new PDO($dsn, $user, $pass, $opts);
+    }
 
     /**
         Initialize a Database Connection, same args as PDO::__construct()
@@ -26,7 +34,9 @@ class radix_db_sql
     */
     public static function init($dsn,$user=null,$pass=null,$opts=null)
     {
+    	// self::$_dsn = $dsh;
         self::$_pdo = new PDO($dsn,$user,$pass,$opts);
+        self::$_kind = strtok($dsn, ':');
     }
 
     /**
@@ -67,7 +77,9 @@ class radix_db_sql
     public static function fetch($sql,$arg=null)
     {
         $res = self::_sql_query($sql,$arg);
-        $res->setFetchMode(PDO::FETCH_ASSOC);
+        if ($res) {
+			$res->setFetchMode(PDO::FETCH_ASSOC);
+		}
         return $res;
     }
 
@@ -91,7 +103,7 @@ class radix_db_sql
     /**
 		Canonical Name for fetch_all
     */
-    public static function fetchAll($sql, $arg=null)
+    public function fetchAll($sql, $arg=null)
     {
     	return self::fetch_all($sql, $arg);
     }
@@ -126,7 +138,7 @@ class radix_db_sql
 	    return $ret;
     }
 
-    public static function fetchMix($sql,$arg=null)
+    public function fetchMix($sql,$arg=null)
     {
     	return self::fetch_mix($sql, $arg);
     }
@@ -158,10 +170,11 @@ class radix_db_sql
         @param $arg bindable array
         @return one row as associative arary
     */
-    public static function fetchRow($sql,$arg=null)
+    public function fetchRow($sql,$arg=null)
     {
     	return self::fetch_row($sql, $arg);
     }
+
     public static function fetch_row($sql,$arg=null)
     {
         $res = self::_sql_query($sql,$arg);
@@ -218,12 +231,33 @@ class radix_db_sql
             $col_data[] = $v;
             $col_hold[] = '?';
         }
-        // @todo add 'returning id' only if it's PGSQL?
-        $sql = sprintf('INSERT INTO %s (%s) VALUES (%s)',$t,implode(',',$col_name),implode(',',$col_hold));
+
+        switch (self::$_kind) {
+        case 'mysql':
+        	$sql = sprintf('INSERT INTO %s (%s) VALUES (%s)',$t,implode(',',$col_name),implode(',',$col_hold));
+        	break;
+        case 'pgsql':
+			$sql = sprintf('INSERT INTO %s (%s) VALUES (%s) RETURNING id',$t,implode(',',$col_name),implode(',',$col_hold));
+			break;
+		}
+
         $res = self::_sql_query($sql,$col_data);
-        // For MS-SQL
-        // $res = self::_sql_query('SELECT @@IDENTITY',null);
-        return $res->fetchColumn(0);
+        if (0 == $res->rowCount()) {
+        	// radix::dump($sql);
+        	// radix::dump($col_data);
+        	throw new Exception(self::lastError());
+        }
+        $drv = self::$_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        switch ($drv) {
+        case 'mssql':
+        	return self::_sql_query('SELECT @@IDENTITY',null);
+        	break;
+        // case 'pgsql':
+        // 	$r = self::$_pdo->lastInsertId("{$t}_id_seq");
+        // 	return $r;
+        default:
+        	throw new Exception("Unhandled Driver: $drv");
+        }
     }
 
     /**

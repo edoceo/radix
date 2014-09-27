@@ -43,6 +43,7 @@ class Radix
     public static $host; // Hostname
     public static $base; // Web-Base of Application ( "/" or "/something" )
     public static $path; // Path of Request in Application "/" is main page
+    public static $osua; // Operating System and User Agent - Well Known Only
 
     // Other's can set more Public Stuff on this Object
     public static $view; // The View Object
@@ -90,6 +91,7 @@ class Radix
         if (empty(self::$view)) {
             self::$view = new Radix();
         }
+
     }
 
     /**
@@ -338,12 +340,13 @@ class Radix
     */
     static function trap($ecode,$etext=null,$efile=null,$eline=null,$edata=null)
     {
+		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error', true, 500);
+		$_ENV['title'] = 'Server Error';
 
-        // Engage myself as the error handler
-        // if ( ($e_code === true) && ($e_text === null) ) {
-        if (true === $ecode) {
-            set_error_handler(array('radix','trap'));
-            set_exception_handler(array('radix','trap'));
+        // Engage myself as the error handler?
+        if ((true === $ecode) && (null === $etext)) {
+            set_error_handler(array('radix', 'trap'));
+            set_exception_handler(array('radix', 'trap'));
             return(true);
         }
 
@@ -355,14 +358,31 @@ class Radix
             $er = error_reporting();
             if (($ecode & $er) != $er) return false;
 
-            $_ENV['title'] = 'Error';
-            $body = "Error: $ecode: $etext in $efile@$eline\n";
+            $body = "<h1>Error: $ecode: $etext in $efile@$eline</h1>";
+
+        } elseif (is_object($ecode)) { // Exception
+
+			$body = '<h1>Exception: ' . $ecode->getMessage() . '</h1>';
+			$body.= '<h2>' . $ecode->getFile() . ' @' . $ecode->getLine() . '</h2>';
+			if ($x = $ecode->getPrevious()) {
+				$body.= '<h2>From: ' . $x->getMessage() . '</h2>';
+				$body.= '<h3>' . $x->getFile() . ' @' . $x->getLine() . '</h2>';
+			}
+
+			$body.= '<pre>';
+			$body.= $ecode->getTraceAsString();
+			$body.= '</pre>';
+
         }
 
-        // Exception
-        if (is_object($ecode)) {
-            $_ENV['title'] = 'Exception';
-            $body = "Exception: $ecode\n";
+        // Trap Existing Buffer
+        $buf = '';
+        while (ob_get_level() > 0) {
+			$buf.= ob_get_clean();
+        }
+
+        if (strlen($buf)) {
+			$body.= '<div><h3>Output Buffer</h3><pre>' . htmlspecialchars($buf, ENT_QUOTES, 'utf-8', false) . '</pre></div>';
         }
 
         try {
@@ -376,10 +396,10 @@ class Radix
             self::send();
 
         } catch (Exception $e) {
-            die('Really fatal error here');
+            die('Fatal Exception: ' . $e->getMessage());
         }
 
-        die(sprintf('%s#%d',__FILE__,__LINE__));
+        die(500);
     }
 
     /**

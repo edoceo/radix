@@ -1,26 +1,41 @@
 {
-    "name": "edoceo/radix",
-    "type": "library",
-    "description": "Simple MVC and Toolkit for Rapid Application Prototyping",
-    "keywords": ["mvc","toolkit"],
-    "homepage": "http://radix.edoceo.com/",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "David Busby",
-            "email": "code@edoceo.com",
-            "homepage": "http://edoceo.com/",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": ">=5.4.0",
-        "ext-apc": "*"
-    },
-    "autoload": {
-        "psr-0": {
-            "radix\\": "",
-            "edoceo\\radix\\": ""
-        }
-    }
+	"name": "edoceo/radix",
+	"type": "library",
+	"description": "Simple MVC and Toolkit for Rapid Application Prototyping",
+	"keywords": [
+		"mvc",
+		"toolkit"
+	],
+	"homepage": "http://radix.edoceo.com/",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "David Busby",
+			"email": "code@edoceo.com",
+			"homepage": "http://edoceo.com/",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0",
+		"ext-apc": "*",
+		"ext-curl": "*",
+		"ext-date": "*",
+		"ext-imap": "*",
+		"ext-json": "*",
+		"ext-mcrypt": "*",
+		"ext-PDO": "*",
+		"ext-session": "*",
+		"ext-sockets": "*",
+		"ext-xdebug": "*",
+		"google/apiclient": "1.0.*@beta",
+		"stripe/stripe-php": "v1.15.0"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "4.2.5",
+		"phpunit/phpunit-selenium": "1.3.3"
+	},
+	"support": {
+		"issues": "https://github.com/edoceo/radix/issues"
+	}
 }
