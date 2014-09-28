@@ -252,7 +252,8 @@ class radix_db_sql
         case 'mssql':
         	return self::_sql_query('SELECT @@IDENTITY',null);
         	break;
-        // case 'pgsql':
+        case 'pgsql':
+			return $res->fetchColumn(0);
         // 	$r = self::$_pdo->lastInsertId("{$t}_id_seq");
         // 	return $r;
         default:
