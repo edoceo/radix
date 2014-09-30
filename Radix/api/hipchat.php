@@ -11,16 +11,26 @@ class radix_api_hipchat
 	protected $_base = 'https://api.hipchat.com/v2';
 	public $_auth;
 
-	function __construct($u,$p=null)
+	function __construct($u, $p=null)
 	{
 		$this->_auth = $u;
 	}
 
-	function roomList()
+	function getRooms()
 	{
 		$uri = $this->_base . '/room';
 		return $this->_api($uri);
 	}
+
+	/**
+		@return Array of WebHook Objects
+	*/
+	function getWebhooks($r)
+	{
+		return $this->_api($this->_base . '/room/' . rawurlencode($r) . '/webhook');
+		
+	}
+	
 
 	function message($room, $msg)
 	{
@@ -42,22 +52,31 @@ class radix_api_hipchat
 	private function _api($uri, $req=null)
 	{
 		$ch = $this->_curl_init($uri);
+
+		$head = array(
+			'Authorization: Bearer ' . $this->_auth,
+		);
+
 		if (!empty($req)) {
 			if (is_array($req)) {
 				$req = json_encode($req);
 			}
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-				'Authorization: Bearer ' . $this->_auth,
-				'Content-Type: application/json',
-				'Content-Length: ' . strlen($req)
-			));
+
+			$head[] = 'Content-Type: application/json';
+			$head[] = 'Content-Length: ' . strlen($req);
+
 		}
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
 
 		return $this->_curl_exec($ch);
 	}
 
+	/**
+		Curl Init
+	*/
     private static function _curl_init($uri)
     {
         $ch = curl_init($uri);
@@ -80,7 +99,7 @@ class radix_api_hipchat
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($ch, CURLOPT_MAXREDIRS, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         // curl_setopt(self::$_ch, CURLOPT_SSLVERSION, 3); // 2, 3 or GnuTLS
         curl_setopt($ch, CURLOPT_TIMEOUT, 0);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Edoceo Radix HipChat Interface');
