@@ -427,6 +427,7 @@ class Radix
                     $base = 'http://' . $host . ':' . $_SERVER['SERVER_PORT'];
                 }
             }
+			$base = rtrim($base, '.');
         }
         // Apache:
         // [SCRIPT_FILENAME] => /opt/edoceo/app/imperium.git/webroot/index.php
