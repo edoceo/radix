@@ -434,7 +434,9 @@ class Radix
         // [SCRIPT_NAME] => /imperium.git/index.php
 
         // Dirname of the Path of the SCRIPT_NAME which is the handler
-        $base.= dirname(parse_url($_SERVER['SCRIPT_NAME'],PHP_URL_PATH));
+        $path = dirname(parse_url($_SERVER['SCRIPT_NAME'],PHP_URL_PATH));
+        $path = trim($path, '.');
+        $base.= $path;
         return rtrim($base,'/');;
     }
 
