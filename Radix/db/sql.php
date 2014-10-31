@@ -239,13 +239,16 @@ class radix_db_sql
         case 'pgsql':
 			$sql = sprintf('INSERT INTO %s (%s) VALUES (%s) RETURNING id',$t,implode(',',$col_name),implode(',',$col_hold));
 			break;
+		case 'sqlite':
+			$sql = sprintf('INSERT INTO %s (%s) VALUES (%s); SELECT last_insert_rowid()',$t,implode(',',$col_name),implode(',',$col_hold));
+			break;
 		}
 
         $res = self::_sql_query($sql,$col_data);
         if (0 == $res->rowCount()) {
         	// radix::dump($sql);
         	// radix::dump($col_data);
-        	throw new Exception(self::lastError());
+        	throw new Exception('RDS#251: ' . self::lastError());
         }
         $drv = self::$_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
         switch ($drv) {
@@ -254,10 +257,12 @@ class radix_db_sql
         	break;
         case 'pgsql':
 			return $res->fetchColumn(0);
+        case 'sqlite':
+			return $res->fetchColumn(0);
         // 	$r = self::$_pdo->lastInsertId("{$t}_id_seq");
         // 	return $r;
         default:
-        	throw new Exception("Unhandled Driver: $drv");
+        	throw new Exception("RDS#265: Unhandled Driver: $drv");
         }
     }
 
