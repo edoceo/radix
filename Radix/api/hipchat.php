@@ -16,6 +16,18 @@ class radix_api_hipchat
 		$this->_auth = $u;
 	}
 
+	/**
+		@param $r Room Name or ID
+		@param $h Hook ID
+	*/
+	function delWebhook($r, $h)
+	{
+		$uri = $this->_base . '/room/' . rawurlencode($r) . '/webhook/' . rawurlencode($h);
+		$ch = $this->_curl_init($uri);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+		return $this->_curl_exec($ch);
+	}
+
 	function getRooms()
 	{
 		$uri = $this->_base . '/room';
@@ -48,14 +60,19 @@ class radix_api_hipchat
 
 		$this->_api($uri, $req);
 	}
+	
+	function setWebhook($r, $h)
+	{
+		$uri = $this->_base . '/room/' . rawurlencode($r) . '/webhook';
+		$arg = $h;
+		return $this->_api($uri, $arg);
+	}
 
 	private function _api($uri, $req=null)
 	{
 		$ch = $this->_curl_init($uri);
 
-		$head = array(
-			'Authorization: Bearer ' . $this->_auth,
-		);
+		$head = array();
 
 		if (!empty($req)) {
 			if (is_array($req)) {
@@ -69,15 +86,13 @@ class radix_api_hipchat
 
 		}
 
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
-
-		return $this->_curl_exec($ch);
+		return $this->_curl_exec($ch, $head);
 	}
 
 	/**
 		Curl Init
 	*/
-    private static function _curl_init($uri)
+    private function _curl_init($uri)
     {
         $ch = curl_init($uri);
         // Booleans
@@ -94,7 +109,7 @@ class radix_api_hipchat
         curl_setopt($ch, CURLOPT_NETRC, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_VERBOSE, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
@@ -114,8 +129,19 @@ class radix_api_hipchat
         @param $ch CURL Handle
         @return API data
     */
-    private static function _curl_exec($ch)
+    private static function _curl_exec($ch, $opt_head = null)
     {
+    	// Update Headers
+    	$head = array(
+    		'Authorization: Bearer ' . $this->_auth,
+    		'Host: api.hipchat.com',
+		);
+		if (is_array($opt_head)) {
+			$head = array_merge($head, $opt_head);
+		}
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
+
+		// Get Response
         $res = array(
             'body' => curl_exec($ch),
             'info' => curl_getinfo($ch),
