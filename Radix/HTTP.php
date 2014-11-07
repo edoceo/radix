@@ -74,10 +74,10 @@ class Radix_HTTP
     */
     static function post($uri,$post,$head=null)
     {
-        $ch = self::_curl_init($uri);
+        $ch = self::_curl_init($uri, $head);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-        curl_setopt($ch, CURLOPT_VERBOSE, true);
+        // curl_setopt($ch, CURLOPT_VERBOSE, true);
         return self::_curl_exec($ch);
     }
 
@@ -172,7 +172,6 @@ class Radix_HTTP
         curl_setopt(self::$_ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt(self::$_ch, CURLOPT_SSL_VERIFYPEER, false);
         // curl_setopt(self::$_ch, CURLOPT_VERBOSE, true);
-        // curl_setopt(self::$_ch, CURLOPT_VERBOSE, false);
         // if ( (!empty(self::$_opts['verbose'])) && (is_resource(self::$_opts['verbose'])) ) {
         //     curl_setopt(self::$_ch, CURLOPT_VERBOSE, true);
         //     curl_setopt(self::$_ch, CURLOPT_STDERR, self::$_opts['verbose']);
@@ -187,7 +186,6 @@ class Radix_HTTP
         curl_setopt(self::$_ch, CURLOPT_TIMEOUT, self::$_opts['timeout']);
         curl_setopt(self::$_ch, CURLOPT_USERAGENT, self::$_opts['user-agent']);
 
-        // radix::dump($head);
         if ( (!empty($head)) && (is_array($head)) ) {
             curl_setopt(self::$_ch, CURLOPT_HTTPHEADER, $head);
         }

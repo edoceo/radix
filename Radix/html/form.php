@@ -229,6 +229,17 @@ class radix_html_form
 		return $r;
 	}
 
+	static function time($n,$v, $opt = null)
+	{
+		$arg = array(
+			'type'  => 'time',
+			'id'    => $n,
+			'name'  => $n,
+			'value' => $v,
+		);
+		return self::_element($arg, $opt);
+	}
+
 	/**
 		@param $chk false|string to test
 		@return HTML String on creation, true on success

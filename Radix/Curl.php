@@ -59,7 +59,7 @@ class Radix_Curl
 
         curl_setopt($this->_ch, CURLOPT_HEADER, true);
         curl_setopt($this->_ch, CURLOPT_NOBODY, true);
-        $buf = curl_exec($this->ch);
+        $buf = curl_exec($this->_ch);
         $buf = explode("\n", $buf);
         foreach ($buf as $hln) {
                 if (preg_match('/^([\w\-]+):(.+)$/', $hln, $m)) {

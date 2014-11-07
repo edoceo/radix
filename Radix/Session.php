@@ -4,6 +4,7 @@
     @brief Basic "secure" session
 
     @package radix
+    @see http://stackoverflow.com/questions/10561280/fast-and-efficient-php-session
 */
 
 /**

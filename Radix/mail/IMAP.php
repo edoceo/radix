@@ -24,8 +24,8 @@ class radix_mail_imap
     */
     function __construct($uri)
     {
-        $this->_uri = $uri;
-        $this->_init($uri);
+        $this->_uri = parse_url($uri);
+        $this->_init($this->_uri);
     }
     /**
     */
@@ -64,7 +64,7 @@ class radix_mail_imap
                 //$c_str.= 'INBOX';
             }
         }
-        echo "Connect: imap_open($c_str,{$uri['user']},{$uri['pass']},OP_HALFOPEN|OP_DEBUG,1);\n";
+        // echo "Connect: imap_open($c_str,{$uri['user']},{$uri['pass']},OP_HALFOPEN|OP_DEBUG,1);\n";
         $this->_c = imap_open($c_str,$uri['user'],$uri['pass'],OP_HALFOPEN|OP_DEBUG,1);
         // if ($this->_c) {
         //     // $this->_c_stat = imap_mailboxmsginfo($this->_c);
@@ -72,10 +72,12 @@ class radix_mail_imap
         // }
         
     }
+
     function loadHeaders($i)
     {
         return imap_headerinfo($this->_c,$i,1024,1024);
     }
+
     /**
     */
     function loadMessage($m)
@@ -95,14 +97,26 @@ class radix_mail_imap
         }
         return $b;
     }
+
     /**
         @param $pat '*' for all folders, '%' for current folder and below
         @return array of folder names
     */
     function listFolders($pat='*')
     {
-        return imap_getmailboxes($this->_c, $this->_c_host, $pat);
+		// $this->_open();
+		$ret = array();
+		$list = imap_getmailboxes($this->_c, $this->_c_host, $pat);
+		foreach ($list as $x) {
+			$ret[] = array(
+				'name' => $x->name,
+				'attribute' => $x->attributes,
+				'delimiter' => $x->delimiter,
+			);
+		}
+		return $ret;
     }
+
     /**
     */
     function listMessage()
@@ -139,6 +153,7 @@ class radix_mail_imap
         }
         return $r;
     }
+
     /**
     */
     function openFolder($f,$stat='count')
@@ -149,6 +164,7 @@ class radix_mail_imap
             //$f->name = $this->_c_host . $x;
             $f = $this->_c_host . self::folderName($f->name);
         }
+
         // prepend host if not found
         if (strpos($f,$this->_c_host) === false) {
             $f = $this->_c_host . self::folderName($f);

@@ -437,6 +437,7 @@ class Radix
         $path = dirname(parse_url($_SERVER['SCRIPT_NAME'],PHP_URL_PATH));
         $path = trim($path, '.');
         $base.= $path;
+
         return rtrim($base,'/');;
     }
 

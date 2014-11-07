@@ -34,7 +34,7 @@ class radix_db_redis extends \Redis
     {
         if ($opt === null) $opt = self::$_opt;
         // $this->_c = new \Redis();
-        $this->connect($opt['hostname']);
+        $this->connect($opt['hostname'],6379,0);
         // $this->_d = $this->_m->selectDB($opt['database']);
         if (!empty($opt['password'])) {
             $this->auth($opt['password']);

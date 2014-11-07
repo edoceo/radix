@@ -18,7 +18,7 @@ class radix_mail_smtp
 {
     const AUTH_READY = 334; // See rfc2554
     const MAIL_ADDR = '/([\w\.\%\+\-]+@[a-z0-9\.\-]+\.[a-z]{2,6})/i';
-    private $_s;
+    private $_s; // Socket
     private $_ext; // Array of Extensions
 
     /**
@@ -175,11 +175,11 @@ class radix_mail_smtp
     */
     private function _send($data)
     {
-        echo "_send($data)\n";
+        // echo "_send($data)\n";
         if (empty($this->_s)) {
             die("SMTP Shutdown\n$data?");
         }
-        $ret = fwrite($this->_s,$data);
+        $ret = fwrite($this->_s, $data);
         return $ret;
     }
 

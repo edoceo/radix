@@ -44,10 +44,10 @@ class Service
         return $ch;
 	}
 	
-	protected function _curl_exec()
+	protected function _curl_exec($ch)
 	{
-		$buf = curl_exec($this->_ch);
-		$inf = curl_getinfo($this->_ch);
+		$buf = curl_exec($ch);
+		$inf = curl_getinfo($ch);
 		return array(
 			'body' => $buf,
 			'info' => $inf,
@@ -68,7 +68,7 @@ class Service
         // 	echo "\ncloseIO_request(" . print_r($update_json, true) . ")\n";
         // 	exit;
         // }
-        
+
         // curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
 		// curl_setopt($ch, CURLOPT_VERBOSE, true);
 		// curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
