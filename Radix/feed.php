@@ -5,6 +5,7 @@
     
     @see http://blog.sherifmansour.com/?p=302
     @see http://stackoverflow.com/questions/595616/what-is-the-correct-mime-type-to-use-for-an-rss-feed
+    @see http://www.ibm.com/developerworks/library/x-phpatomfeed/
 */
 
 class radix_feed implements arrayaccess, iterator

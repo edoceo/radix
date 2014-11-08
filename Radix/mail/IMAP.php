@@ -21,13 +21,16 @@ class radix_mail_imap
     const E_NO_MAILBOX = -404;
 
     /**
+    	@param URI to Mailbox
     */
     function __construct($uri)
     {
         $this->_uri = parse_url($uri);
         $this->_init($this->_uri);
     }
+
     /**
+    	@param $uri as array to mailbox
     */
     private function _init($uri)
     {
@@ -40,7 +43,7 @@ class radix_mail_imap
         if (!empty($uri['port'])) {
             $this->_c_host.= sprintf(':%d',$uri['port']);
         }
-        switch (strtolower(@$uri['scheme'])) {
+        switch (strtolower($uri['scheme'])) {
         case 'imap-ssl':
             $this->_c_host.= '/ssl/novalidate-cert';
             break;
@@ -70,15 +73,19 @@ class radix_mail_imap
         //     // $this->_c_stat = imap_mailboxmsginfo($this->_c);
         //     // $this->_c_list = imap_getmailboxes($this->_c, $this->_c_host, '*');
         // }
-        
+
     }
 
+    /**
+		Fetch Message Headers
+    */
     function loadHeaders($i)
     {
         return imap_headerinfo($this->_c,$i,1024,1024);
     }
 
     /**
+    	Loads message by Message ID
     */
     function loadMessage($m)
     {
@@ -123,6 +130,7 @@ class radix_mail_imap
     {
 
     }
+
     /**
     */
     function makeFolder($f)
@@ -135,6 +143,7 @@ class radix_mail_imap
         @imap_createmailbox($this->_c,$name);
         return $this->stat();
     }
+
     /**
     */
     function nextMessage()
@@ -156,7 +165,7 @@ class radix_mail_imap
 
     /**
     */
-    function openFolder($f,$stat='count')
+    function openFolder($f, $stat='count')
     {
         if (is_object($f)) {
             //$x = $f;
@@ -213,6 +222,16 @@ class radix_mail_imap
             die("\nimap_reopen($this->_c_host,$f) failed: $x\n");
         }
     }
+
+    /**
+    	Just pings the connection
+    */
+    function ping()
+    {
+    	// $this->_open();
+    	return imap_ping($this->_c);
+    }
+
     /**
     */
     function putMessage($mail,$flag=null,$date=null)
@@ -229,6 +248,7 @@ class radix_mail_imap
         }
         return true;
     }
+
     /**
         Get Status Messages
     */
@@ -248,13 +268,16 @@ class radix_mail_imap
         }
         return $r;
     }
+
     /**
+    	Immediately Delete and Expunge the message
     */
     function wipeMessage($x)
     {
         imap_delete($this->_c,intval($x));
         imap_expunge($this->_c);
     }
+
     /**
         Returns the Base Folder Name, w/o the Server part
     */

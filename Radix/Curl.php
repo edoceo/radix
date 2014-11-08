@@ -71,12 +71,52 @@ class Radix_Curl
 	}
 
 	/**
+		@param $post Array or String to POST
+	*/
+	function post($post)
+	{
+		// if (is_array($post)) {
+		//
+		// }
+
+		$this->opt(CURLOPT_POST, true);
+		$this->opt(CURLOPT_POSTFIELDS, $post);
+		$this->opt(CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+		));
+
+		return $this->exec();
+
+	}
+
+	/**
+		@param $post Array or Object or String to send as JSON
+	*/
+	function postJSON($post)
+	{
+		if (is_array($post)) {
+			$post = json_encode($post);
+		} elseif (is_object($post)) {
+			$post = json_encode($post);
+		}
+
+		$this->opt(CURLOPT_POST, true);
+		$this->opt(CURLOPT_POSTFIELDS, $post);
+		$this->opt(CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+		));
+
+		return $this->exec();
+	}
+
+
+	/**
 	*/
 	function info()
 	{
 		return curl_getinfo($this->_ch);
 	}
-	
+
 	function opt($k,$v)
 	{
 		switch ($k) {
@@ -88,7 +128,6 @@ class Radix_Curl
 			curl_setopt($this->_ch, $k, $v);
 		}
 	}
-	
 
 	function download($out=null)
 	{
@@ -102,6 +141,14 @@ class Radix_Curl
         curl_close($this->_ch);
 
         return $out;
+	}
+
+	/**
+
+	*/
+	function setHeader($k, $v)
+	{
+		$this->_head[] = sprintf('%s: %s', $k, $v);
 	}
 
 }
