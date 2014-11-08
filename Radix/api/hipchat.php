@@ -129,7 +129,7 @@ class radix_api_hipchat
         @param $ch CURL Handle
         @return API data
     */
-    private static function _curl_exec($ch, $opt_head = null)
+    private function _curl_exec($ch, $opt_head = null)
     {
     	// Update Headers
     	$head = array(
