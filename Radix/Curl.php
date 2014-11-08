@@ -81,9 +81,6 @@ class Radix_Curl
 
 		$this->opt(CURLOPT_POST, true);
 		$this->opt(CURLOPT_POSTFIELDS, $post);
-		$this->opt(CURLOPT_HTTPHEADER, array(
-			'Content-Type: application/json',
-		));
 
 		return $this->exec();
 
