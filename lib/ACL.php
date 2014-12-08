@@ -10,7 +10,9 @@
 
 */
 
-class Radix_ACL
+namespace Radix;
+
+class ACL
 {
     private static $_access = 'reject,permit';
     private static $_actors; // List of Actors

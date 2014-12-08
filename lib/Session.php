@@ -7,11 +7,13 @@
     @see http://stackoverflow.com/questions/10561280/fast-and-efficient-php-session
 */
 
+namespace Radix;
+
 /**
     @brief Ensures integrity of session, browser sig, etc
 */
 
-class Radix_Session
+class Session
 {
     // @todo Tune These
     private static $_opts = array(

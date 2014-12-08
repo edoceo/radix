@@ -3,6 +3,8 @@
 
 */
 
+namespace Radix;
+
 class Radix_Curl
 {
 	private $_ch;

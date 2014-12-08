@@ -11,7 +11,9 @@
     @package Radix
 */
 
-class radix_db_couch
+namespace Radix\DB;
+
+class Couch
 {
     const USER_AGENT = 'Edoceo Radix CouchDB v2012.12';
 

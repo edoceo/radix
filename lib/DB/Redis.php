@@ -7,9 +7,9 @@
     @package radix
 */
 
-namespace radix;
+namespace Radix\DB;
 
-class radix_db_redis extends \Redis
+class Redis extends \Redis
 {
     private static $_opt = array(
         'hostname' => 'localhost',

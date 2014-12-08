@@ -7,8 +7,9 @@
     @package radix
 */
 
+namespace Radix\DB;
 
-class radix_db_mongo
+class Mongo
 {
     private $_c; // Collection
     private $_d; // Database
@@ -35,7 +36,7 @@ class radix_db_mongo
         if (!empty($opt['logs'])) {
             // Save for Later
         }
-        $this->_m = new Mongo($opt['hostname'],array('connect'=>false));
+        $this->_m = new \Mongo($opt['hostname'],array('connect'=>false));
         $this->_d = $this->_m->selectDB($opt['database']);
     }
 
