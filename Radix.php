@@ -16,8 +16,6 @@
     The assumptions is that a few simple implementations of these classes can bring the system to life quickly.
 */
 
-namespace Edoceo\Radix;
-
 /**
     @brief Radix Base Class, Core MVC Utilities
            Radix is also the class instantiated for the View object
@@ -59,12 +57,21 @@ class Radix
     */
     public static function autoload()
     {
+    	if (!defined('RADIX_ROOT')) {
+    		define('RADIX_ROOT', __DIR__);
+    	}
+
 		spl_autoload_register(function($c) {
 
-			$file = str_replace('\\', '/', $c);
-			$path = sprintf('%s/lib/%s.php', APP_ROOT, $file);
+			$file = str_replace('Radix\\', null, $c);
+			$file = str_replace('\\', '/', $file);
+			$path = sprintf('%s/lib/%s.php', RADIX_ROOT, $file);
 
-			require_once($path);
+			// echo "require_once($path);\n";
+
+			if (is_file($path)) {
+				require_once($path);
+			}
 
 		});
 

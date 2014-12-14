@@ -4,7 +4,9 @@
     @brief Tools for working with Images
 */
 
-class radix_image
+namespace Radix;
+
+class Image
 {
     /**
         Converts Images to PNG w/Transparent Background
@@ -27,7 +29,7 @@ class radix_image
             break;
         default:
             error_reporting($er);
-            throw new Exception("Invalid Image Type: $type",__LINE__);
+            throw new \Exception("Invalid Image Type: $type",__LINE__);
         }
         imagealphablending($src_i, true);
 
@@ -65,7 +67,7 @@ class radix_image
             $src_i = imagecreatefrompng($src);
             break;
         default:
-            throw new Exception("Invalid Image Type: $type",__LINE__);
+            throw new \Exception("Invalid Image Type: $type",__LINE__);
         }
         imagealphablending($src_i, true);
 
@@ -100,7 +102,7 @@ class radix_image
             imagedestroy($dst_i);
             if ($ret !== true) {
                 $x = error_get_last();
-                throw new Exception($x['message'],__LINE__);
+                throw new \Exception($x['message'],__LINE__);
             }
         // }
 
@@ -121,7 +123,7 @@ class radix_image
     {
         // Check Inputs
         if (empty($dst_w) && empty($dst_h)) {
-            throw new Exception("One of Target Width or Height must be provided: $type",__LINE__);
+            throw new \Exception("One of Target Width or Height must be provided: $type",__LINE__);
         }
 
         // Open Image
@@ -163,7 +165,7 @@ class radix_image
         imagedestroy($dst_i);
         if ($ret !== true) {
             $x = error_get_last();
-            throw new Exception($x['message'],__LINE__);
+            throw new \Exception($x['message'],__LINE__);
         }
 
         return $ret;
@@ -191,7 +193,7 @@ class radix_image
             $src_i = imagecreatefrompng($src);
             break;
         default:
-            throw new Exception("Invalid Image Type: $type",__LINE__);
+            throw new \Exception("Invalid Image Type: $type",__LINE__);
         }
         imagealphablending($src_i, true);
 
@@ -218,7 +220,7 @@ class radix_image
         imagedestroy($dst_i);
         if ($ret !== true) {
             $x = error_get_last();
-            throw new Exception($x['message'],__LINE__);
+            throw new \Exception($x['message'],__LINE__);
         }
 
         return true;

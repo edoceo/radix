@@ -11,7 +11,10 @@
 /**
     A collection of Static Methods
 */
-class Radix_Format
+
+namespace Radix;
+
+class Format
 {
 
     /**

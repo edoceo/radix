@@ -7,10 +7,12 @@
     @package radix
 */
 
+namespace Radix\DB;
+
 /**
     @brief SQL Database Interface Wrapper, internally PDO
 */
-class radix_db_sql
+class SQL
 {
 	private $_c; // Connection Object
 
@@ -21,7 +23,7 @@ class radix_db_sql
 
     function __construct($dst=null, $user=null, $pass=null, $opts=null)
     {
-        $this->_c = new PDO($dsn, $user, $pass, $opts);
+        $this->_c = new \PDO($dsn, $user, $pass, $opts);
     }
 
     /**
@@ -35,7 +37,7 @@ class radix_db_sql
     public static function init($dsn,$user=null,$pass=null,$opts=null)
     {
     	// self::$_dsn = $dsh;
-        self::$_pdo = new PDO($dsn,$user,$pass,$opts);
+        self::$_pdo = new \PDO($dsn,$user,$pass,$opts);
         self::$_kind = strtok($dsn, ':');
     }
 
@@ -78,7 +80,7 @@ class radix_db_sql
     {
         $res = self::_sql_query($sql,$arg);
         if ($res) {
-			$res->setFetchMode(PDO::FETCH_ASSOC);
+			$res->setFetchMode(\PDO::FETCH_ASSOC);
 		}
         return $res;
     }
@@ -94,7 +96,7 @@ class radix_db_sql
     {
         $ret = null;
         if ($res = self::_sql_query($sql,$arg)) {
-            $res->setFetchMode(PDO::FETCH_ASSOC);
+            $res->setFetchMode(\PDO::FETCH_ASSOC);
             $ret = $res->fetchAll();
             $res->closeCursor();
         }
@@ -117,7 +119,7 @@ class radix_db_sql
     {
 	    $res = self::_sql_query($sql,$arg);
 	    $ret = array();
-	    while ($rec = $res->fetch(PDO::FETCH_BOTH)) {
+	    while ($rec = $res->fetch(\PDO::FETCH_BOTH)) {
 	        $ret[ $rec[0] ] = $rec;
 	    }
 	    return $ret;
@@ -132,7 +134,7 @@ class radix_db_sql
     {
 	    $res = self::_sql_query($sql,$arg);
 	    $ret = array();
-	    while ($rec = $res->fetch(PDO::FETCH_NUM)) {
+	    while ($rec = $res->fetch(\PDO::FETCH_NUM)) {
 	        $ret[ $rec[0] ] = $rec[1];
 	    }
 	    return $ret;
@@ -154,7 +156,7 @@ class radix_db_sql
     {
         $res = self::_sql_query($sql,$arg);
         if ($res) {
-            $rec = $res->fetch(PDO::FETCH_NUM);
+            $rec = $res->fetch(\PDO::FETCH_NUM);
             $res->closeCursor();
             if ($rec !== false) {
                 return $rec[0];
@@ -179,7 +181,7 @@ class radix_db_sql
     {
         $res = self::_sql_query($sql,$arg);
         if ($res) {
-            $rec = $res->fetch(PDO::FETCH_ASSOC);
+            $rec = $res->fetch(\PDO::FETCH_ASSOC);
             $res->closeCursor();
             if ($rec !== false) {
                 return $rec;
@@ -246,11 +248,10 @@ class radix_db_sql
 
         $res = self::_sql_query($sql,$col_data);
         if (0 == $res->rowCount()) {
-        	// radix::dump($sql);
         	// radix::dump($col_data);
-        	throw new Exception('RDS#251: ' . self::lastError());
+        	throw new \Exception('RDS#251: ' . self::lastError());
         }
-        $drv = self::$_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $drv = self::$_pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
         switch ($drv) {
         case 'mssql':
         	return self::_sql_query('SELECT @@IDENTITY',null);
@@ -262,7 +263,7 @@ class radix_db_sql
         // 	$r = self::$_pdo->lastInsertId("{$t}_id_seq");
         // 	return $r;
         default:
-        	throw new Exception("RDS#265: Unhandled Driver: $drv");
+        	throw new \Exception("RDS#265: Unhandled Driver: $drv");
         }
     }
 
@@ -386,4 +387,31 @@ class radix_db_sql
           $sql.= " WHERE relname = '$t' ";
         $sql.= ") AND attname = '$c'";
     }
+    
+    function showTables()
+    {
+    	
+    }
+
+    /**
+		
+    */
+    function showUsers()
+    {
+        $drv = self::$_pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        switch ($drv) {
+        case 'mssql':
+        	// return self::_sql_query('SELECT @@IDENTITY',null);
+        	break;
+        case 'mysql':
+        	return $this->_pdo->fetchAll('SELECT * FROM mysql.user');
+        case 'pgsql':
+			return $this->_pdo->fetchAll('SELECT * FROM mysql.user');
+        case 'sqlite':
+			return $this->_pdo->fetchAll('SELECT * FROM mysql.user');
+        default:
+        	throw new Exception("RDS#414: Unhandled Driver: $drv");
+        }
+    }
+
 }

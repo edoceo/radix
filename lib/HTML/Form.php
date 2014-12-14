@@ -4,7 +4,9 @@
     @brief Draws an HTML Calendar
 */
 
-class radix_html_form
+namespace Radix\HTML;
+
+class Form
 {
 	private static $_idx = 0;
 	private static $_use_list = array();

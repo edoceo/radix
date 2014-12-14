@@ -7,7 +7,9 @@
     @package Radix
 */
 
-class Radix_Shell
+namespace Radix;
+
+class Shell
 {
     /**
         Execute a System Command

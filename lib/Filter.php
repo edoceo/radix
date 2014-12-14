@@ -7,7 +7,9 @@
 
 */
 
-class Radix_Filter
+namespace Radix;
+
+class Filter
 {
     /**
         @param $x the email address data

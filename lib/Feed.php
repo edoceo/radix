@@ -8,7 +8,9 @@
     @see http://www.ibm.com/developerworks/library/x-phpatomfeed/
 */
 
-class radix_feed implements arrayaccess, iterator
+namespace Radix;
+
+class Feed implements \ArrayAccess, \Iterator
 {
     const MIME_ATOM = 'application/atom+xml';
     const MIME_RSS  = 'application/rss+xml';
