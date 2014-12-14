@@ -7,7 +7,7 @@
     @package Radix
 */
 
-namespace Radix;
+namespace Edoceo\Radix;
 
 class Shell
 {

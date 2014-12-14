@@ -8,7 +8,7 @@
     @see http://www.ibm.com/developerworks/library/x-phpatomfeed/
 */
 
-namespace Radix;
+namespace Edoceo\Radix;
 
 class Feed implements \ArrayAccess, \Iterator
 {

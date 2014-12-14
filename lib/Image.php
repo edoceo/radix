@@ -4,7 +4,7 @@
     @brief Tools for working with Images
 */
 
-namespace Radix;
+namespace Edoceo\Radix;
 
 class Image
 {

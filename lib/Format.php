@@ -12,7 +12,7 @@
     A collection of Static Methods
 */
 
-namespace Radix;
+namespace Edoceo\Radix;
 
 class Format
 {

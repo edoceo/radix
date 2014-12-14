@@ -4,7 +4,7 @@
     @brief Draws an HTML Calendar
 */
 
-namespace Radix\HTML;
+namespace Edoceo\Radix\HTML;
 
 class Form
 {

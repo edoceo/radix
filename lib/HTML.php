@@ -4,7 +4,7 @@
 	@brief Tools for working with HTML, mostly for output.
 */
 
-namespace Radix;
+namespace Edoceo\Radix;
 
 class HTML
 {

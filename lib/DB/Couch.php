@@ -11,7 +11,7 @@
     @package Radix
 */
 
-namespace Radix\DB;
+namespace Edoceo\Radix\DB;
 
 class Couch
 {

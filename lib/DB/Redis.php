@@ -7,7 +7,7 @@
     @package radix
 */
 
-namespace Radix\DB;
+namespace Edoceo\Radix\DB;
 
 class Redis extends \Redis
 {

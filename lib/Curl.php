@@ -3,7 +3,7 @@
 
 */
 
-namespace Radix;
+namespace Edoceo\Radix;
 
 class Radix_Curl
 {
