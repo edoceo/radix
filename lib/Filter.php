@@ -21,7 +21,7 @@ class Filter
     {
         // Match Email Address Pattern
         $x = strtolower(trim($x));
-        if (preg_match('/^([\w\.\%\+\-]+)@([a-z0-9\.\-]+\.[a-z]{2,6})$/i',$x,$m)) {
+        if (preg_match('/^([\w\.\%\+\-]+[a-z0-9])@([a-z0-9][a-z0-9\.\-]*[a-z0-9]\.[a-z]{2,6})$/',$x,$m)) {
             // More strict is to only check MX, we do both in example
             if ( (checkdnsrr($m[2],'MX') == true) || (checkdnsrr($m[2],'A') == true) ) {
                 return sprintf('%s@%s',$m[1],$m[2]);
