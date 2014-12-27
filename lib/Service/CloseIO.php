@@ -3,7 +3,7 @@
 	Interact with the Close.IO Service
 */
 
-namespace Radix\Service;
+namespace Edoceo\Radix\Service;
 
 class CloseIO extends \Radix\Service
 {

@@ -3,7 +3,7 @@
 	Interact with the Intercom.IO Service
 */
 
-namespace Radix\Service;
+namespace Edoceo\Radix\Service;
 
 class IntercomIO extends \Radix\Service
 {

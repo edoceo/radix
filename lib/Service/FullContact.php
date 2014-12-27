@@ -3,7 +3,7 @@
 	Interact with the FullContact Service
 */
 
-namespace Radix\Service;
+namespace Edoceo\Radix\Service;
 
 class FullContact extends \Radix\Service
 {

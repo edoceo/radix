@@ -3,7 +3,7 @@
 # @brief Radix Helper
 
 app_dir=$(pwd)
-radix_dir=$(dirname $(readlink -f $0))
+radix_dir=$(dirname $(dirname $(readlink -f $0)))
 
 function find_uidgid()
 {
@@ -149,73 +149,6 @@ radix::view();
 radix::send();
 
 EOP
-
-cat >apache.conf.example <<EOC
-
-<Directory "$app_dir">
-
-    Header unset Pragma
-
-    RewriteEngine On
-    RewriteBase /
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule .* /index.php [QSA,L]
-
-    php_flag display_errors on
-    php_flag display_startup_errors on
-
-    php_value error_reporting -1
-
-    # php_admin_flag
-    # php_admin_value
-
-</Directory>
-
-EOC
-
-cat >nginx.conf.radix <<EOC
-server {
-    location / {
-
-        root "$app_dir";
-
-        fastcgi_pass   127.0.0.1:9000;
-        fastcgi_index  index.php;
-
-        # fastcgi_split_path_info ^/(.+\.php)(/?.+)$;
-
-        fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
-
-        fastcgi_param  SERVER_ADDR        \$server_addr;
-        fastcgi_param  SERVER_PORT        \$server_port;
-        fastcgi_param  SERVER_NAME        \$server_name;
-        fastcgi_param  SERVER_SOFTWARE    nginx/\$nginx_version;
-        fastcgi_param  SERVER_PROTOCOL    \$server_protocol;
-
-        fastcgi_param  REMOTE_ADDR        \$remote_addr;
-        fastcgi_param  REMOTE_PORT        \$remote_port;
-
-        fastcgi_param  REQUEST_METHOD     \$request_method;
-        fastcgi_param  REQUEST_URI        \$request_uri;
-        fastcgi_param  QUERY_STRING       \$query_string;
-        # fastcgi_param  CONTENT_TYPE       \$content_type;
-        # fastcgi_param  CONTENT_LENGTH     \$content_length;
-
-        fastcgi_param  DOCUMENT_URI       \$document_uri;
-        fastcgi_param  DOCUMENT_ROOT      \$document_root;
-
-        fastcgi_param  SCRIPT_NAME        \$fastcgi_script_name;
-        fastcgi_param  PATH_INFO          \$fastcgi_path_info;
-        # fastcgi_param  SCRIPT_FILENAME    $app_dir/\$fastcgi_script_name;
-        fastcgi_param  SCRIPT_FILENAME    $app_dir/webroot/index.php;
-
-        # PHP only, required if PHP was built with --enable-force-cgi-redirect
-        # fastcgi_param  REDIRECT_STATUS    200;
-
-    }
-
-}
-EOC
 
 # make_dirs;
 # make_boot;

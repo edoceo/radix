@@ -71,9 +71,17 @@ class radix_api_twilio
         @param $page Page Number, 0
         @param $size Page Size, 100
     */
-    public function callList($page=0,$size=100)
+    public function callList($page=0, $size=100, $opt=null)
     {
-        $api = sprintf('Calls.json?Page=%d&PageSize=%d',$page,$size);
+		$arg = array(
+			'Page' => $page,
+			'PageSize' => $size,
+		);
+		if (is_array($opt)) {
+			$arg = array_merge($arg, $opt);
+		}
+
+		$api = 'Calls.json?' . http_build_query($arg);
         return $this->api($api);
     }
 
