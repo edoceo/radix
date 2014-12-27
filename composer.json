@@ -26,11 +26,11 @@
 		"ext-PDO": "*",
 		"ext-session": "*",
 		"ext-sockets": "*",
-		"ext-xdebug": "*",
 		"google/apiclient": "1.0.*@beta",
 		"stripe/stripe-php": "v1.15.0"
 	},
 	"require-dev": {
+		"ext-xdebug": "*",
 		"phpunit/phpunit": "4.2.5",
 		"phpunit/phpunit-selenium": "1.3.3"
 	},
