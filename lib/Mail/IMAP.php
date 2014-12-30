@@ -22,6 +22,8 @@ class IMAP
 
 	const E_NO_MAILBOX = -404;
 
+	const TRY_OPEN = 2;
+
 	/**
 		@param URI to Mailbox
 	*/
@@ -32,32 +34,60 @@ class IMAP
 	}
 
 	/**
-		@param $uri as array to mailbox
+		@param $uri as array to mailbox imap|imap-ssl|imap-tls|pop3|pop3-ssl|pop3-tls://host:port/INBOX
 	*/
 	private function _init($uri)
 	{
 		$this->_c = null;
+		$this->_c_uri = $uri;
+
 		if (empty($uri['host'])) {
 			$uri['host'] = 'localhost';
 		}
-		$this->_c_uri = $uri;
-		$this->_c_host = sprintf('{%s',$uri['host']);
-		if (!empty($uri['port'])) {
-			$this->_c_host.= sprintf(':%d',$uri['port']);
-		}
+
+		$host = $uri['host'];
+		$port = null;
+		$flag = array();
+
+		// Connection Type
 		switch (strtolower($uri['scheme'])) {
+		case 'ssl':
 		case 'imap-ssl':
-			$this->_c_host.= '/ssl/novalidate-cert';
+			$flag[] = 'imap';
+			$flag[] = 'ssl';
+			$port = '993';
 			break;
+		case 'tls':
 		case 'imap-tls':
-			$this->_c_host.= '/tls/novalidate-cert';
+			$flag[] = 'imap';
+			$flag[] = 'tls';
+			$port = '993';
 			break;
 		case 'imap':
-			$this->_c_host.= '/notls';
+		case 'tcp':
+			$flag[] = 'imap';
+			$flag[] = 'notls';
+			$port = '143';
+			break;
+		case 'pop3':
+			$flag[] = 'pop3';
+			$port = '110';
+			break;
+		case 'pop3-ssl':
+			$flag[] = 'pop3';
+			$flag[] = 'ssl';
+			$port = '995';
+			break;
 		default:
+			throw new \Exception("Invalid Mail Scheme: {$uri['scheme']}");
 		}
-		//$this->_c_host.= '/debug';
-		$this->_c_host.= '}';
+
+		// Override Default
+		if (!empty($uri['port'])) {
+			$port = $uri['port'];
+		}
+
+		$this->_c_host = sprintf('{%s:%d/%s}', $host, $port, implode('/', $flag));
 
 		$c_str = $this->_c_host;
 		// Append Path?
@@ -69,8 +99,9 @@ class IMAP
 				//$c_str.= 'INBOX';
 			}
 		}
-		// echo "Connect: imap_open($c_str,{$uri['user']},{$uri['pass']},OP_HALFOPEN|OP_DEBUG,1);\n";
-		$this->_c = imap_open($c_str,$uri['user'],$uri['pass'],OP_HALFOPEN|OP_DEBUG,1);
+
+		$this->_c = imap_open($c_str, $uri['user'], $uri['pass'], OP_HALFOPEN, self::TRY_OPEN);
+
 		// if ($this->_c) {
 		//	 // $this->_c_stat = imap_mailboxmsginfo($this->_c);
 		//	 // $this->_c_list = imap_getmailboxes($this->_c, $this->_c_host, '*');
@@ -79,20 +110,26 @@ class IMAP
 	}
 
 	/**
-		Fetch Message Headers
+		Immediately Delete and Expunge the message
 	*/
-	function loadHeaders($i)
+	function mailDelete($i, $flush=false)
 	{
-		return imap_headerinfo($this->_c,$i,1024,1024);
+
+		imap_delete($this->_c, intval($x));
+
+		if ($flush) {
+			imap_expunge($this->_c);
+		}
+
 	}
 
 	/**
 		Loads message by Message ID
 	*/
-	function loadMessage($m)
+	function mailGet($m, $part='1')
 	{
-		$i = intval($m->Msgno);
-		$b = imap_fetchbody($this->_c,$i,null,FT_PEEK);
+		$i = intval($m);
+		$b = imap_fetchbody($this->_c, $i, null, FT_PEEK);
 		$x = $this->stat();
 		if (preg_match('/Could not parse command/',$x)) {
 			return null;
@@ -107,11 +144,71 @@ class IMAP
 		return $b;
 	}
 
+	function mailGetPart($i, $part='1', $file=null)
+	{
+		$this->_open();
+		return imap_savebody($this->_c, $file ,$mnum , $part, FT_INTERNAL|FT_PEEK);
+	}
+
+	/**
+		Fetch Message Headers
+	*/
+	function mailHead($i)
+	{
+		// $t0 = microtime(true);
+
+		$x = imap_fetchheader($this->_c, $i);
+
+		$x = str_replace("\r\n", "\n", $x); // Fix Line Endings
+		$x = preg_replace('/\n\s+/ms', ' ', $x); // Un-Fold
+
+		// Sorts
+		// $x = explode("\n", $x);
+		// sort($x);
+		// $x = implode("\n", $x);
+		// $stat['head'] = "$x\nTime-Load: " .  (microtime(true) - $t0);
+		return $x;
+	}
+	// function loadHeaders($i)
+	// {
+	// 	return imap_headerinfo($this->_c,$i,1024,1024);
+	// }
+
+	function mailList()
+	{
+		// FT_UID imap_headers
+	}
+
+
+	/**
+		Put a Message to the Server
+	*/
+	function mailPut($mail, $flag=null, $date=null)
+	{
+		// Parse date from message?
+		if ( (empty($date)) && (preg_match('/^Date: (.+)$/m', $mail, $x)) ) {
+			$date = strftime('%d-%b-%Y %H:%M:%S %z',strtotime($x[1]));
+		}
+
+		// $stat = $this->pathStat();
+		// $ret = imap_append($this->_c,$stat['check_path'], $mail, $flag, $date);
+
+		$ret = imap_append($this->_c, $this->_folder_name, $mail, $flag, $date);
+
+		$x = $this->stat();
+		if (!empty($x)) {
+			print_r($x);
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 		@param $pat '*' for all folders, '%' for current folder and below
 		@return array of folder names
 	*/
-	function listFolders($pat='*')
+	function pathList($pat='*')
 	{
 		// $this->_open();
 		$ret = array();
@@ -124,6 +221,81 @@ class IMAP
 			);
 		}
 		return $ret;
+	}
+
+	function pathOpen($p, $stat='stat')
+	{
+		// Open a Folder
+		if (is_object($p)) {
+			//$x = $f;
+			//$f = new stdClass();
+			//$f->name = $this->_c_host . $x;
+			$p = $this->_c_host . self::folderName($p->name);
+		}
+
+		// prepend host if not found
+		if (strpos($p, $this->_c_host) === false) {
+			$p = $this->_c_host . self::folderName($p);
+		}
+
+		// Reset
+		$this->_folder_stat = null;
+		$this->_message_cur = 1;
+		$this->_message_max = 0;
+
+		// Open
+		imap_check($this->_c);
+		imap_reopen($this->_c, $p, 0, 1);
+		//$this->_c_stat = imap_status($this->_c);
+		$x = $this->stat();
+		if (empty($x)) {
+			$this->_folder_name = $p;
+			$this->_message_cur = 1;
+			// switch ($stat) {
+			// case 'count':
+			// 	$this->_message_max = imap_num_msg($this->_c);
+			// 	return $this->_message_max;
+			// case 'stat':
+			// 	$this->_folder_stat = imap_status($this->_c, $p, SA_ALL);
+			// 	print_r($this->_folder_stat);
+			// 	die('stat');
+			// 	return $this->_folder_stat;
+			// case 'info':
+			// 	$this->_folder_stat = imap_mailboxmsginfo($this->_c);
+			// 	$this->_message_max = $this->_folder_stat->Nmsgs;
+			// }
+			// return $this->_folder_stat;
+
+			// $x0 = self::folderName($p);
+			// $x1 = self::folderName($this->_folder_stat->Mailbox);
+			// if ($x0 == $x1) {
+			// 	return $this->_folder_stat;
+			// }
+		} else {
+			if (preg_match('/no such mailbox/', $x)) {
+				return self::E_NO_MAILBOX;
+			}
+			if (preg_match('/Unknown Mailbox/', $x)) {
+				return self::E_NO_MAILBOX;
+			}
+			die("\nimap_reopen($this->_c_host, $p) failed: $x\n");
+		}
+
+	}
+
+	function pathStat($p)
+	{
+		$ret = array();
+		// $ret = imap_status($this->_c, self::folderName($p), SA_ALL);
+		// print_r($ret);
+		// $x = $this->stat();
+		// print_r($x);
+
+		$ret['msg_max'] = imap_num_msg($this->_c);
+		$ret['msg_info'] = imap_mailboxmsginfo($this->_c);
+
+		return $ret;
+
 	}
 
 	/**
@@ -142,7 +314,7 @@ class IMAP
 		}
 		$name = sprintf('%s%s',$this->_c_host,$f);
 		//echo "New Name: $name\n";
-		@imap_createmailbox($this->_c,$name);
+		@imap_createmailbox($this->_c, $name);
 		return $this->stat();
 	}
 
@@ -166,89 +338,12 @@ class IMAP
 	}
 
 	/**
-	*/
-	function openFolder($f, $stat='count')
-	{
-		if (is_object($f)) {
-			//$x = $f;
-			//$f = new stdClass();
-			//$f->name = $this->_c_host . $x;
-			$f = $this->_c_host . self::folderName($f->name);
-		}
-
-		// prepend host if not found
-		if (strpos($f,$this->_c_host) === false) {
-			$f = $this->_c_host . self::folderName($f);
-		}
-
-		echo "\nopenFolder($f,\$stat=$stat)\n";
-		// Reset
-		$this->_folder_stat = null;
-		$this->_message_cur = 1;
-		$this->_message_max = 0;
-		// Open
-		imap_check($this->_c);
-		imap_reopen($this->_c,$f,0,1);
-		//$this->_c_stat = imap_status($this->_c);
-		$x = $this->stat();
-		if (empty($x)) {
-			$this->_folder_name = $f;
-			$this->_message_cur = 1;
-			switch ($stat) {
-			case 'count':
-				$this->_message_max = imap_num_msg($this->_c);
-				return $this->_message_max;
-			case 'stat':
-				$this->_folder_stat = imap_status($this->_c,$f,SA_ALL);
-				print_r($this->_folder_stat);
-				die('stat');
-				return $this->_folder_stat;
-			case 'info':
-				$this->_folder_stat = imap_mailboxmsginfo($this->_c);
-				$this->_message_max = $this->_folder_stat->Nmsgs;
-			}
-			return $this->_folder_stat;
-
-			$x0 = self::folderName($f);
-			$x1 = self::folderName($this->_folder_stat->Mailbox);
-			if ($x0 == $x1) {
-				return $this->_folder_stat;
-			}
-		} else {
-			if (preg_match('/no such mailbox/',$x)) {
-				return self::E_NO_MAILBOX;
-			}
-			if (preg_match('/Unknown Mailbox/',$x)) {
-				return self::E_NO_MAILBOX;
-			}
-			die("\nimap_reopen($this->_c_host,$f) failed: $x\n");
-		}
-	}
-
-	/**
 		Just pings the connection
 	*/
 	function ping()
 	{
 		// $this->_open();
 		return imap_ping($this->_c);
-	}
-
-	/**
-	*/
-	function putMessage($mail,$flag=null,$date=null)
-	{
-		if ( (empty($date)) && (preg_match('/Date: (.+)$/m',$m,$x)) ) {
-			$date = strftime('%d-%b-%Y %H:%M:%S %z',strtotime($x[1]));
-		}
-		//echo "putMessage(\$mail,$flag,$date)\n";
-		imap_append($this->_c,$this->_folder_name,$mail,$flag,$date);
-		$x = $this->stat();
-		if (!empty($x)) {
-			print_r($x);
-			return false;
-		}
-		return true;
 	}
 
 	/**
@@ -269,15 +364,6 @@ class IMAP
 			$r.= "Errors:\n  " . implode('; ',$x) . "\n";
 		}
 		return $r;
-	}
-
-	/**
-		Immediately Delete and Expunge the message
-	*/
-	function wipeMessage($x)
-	{
-		imap_delete($this->_c,intval($x));
-		imap_expunge($this->_c);
 	}
 
 	/**
