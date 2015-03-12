@@ -25,9 +25,7 @@
 		"ext-mcrypt": "*",
 		"ext-PDO": "*",
 		"ext-session": "*",
-		"ext-sockets": "*",
-		"google/apiclient": "1.0.*@beta",
-		"stripe/stripe-php": "v1.15.0"
+		"ext-sockets": "*"
 	},
 	"require-dev": {
 		"ext-xdebug": "*",
