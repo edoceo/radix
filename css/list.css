@@ -1,26 +1,11 @@
 /* Lists =========================================================== */
 
-dl, menu, ol, ul {
-    margin: 1em 0;
-}
-ol, ul {
-    padding: 0;
-    margin: 0 0 8px 24px;
-}
-/* Children */
-ol ol, ol ul, ul ol, ul ul {
-    padding: 0;
-    margin: 0 0 0 20px;
-}
-nav ul, nav ol {
+nav ul,
+nav ol {
     list-style: none;
     list-style-image: none;
     margin:0;
     padding:0;
-}
-
-ul { 
-    list-style: disc;
 }
 
 /* Horizontal */
@@ -30,17 +15,6 @@ ol.h:after, ul.h:after {
     height: 0;
     clear: left;
     visibility: hidden;
-}
-
-dd, dt {
-    line-height:22px;
-}
-
-dd {
-    margin: 0 0 0 40px;
-}
-dt {
-    font-weight:700;
 }
 
 /*

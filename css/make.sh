@@ -2,18 +2,15 @@
 
 cat \
   base.less \
-  html.less \
-  grid.less \
-  code.less \
-  list.css \
-  form.css \
   page.css \
-  info.css \
-  note.css \
   menu.css \
-  pbar.less \
+  list.css \
+  code.less \
+  info.less \
+  note.css \
   > radix.less
 
+#  form.css \
 #  debug.css \
   
 # perl -MCSS::Minifier -e 'print CSS::Minifier::minify(input => *STDIN)' < radix-full.css > radix.css
@@ -26,8 +23,11 @@ cat \
 #   | sed -e 's/^[ \t]*//g; s/[ \t]*$//g; s/\([:{;,]\) /\1/g; s/ {/{/g; s/\/\*.*\*\///g; /^$/d' \
 #   | sed -e :a -e '$!N; s/\n\(.\)/\1/; ta' >target.css
 
-lessc radix.less > radix.css
-# \
-# 	--compress \
-# 	--strict-units=on \
-# 	radix.less > radix.css
+lessc \
+	--no-ie-compat \
+	--compress \
+	--strict-math=on \
+	--strict-units=on \
+	radix.less > radix.css
+
+rm radix.less
