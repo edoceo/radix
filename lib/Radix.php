@@ -21,7 +21,7 @@
            Radix is also the class instantiated for the View object
 */
 
-namespace Edoceo\Radix;
+namespace Edoceo;
 
 class Radix
 {

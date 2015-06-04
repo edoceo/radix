@@ -5,7 +5,7 @@
 
 namespace Edoceo\Radix;
 
-class Radix_Curl
+class Curl
 {
 	private $_ch;
 	private $_url;
