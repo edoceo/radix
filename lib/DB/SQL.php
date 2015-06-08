@@ -255,13 +255,10 @@ class SQL
         switch ($drv) {
         case 'mssql':
         	return self::_sql_query('SELECT @@IDENTITY',null);
-        	break;
         case 'pgsql':
 			return $res->fetchColumn(0);
         case 'sqlite':
-			return $res->fetchColumn(0);
-        // 	$r = self::$_pdo->lastInsertId("{$t}_id_seq");
-        // 	return $r;
+			return self::$_pdo->lastInsertId();
         default:
         	throw new \Exception("RDS#265: Unhandled Driver: $drv");
         }
