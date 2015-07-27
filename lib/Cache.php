@@ -11,11 +11,13 @@
 
 */
 
+namespace Edoceo\Radix;
+
 /**
     @brief A Caching Interface for File or Memory caching
 */
 
-class radix_cache
+class Cache
 {
     private static $_kind; //! dir|mem
     private static $_path;
