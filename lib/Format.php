@@ -107,6 +107,29 @@ class Format
     }
 
     /**
+    	Time Span
+    */
+	static function spanAsMMSS($s)
+	{
+		$m = floor($s/60);
+		$s = $s - ($m * 60);
+		return sprintf('%d:%02d', $m, $s);
+	}
+
+    /**
+    	Time Span
+    */
+	static function spanAsHHMMSS($s)
+	{
+		$h = floor($s / 3600);
+		$m = floor(($s - ($h * 3600)) / 60);
+		$s = $s - ($h * 3600) - ($m * 60);
+
+		return sprintf('%d:%02d:%02d', $h, $m, $s);
+
+	}
+
+    /**
         Formats a Telephone Number
         @see http://countrycode.org/
         @param $p phone number
