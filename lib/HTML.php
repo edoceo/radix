@@ -16,13 +16,21 @@ class HTML
 	static function asText($html)
 	{
 		$er = error_reporting(0);
-		$dom = new DOMDocument();
+		$dom = new \DOMDocument();
 		$dom->loadHTML($html);
 		error_reporting($er);
 
 		$text = self::_html2text_node($dom);
 
 		return $text;
+	}
+
+	/**
+		@param $html String of HTML, hopefully well formed
+	*/
+	static function stripComments($html)
+	{
+		return preg_replace('/<!\-\-(.*?)\-\->/ms', null, $html);
 	}
 
 	/**
