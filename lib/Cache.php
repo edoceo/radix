@@ -58,7 +58,7 @@ class Cache
             if (empty($pot['port'])) $opt['port'] = 11211;
             self::$_kind = 'mem';
             if (empty(self::$_mem)) {
-                self::$_mem = new Memcached();
+                self::$_mem = new \Memcached();
                 // self::$_mem->setOption(Memcached::SERIALIZER_IGBINARY,true);
                 self::$_mem->addServer($opt['host'],$opt['port']);
             }
