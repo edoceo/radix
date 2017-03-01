@@ -444,15 +444,16 @@ class Radix
             if (empty($host)) $host = $_SERVER['SERVER_ADDR'];
 
             // Scheme, Hostname & Port
-            $base = 'http://' . $host;
-            if ($_SERVER['SERVER_PORT'] != 80) {
-                $base = 'http://' . $host . ':' . $_SERVER['SERVER_PORT'];
-            }
-            if (isset($_SERVER['HTTPS'])) {
-                $base = 'https://' . $host;
-                if ($_SERVER['SERVER_PORT'] != 443) {
-                    $base = 'http://' . $host . ':' . $_SERVER['SERVER_PORT'];
-                }
+			$base = 'http://';
+			$port = 80;
+			if ('on' == $_SERVER['HTTPS'] || ('https' == $_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+				$base = 'https://';
+				$port = 443;
+			}
+            $base.= $host;
+
+            if ($_SERVER['SERVER_PORT'] != $port) {
+                $base.= ':' . $_SERVER['SERVER_PORT'];
             }
 			$base = rtrim($base, '.');
         }

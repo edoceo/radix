@@ -144,20 +144,24 @@ class Session
     */
     static function kill()
     {
-        // Wipe Vars
-        foreach ($_SESSION as $k=>$v) {
-            unset($_SESSION[$k]);
-        }
         $cp = session_get_cookie_params();
+
+    	if (PHP_SESSION_ACTIVE == session_status()) {
+			// Wipe Vars
+			foreach ($_SESSION as $k=>$v) {
+				unset($_SESSION[$k]);
+			}
+			session_destroy();
+		}
+
         session_regenerate_id(true);
-        session_destroy();
-        setcookie(session_name(),false,1,$cp['path'],$cp['domain'],$cp['secure']);
+        setcookie(session_name(), false, 1, $cp['path'], $cp['domain'], $cp['secure']);
     }
 
-    /*
-        Set a specific piece of data to expire at a specific time
+    /**
+	    Set a specific piece of data to expire at a specific time
 
-        @param $name String then name of the session key ($_SESSION[ $this_one ]) to expire at time
+		@param $name String then name of the session key ($_SESSION[ $this_one ]) to expire at time
         @param $time unix timestamp or date or the pattern "+(\d+)(s|m|h|d)" to expire if unchanged for that amount of time
     */
     static function expire($name,$time='+30m')

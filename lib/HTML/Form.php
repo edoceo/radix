@@ -164,7 +164,22 @@ class Form
 	*/
 	static function select($nid, $def, $list=null, $opt=null)
 	{
-		$ret = '<select id="' . $nid . '" name="' . $nid . '">';
+		// $arg = self::_element_arg($arg);
+		if (null == $opt) {
+			$opt = array();
+		} elseif (!is_array($opt)) {
+			$opt = array($opt);
+		}
+		$opt['id'] = $nid;
+		$opt['name'] = $nid;
+		ksort($opt);
+
+		$ret = '<select';
+		foreach ($opt as $k=>$v) {
+			$ret.= sprintf(' %s="%s"', $k, $v);
+		}
+		$ret.= '>';
+
 		if (!empty($list) && is_array($list)) {
 			foreach ($list as $k=>$v) {
 				$ret.= '<option ';
@@ -175,7 +190,7 @@ class Form
 		$ret.= '</select>';
 
 		self::$_idx++;
-		self::$_use_list[$n] = true;
+		self::$_use_list[$nid] = true;
 
 		return $ret;
 	}

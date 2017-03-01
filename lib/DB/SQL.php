@@ -36,9 +36,11 @@ class SQL
     */
     public static function init($dsn,$user=null,$pass=null,$opts=null)
     {
-    	// self::$_dsn = $dsh;
-        self::$_pdo = new \PDO($dsn,$user,$pass,$opts);
-        self::$_kind = strtok($dsn, ':');
+		// self::$_dsn = $dsh;
+		self::$_pdo = null;
+		self::$_pdo = new \PDO($dsn,$user,$pass,$opts);
+		self::$_pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
+		self::$_kind = strtok($dsn, ':');
     }
 
     /**

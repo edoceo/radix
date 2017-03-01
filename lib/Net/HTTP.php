@@ -12,7 +12,9 @@
 
 */
 
-class Radix_HTTP
+namespace Edoceo\Radix\Net;
+
+class HTTP
 {
     private static $_ch; // Curl Handle Array
     private static $_ch_head;

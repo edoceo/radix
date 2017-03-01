@@ -36,7 +36,7 @@ class Mongo
         if (!empty($opt['logs'])) {
             // Save for Later
         }
-        $this->_m = new \MongoClient($opt['hostname'],array('connect'=>false));
+        $this->_m = new \MongoClient($opt['hostname'], array('connect'=>false));
         $this->_d = $this->_m->selectDB($opt['database']);
     }
 
@@ -135,6 +135,14 @@ class Mongo
         $r = $c->insert($a,$opt);
         return $r;
     }
+
+	function save($c, $a)
+	{
+		$c = $this->_d->selectCollection($c);
+		$r = $c->save($a);
+		return $r;
+	}
+
 
     /**
         Update a Record
