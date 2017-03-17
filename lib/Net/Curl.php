@@ -3,7 +3,7 @@
 
 */
 
-namespace Edoceo\Radix;
+namespace Edoceo\Radix\Net
 
 class Curl
 {
