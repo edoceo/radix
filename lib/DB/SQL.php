@@ -39,7 +39,7 @@ class SQL
 		// self::$_dsn = $dsh;
 		self::$_pdo = null;
 		self::$_pdo = new \PDO($dsn,$user,$pass,$opts);
-		self::$_pdo->setAttribute(\PDO::ATTR_CASE, PDO::CASE_NATURAL);
+		self::$_pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_NATURAL);
 		self::$_kind = strtok($dsn, ':');
 	}
 
