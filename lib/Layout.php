@@ -1,21 +1,23 @@
 <?php
 /**
 	Tools for working with Layouts
+	Add Scripts and Styles
 */
 
 namespace Edoceo\Radix;
 
 class Layout
 {
-
 	private static $_script_head;
 	private static $_script_tail;
+
+	private static $_style_head;
 
 	/**
 		@param $src Source Link or Source Code
 		@param $pos Position, 'head' or null
 	*/
-	static function addScript($src, $pos='foot')
+	static function addScript($src, $pos='tail')
 	{
 		// Init
 		if (empty(self::$_script_head)) {
@@ -74,6 +76,8 @@ class Layout
 			break;
 		}
 
+		return $clt;
+
 	}
 
 	/**
@@ -130,12 +134,89 @@ class Layout
 		}
 	}
 
-	static function addStyle()
+	/**
+		Add CSS as Link or Text
+	*/
+	static function addStyle($css)
 	{
+		// Init
+		if (empty(self::$_style_head)) {
+			self::$_style_head = array();
+		}
+
+		$k = self::_addStyle_Kind($css);
+
+		self::$_style_head[] = array(
+			'kind' => $k,
+			'data' => $css,
+		);
+
 	}
 
+	/**
+		Determines if the source is Code, a Link or a full HTML Node
+
+		If $src starts with 'h' or '/', it's a link
+		If it it starts with '<' it's a Node
+		Else Code
+
+		@param $src The Source String
+		@return "code" | "link" | "node"
+	*/
+	private static function _addStyle_Kind($src)
+	{
+		$src = trim($src);
+		$clt = null; // Code or Link or full Tag
+
+		switch (substr($src, 0, 1)) {
+		case 'h': // This is too niave
+		case '/':
+			$clt = 'link';
+			break;
+		case '<':
+			$clt = 'node';
+			break;
+		default:
+			$clt = 'code';
+			break;
+		}
+
+		return $clt;
+
+	}
+
+	/**
+		@return the Style Sheets and Code
+	*/
 	static function getStyle()
 	{
+		$ret = array();
+
+		if (empty(self::$_style_head)) {
+			return null;
+		}
+
+		foreach (self::$_style_head as $i => $s) {
+			$ret[] = self::_getStyle_HTML($s);
+		}
+
+		return trim(implode("\n", $ret));
+	}
+
+	/**
+		@param $s a Style Descriptor
+		@return $s as HTML
+	*/
+	private static function _getStyle_HTML($s)
+	{
+		switch ($s['kind']) {
+		case 'code':
+			return sprintf('<style>%s</style>', $s['data']);
+		case 'link':
+			return sprintf('<link href="%s" rel="stylesheet">', $s['data']);
+		case 'node':
+			return $s['data'];
+		}
 	}
 
 }
