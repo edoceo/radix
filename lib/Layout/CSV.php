@@ -14,10 +14,18 @@ class CSV
 		@param $data Indexed Array of hash-Arrays
 		@param $cols Column Spec
 	*/
-	function __construct($data=null, $head=null)
+	function __construct($data=null, $cols=null)
 	{
-		$this->_data = $data;
-		$this->_cols = $cols;
+		if (!is_array($data)) {
+			throw new \Exception('Invalid data to CSV');
+		}
+		if (is_array($cols)) {
+			$this->_cols = $cols;
+		} else {
+			$this->_cols = array_fill(0, count($data[0]), function() {
+				return 'Col';
+			});
+		}
 	}
 
 	/**
@@ -38,6 +46,7 @@ class CSV
         if ($dl) {
 			header(sprintf('Content-Disposition: attachment; filename="%s"', $fn));
 		}
+		header('Content-Transfer-Encoding: binary');
         header('Content-Type: text/csv');
         // header('Pragma: no-cache');
 	}
