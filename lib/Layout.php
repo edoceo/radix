@@ -156,7 +156,7 @@ class Layout
 	/**
 		Determines if the source is Code, a Link or a full HTML Node
 
-		If $src starts with 'h' or '/', it's a link
+		If $src starts with 'http' or '/', it's a link
 		If it it starts with '<' it's a Node
 		Else Code
 
@@ -168,20 +168,32 @@ class Layout
 		$src = trim($src);
 		$clt = null; // Code or Link or full Tag
 
-		switch (substr($src, 0, 1)) {
-		case 'h': // This is too niave
+		$c4 = substr($src, 0, 4);
+
+		// This is too foolish
+		switch ($c4) {
+		case 'http':
+			return 'link' ;
+		case '<sty':
+			return 'node';
+		}
+
+		$c2 = substr($src, 0, 2);
+		switch ($c2) {
+		case '//':
+			return 'link';
+		case '/*':
+			return 'code';
+		}
+
+		$c1 = substr($src, 0, 1);
+		switch ($c1) {
 		case '/':
-			$clt = 'link';
-			break;
-		case '<':
-			$clt = 'node';
-			break;
-		default:
-			$clt = 'code';
+			return 'link';
 			break;
 		}
 
-		return $clt;
+		return 'code';
 
 	}
 
