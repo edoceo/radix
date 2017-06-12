@@ -75,15 +75,9 @@ class ULID
 	*/
 	function generate()
 	{
-		$t = self::encodeTime();
-		$r = self::encodeRandom();
-
+		$t = self::encodeTime($t, $tc);
+		$r = self::encodeRandom($rc);
 		return sprintf('%s%s', $t, $r);
 	}
 
 }
-
-// alert( encodeTime(  Date.now(), 10 ) );
-
-echo ULID::generate();
-echo "\n";

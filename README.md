@@ -1,24 +1,24 @@
 # Radix PHP Toolkit
 
-It's a simple PHP toolkit (or framework?) that provides a basic MVC environment
-It also includes basic tools for caching (file, memcache), databases (postgresql,mysql,sqlite,couchdb,mongodb), shopping carts and other things you'd expect to find.
-API interfaces exist for dozens of services such as AWS, Facebook, eNom, Twitter, Twilio.
+It's a simple PHP toolkit (or framework?) that provides a very basic MVC-like environment.
+It also includes basic tools for caching (file, memcache), databases (postgresql,mysql,sqlite,couchdb,mongodb), shopping carts and other wrappers for common.
+API interfaces exist for dozens of services such as Facebook, eNom, Twitter, Twilio.
 
-* Official Site: http://radix.edoceo.com/
-* API/SDK Documentation: http://radix.edoceo.com/api/
-* Git: git clone https://github.com/edoceo/radix.git
-* Packagist: https://packagist.org/packages/edoceo/radix
+ * Official Site: http://edoceo.com/radix
+ * API/SDK Documentation: http://edoceo.com/radix/api/
+ * Git: git clone https://github.com/edoceo/radix.git
+ * Packagist: https://packagist.org/packages/edoceo/radix
 
 ## History
 
 I started hacking PHP in 2001 or so; started cobbling together useful libraries as I built them.
-I read PoEAA when it came out and sort of abandoned Radix while exploring other frameworks or CMS (Cake, Drupal, Joomla, Symphony, ZF ...)
-I like them, will embrace them and use them on a weekly basis.
+I read PoEAA when it came out and sort of abandoned Radix while exploring other frameworks or CMS (Cake, Drupal, Joomla, Slim, Symphony, Yii, ZF)
+I like them and use them on a weekly basis but sometimes, one just has to smash out a quick web-app, that is what Radix is for.
 
-However, some use-cases I kept coming back to, where those didn't fit
+Some use-cases I kept coming back to, where those didn't fit
 
-* Exisiting Custom Apps needing improvement
-* Rapid Prototype / LoFi MVP
+ * Exisiting Custom Apps needing improvement
+ * Rapid Prototype / LoFi MVP
 
 ### Existing Apps
 
@@ -43,28 +43,29 @@ Due to it's simplistic nature Radix can be used to create these systems pretty q
 
 Radix has a pretty typical directory structure, very simple
 
-* ./block - Blocks
-* ./controller - Controllers
-* ./etc - Configuration
-* ./lib - Libraries or Models
-* ./lib/vendor - Vendor supplied Libraries
-* ./view - Guess!
+ * ./block - Blocks (view-partials)
+ * ./controller - Controllers
+ * ./etc - Configuration
+ * ./layout - Layout Files
+ * ./lib - Libraries or Models
+ * ./vendor - Vendor supplied Libraries (via Composer)
+ * ./view - View Scripts
 
-* ./boot.php
-* ./webroot/index.php
+ * ./boot.php
+ * ./webroot/front.php
 
 ## Radix Provided Interfaces
 
-* Basics: Caching, Cart, IPC, MRU, Session
+ * Basics: Caching, IPC, MRU, Session
 
-* Auth with HTTP, Facebook, Google or Twitter
-* Checkout: Authorize.net, MerchantE, Stripe, VirtualMerchant
-* Apps: FreeSWITCH
-* Misc API: eNom, Twilio, Phaxio, Plivo
-* Amazon: MTurk, S3, SQS
-* Email: SMTP, IMAP
-* Network: Telnet, IRC, XMPP
+ * Auth with HTTP, Facebook, Google or Twitter
+ * Checkout: Authorize.net, MerchantE, Stripe, VirtualMerchant
+ * Apps: FreeSWITCH
+ * Services: eNom, Twilio, Phaxio, Plivo
+ * Misc: ULID
+ * Email: SMTP, IMAP
+ * Network: Telnet, IRC, XMPP
 
 ## Todo
 
-https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
+ https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
