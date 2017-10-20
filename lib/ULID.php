@@ -3,36 +3,34 @@
 	Radix ULID Generator
 
 	@see https://github.com/alizain/ulid/
+	@see https://github.com/bk/Data-ULID/blob/master/lib/Data/ULID.pm
+	@see http://php.net/manual/en/function.base-convert.php
+	@see https://github.com/bbars/utils/blob/master/php-base32-encode-decode/Base32.php
 */
 
 namespace Edoceo\Radix;
 
 class ULID
 {
-	// Crockford's Base32
-	// https://en.wikipedia.org/wiki/Base32
+	// @see https://en.wikipedia.org/wiki/Base32
 	const ENCODING = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-	const ENCODING_LEN = 32; // ENCODING.length
+	const ENCODING_LEN = 32;
 
-	const TIME_MAX = 281474976710655;
+	// const TIME_MAX = 281474976710655;
 	const TIME_LEN = 10;
 
-	const RANDOM_LEN = 16;
+	const RAND_LEN = 16;
 
 	/**
 		@param $tms Timestamp, in milliseconds
 		@param $max Max Length, in Characters
 	*/
-	function encodeTime($tms=null, $len=10)
+	static function encodeTime($tms=null, $len=10)
 	{
 		if (empty($tms)) {
 			$tms = microtime(true);
 			$tms = floor($tms * 1000);
 		}
-
-//		if ($tms > self::TIME_MAX) {
-//			throw new Exception("cannot encode time greater than " + self::TIME_MAX)
-//		}
 
 		$ret = array();
 
@@ -52,7 +50,7 @@ class ULID
 		Encode a Random Length of
 		@param $max The Max Length of the Random Data in Bytes
 	*/
-	function encodeRandom($max=16)
+	static function encodeRandom($max=16)
 	{
 		$rnd = 0;
 		$ret = array();
@@ -73,10 +71,10 @@ class ULID
 	/**
 		Generate a ULID and return in Base32
 	*/
-	function generate()
+	static function generate()
 	{
-		$t = self::encodeTime($t, $tc);
-		$r = self::encodeRandom($rc);
+		$t = self::encodeTime();
+		$r = self::encodeRandom();
 		return sprintf('%s%s', $t, $r);
 	}
 
