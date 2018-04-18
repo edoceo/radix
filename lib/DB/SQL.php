@@ -40,6 +40,8 @@ class SQL
 		self::$_pdo = null;
 		self::$_pdo = new \PDO($dsn,$user,$pass,$opts);
 		self::$_pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_NATURAL);
+		self::$_pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		self::$_pdo->setAttribute(\PDO::ATTR_ORACLE_NULLS, \PDO::NULL_EMPTY_STRING);
 		self::$_kind = strtok($dsn, ':');
 	}
 
