@@ -142,21 +142,26 @@ class Session
         Regenerates ID
         Flushes Cookie
     */
-    static function kill()
-    {
-        $cp = session_get_cookie_params();
+	static function kill()
+	{
+		//session_regenerate_id(true);
 
-    	if (PHP_SESSION_ACTIVE == session_status()) {
+		if (PHP_SESSION_ACTIVE == session_status()) {
+
+			$cp = session_get_cookie_params();
+			$sn = session_name();
+
 			// Wipe Vars
 			foreach ($_SESSION as $k=>$v) {
 				unset($_SESSION[$k]);
 			}
 			session_destroy();
+
+			setcookie($sn, false, 1, $cp['path'], $cp['domain'], $cp['secure']);
+
 		}
 
-        session_regenerate_id(true);
-        setcookie(session_name(), false, 1, $cp['path'], $cp['domain'], $cp['secure']);
-    }
+	}
 
     /**
 	    Set a specific piece of data to expire at a specific time
