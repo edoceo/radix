@@ -22,7 +22,6 @@
 		"ext-date": "*",
 		"ext-imap": "*",
 		"ext-json": "*",
-		"ext-mcrypt": "*",
 		"ext-PDO": "*",
 		"ext-session": "*",
 		"ext-sockets": "*"
