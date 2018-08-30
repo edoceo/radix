@@ -174,6 +174,7 @@ class Layout
 		switch ($c4) {
 		case 'http':
 			return 'link' ;
+		case '<lin';
 		case '<sty':
 			return 'node';
 		}
