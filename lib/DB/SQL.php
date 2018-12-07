@@ -14,16 +14,25 @@ namespace Edoceo\Radix\DB;
 */
 class SQL
 {
-	private $_c; // Connection Object
+	private $_pdo;
+	private $_pdo_type;
 
-	private static $_pdo;
-	private static $_kind;
-	private static $_sql_stat = array();
-	private static $_sql_tick = 0;
+	private $_sql_stat = array();
+	private $_sql_tick = 0;
 
-	function __construct($dst=null, $user=null, $pass=null, $opts=null)
+	private static $__me;
+
+	function __construct($dsn=null, $user=null, $pass=null, $opts=null)
 	{
-		$this->_c = new \PDO($dsn, $user, $pass, $opts);
+		$this->_pdo = new \PDO($dsn, $user, $pass, $opts);
+
+		$this->_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+		$this->_pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_NATURAL);
+		$this->_pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		$this->_pdo->setAttribute(\PDO::ATTR_ORACLE_NULLS, \PDO::NULL_EMPTY_STRING);
+
+		$this->_pdo_type = $this->_pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+
 	}
 
 	/**
@@ -36,13 +45,57 @@ class SQL
 	*/
 	public static function init($dsn,$user=null,$pass=null,$opts=null)
 	{
-		// self::$_dsn = $dsh;
-		self::$_pdo = null;
-		self::$_pdo = new \PDO($dsn,$user,$pass,$opts);
-		self::$_pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_NATURAL);
-		self::$_pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-		self::$_pdo->setAttribute(\PDO::ATTR_ORACLE_NULLS, \PDO::NULL_EMPTY_STRING);
-		self::$_kind = strtok($dsn, ':');
+		self::$__me = new self($dsn, $user, $pass, $opts);
+	}
+
+	/**
+		Handles/maps the deprected static callers
+		@param $f Function
+		@param $a Arguments
+	*/
+	public static function __callStatic($f, $a)
+	{
+		switch ($f) {
+		case 'delete':
+			return self::$__me->_delete($a[0], $a[1]);
+		case 'fetch':
+			return self::$__me->_fetch($a[0], $a[1]);
+		case 'fetch_all':
+			return self::$__me->fetchAll($a[0], $a[1]);
+		case 'fetch_one':
+			return self::$__me->fetchOne($a[0], $a[1]);
+		case 'fetch_row':
+			return self::$__me->fetchRow($a[0], $a[1]);
+		case 'insert':
+			return self::$__me->_insert($a[0], $a[1]);
+		case 'query':
+			return self::$__me->_query($a[0], $a[1]);
+		case 'update':
+			return self::$__me->_update($a[0], $a[1], $a[2]);
+		}
+
+		die("static $f");
+	}
+
+	/**
+		Handles/maps the conflict for name called on object
+		@param $f Function
+		@param $a Arguments
+	*/
+	function __call($f, $a)
+	{
+		switch ($f) {
+		case 'delete':
+			return $this->_delete($a[0], $a[1]);
+		case 'fetch':
+			return $this->_fetch($a[0], $a[1]);
+		case 'insert':
+			return $this->_insert($a[0], $a[1]);
+		case 'update':
+			return $this->_insert($a[0], $a[1], $a[2]);
+		}
+
+		die("object $f\n");
 	}
 
 	/**
@@ -50,12 +103,12 @@ class SQL
 
 		@return null or text string like: #%d:%s
 	*/
-	public static function lastError()
+	public function lastError()
 	{
-		if (empty(self::$_pdo)) {
+		if (empty($this->_pdo)) {
 			return null;
 		}
-		$info = self::$_pdo->errorInfo();
+		$info = $this->_pdo->errorInfo();
 		if (!empty($info[2])) {
 			return sprintf('%s (Guru Meditation: #%s.%s)',$info[2],$info[0],$info[1]);
 		}
@@ -64,11 +117,11 @@ class SQL
 	/**
 		@return Status Information Array
 	*/
-	public static function stat()
+	public function stat()
 	{
 		$ret = array(
-			'query-tick' => self::$_sql_tick,
-			'query-stat' => self::$_sql_stat,
+			'query-tick' => $this->_sql_tick,
+			'query-stat' => $this->_sql_stat,
 		);
 		return $ret;
 	}
@@ -80,11 +133,11 @@ class SQL
 		@param $arg array bindable parameters, no escaping
 		@return Object PDO Statment
 	*/
-	public static function fetch($sql,$arg=null)
+	public function _fetch($sql,$arg=null)
 	{
-		$res = self::_sql_query($sql,$arg);
+		$res = $this->_sql_query($sql,$arg);
 		if ($res) {
-			$res->setFetchMode(\PDO::FETCH_ASSOC);
+			//$res->setFetchMode(\PDO::FETCH_ASSOC);
 		}
 		return $res;
 	}
@@ -96,22 +149,15 @@ class SQL
 		@param $arg bindable array
 		@return array of rows
 	*/
-	public static function fetch_all($sql,$arg=null)
+	public function fetchAll($sql,$arg=null)
 	{
 		$ret = null;
-		if ($res = self::_sql_query($sql,$arg)) {
-			$res->setFetchMode(\PDO::FETCH_ASSOC);
+		if ($res = $this->_sql_query($sql,$arg)) {
+			//$res->setFetchMode(\PDO::FETCH_ASSOC);
 			$ret = $res->fetchAll();
 			$res->closeCursor();
 		}
 		return $ret;
-	}
-	/**
-		Canonical Name for fetch_all
-	*/
-	public function fetchAll($sql, $arg=null)
-	{
-		return self::fetch_all($sql, $arg);
 	}
 
 	/**
@@ -119,9 +165,9 @@ class SQL
 		@param $arg bindable array
 		@return array keys are first column, value is record object
 	*/
-	public static function fetch_map($sql,$arg=null)
+	public function fetchMap($sql,$arg=null)
 	{
-		$res = self::_sql_query($sql,$arg);
+		$res = $this->_sql_query($sql,$arg);
 		$ret = array();
 		while ($rec = $res->fetch(\PDO::FETCH_BOTH)) {
 			$ret[ $rec[0] ] = $rec;
@@ -134,19 +180,14 @@ class SQL
 		@param $arg bindable array
 		@return array, 0 column is key, 1 column is value
 	*/
-	public static function fetch_mix($sql,$arg=null)
+	public function fetchMix($sql,$arg=null)
 	{
-		$res = self::_sql_query($sql,$arg);
+		$res = $this->_sql_query($sql,$arg);
 		$ret = array();
 		while ($rec = $res->fetch(\PDO::FETCH_NUM)) {
 			$ret[ $rec[0] ] = $rec[1];
 		}
 		return $ret;
-	}
-
-	public function fetchMix($sql,$arg=null)
-	{
-		return self::fetch_mix($sql, $arg);
 	}
 
 	/**
@@ -156,9 +197,9 @@ class SQL
 		@param $arg bindable array
 		@return single scalar variable
 	*/
-	public static function fetch_one($sql,$arg=null)
+	public function fetchOne($sql,$arg=null)
 	{
-		$res = self::_sql_query($sql,$arg);
+		$res = $this->_sql_query($sql,$arg);
 		if ($res) {
 			$rec = $res->fetch(\PDO::FETCH_NUM);
 			$res->closeCursor();
@@ -178,14 +219,9 @@ class SQL
 	*/
 	public function fetchRow($sql,$arg=null)
 	{
-		return self::fetch_row($sql, $arg);
-	}
-
-	public static function fetch_row($sql,$arg=null)
-	{
-		$res = self::_sql_query($sql,$arg);
+		$res = $this->_sql_query($sql,$arg);
 		if ($res) {
-			$rec = $res->fetch(\PDO::FETCH_ASSOC);
+			$rec = $res->fetch();
 			$res->closeCursor();
 			if ($rec !== false) {
 				return $rec;
@@ -201,9 +237,9 @@ class SQL
 		@param $arg array of bindable parameters
 		@return number of affected rows
 	*/
-	public static function query($sql,$arg=null)
+	public function _query($sql,$arg=null)
 	{
-		if ($r = self::_sql_query($sql,$arg)) {
+		if ($r = $this->_sql_query($sql,$arg)) {
 			return $r->rowCount();
 		}
 		return false;
@@ -215,19 +251,19 @@ class SQL
 		@param $arg array of prepare parameters
 		@return PDO Statment Handle
 	*/
-	public static function prepare($sql,$arg=null)
+	public function prepare($sql,$arg=null)
 	{
 		if (empty($arg)) {
 			$arg = array();
 		}
-		$res = self::$_pdo->prepare($sql,$arg);
+		$res = $this->$_pdo->prepare($sql,$arg);
 		return $res;
 	}
 
 	/**
 		Insert Data using PDO Query
 	*/
-	public static function insert($t,$r)
+	public function _insert($t,$r)
 	{
 		$col_name = array();
 		$col_data = array();
@@ -238,7 +274,7 @@ class SQL
 			$col_hold[] = '?';
 		}
 
-		switch (self::$_kind) {
+		switch ($this->_pdo_type) {
 		case 'mysql':
 			$sql = sprintf('INSERT INTO %s (%s) VALUES (%s)',$t,implode(',',$col_name),implode(',',$col_hold));
 			break;
@@ -250,19 +286,19 @@ class SQL
 			break;
 		}
 
-		$res = self::_sql_query($sql,$col_data);
+		$res = $this->_sql_query($sql,$col_data);
 		if (0 == $res->rowCount()) {
 			// radix::dump($col_data);
-			throw new \Exception('RDS#251: ' . self::lastError());
+			throw new \Exception('RDS#251: ' . $this->lastError());
 		}
-		$drv = self::$_pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
-		switch ($drv) {
+
+		switch ($this->_pdo_type) {
 		case 'mssql':
-			return self::_sql_query('SELECT @@IDENTITY',null);
+			return $this->_sql_query('SELECT @@IDENTITY',null);
 		case 'pgsql':
 			return $res->fetchColumn(0);
 		case 'sqlite':
-			return self::$_pdo->lastInsertId();
+			return $this->_pdo->lastInsertId();
 		default:
 			throw new \Exception("RDS#265: Unhandled Driver: $drv");
 		}
@@ -275,7 +311,7 @@ class SQL
 		@param $r = Record Data Array
 		@param $w = WHERE clause string
 	*/
-	public static function update($t,$r,$w)
+	public function _update($t,$r,$w)
 	{
 		$arg = array();
 		foreach ($r as $k=>$v) {
@@ -283,57 +319,87 @@ class SQL
 			$arg[] = $v;
 		}
 		$sql = sprintf('UPDATE %s SET %s WHERE (%s)',$t,implode(',',$col),$w);
-		$res = self::_sql_query($sql,$arg);
+		$res = $this->_sql_query($sql,$arg);
 		return $res->rowCount();
 	}
 
 	/**
 		Delete from a Table
 	*/
-	public static function delete($t,$w)
+	public function _delete($t,$w)
 	{
-		$sql = 'DELETE FROM ' . self::$_pdo->quote($t);
+		$sql = 'DELETE FROM ' . $this->_pdo->quote($t);
 		$sql.= ' WHERE (' . $w . ')';
-		return self::_sql_query($sql);
+		return $this->_sql_query($sql);
 	}
 
-	public static function shut()
+	public function shut()
 	{
-		self::$_pdo = null;
+		$this->_pdo = null;
 	}
 
 	/**
 		@param $sql string
 		@param $arg array
 	*/
-	private static function _sql_query($sql,$arg)
+	function _sql_debug($sql,$arg)
+	{
+		$out = $sql;
+
+		foreach ($arg as $k => $v) {
+			if (':' == substr($k, 0, 1)) {
+				$out = str_replace($k, "'$v'", $out);
+			} else {
+				$out = preg_replace('/\?/', "'$v'", $out, 1);
+			}
+		}
+
+		return "$out\n";
+	}
+
+	/**
+		@param $sql string
+		@param $arg array
+	*/
+	private function _sql_query($sql,$arg)
 	{
 		$res = null;
-		if (empty(self::$_pdo)) {
+		if (empty($this->_pdo)) {
 			return $res;
 		}
-		$t = microtime(true);
+		$t0 = microtime(true);
 		// Query
 		if (!empty($arg)) { // got parameters
 			if (!is_array($arg)) {
 				$arg = array($arg); // Promote
 			}
-			$res = self::$_pdo->prepare($sql);
+			$res = $this->_pdo->prepare($sql);
 			if (empty($res)) {
-				die(self::lastError());
+				die($this->lastError());
 			}
 			$res->execute($arg);
 		} else { // straight SQL
-			$res = self::$_pdo->query($sql);
+			$res = $this->_pdo->query($sql);
 		}
 		// Counter
-		self::$_sql_tick++;
-		if (empty(self::$_sql_stat[$sql])) {
-			 self::$_sql_stat[$sql] = array('exec' => 1, 'time' => (microtime(true) - $t));
+		$t1 = (microtime(true) - $t0);
+		$this->_sql_tick++;
+		if (empty($this->_sql_stat[$sql])) {
+			 $this->_sql_stat[$sql] = array('exec' => 1, 'time' => $t1);
 		} else {
-			 self::$_sql_stat[$sql]['exec'] = self::$_sql_stat[$sql]['exec'] + 1;
-			 self::$_sql_stat[$sql]['time'] = self::$_sql_stat[$sql]['time'] + (microtime(true) - $t);
+			 $this->_sql_stat[$sql]['exec'] = $this->_sql_stat[$sql]['exec'] + 1;
+			 $this->_sql_stat[$sql]['time'] = $this->_sql_stat[$sql]['time'] + $t1;
 		}
+
+		// Some Logging Hook?
+		//if (!empty($this->_sql_dump)) {
+		//	if (is_resource($this->_sql_dump)) {
+		//		if ('stream' == get_resource_type($this->_sql_dump)) {
+		//
+		//		}
+		//	}
+		//}
+
 		return $res;
 	}
 
@@ -342,7 +408,7 @@ class SQL
 
 		@param $t specific Table, null or empty for list of views
 	*/
-	public static function describeTable($t=null)
+	public function describeTable($t=null)
 	{
 		// For PostgreSQL 8 & 9
 		$sql = 'SELECT n.nspname as "Schema", ';
@@ -362,7 +428,7 @@ class SQL
 
 		@param $v specific view, null or empty for list of views
 	*/
-	public static function describeView($v=null)
+	public function describeView($v=null)
 	{
 		// For PostgreSQL 8 & 9
 		$sql = 'SELECT n.nspname as "Schema", ';
@@ -379,7 +445,7 @@ class SQL
 
 	/**
 	*/
-	public static function describeColumn($t,$c)
+	public function describeColumn($t,$c)
 	{
 		$sql = 'SELECT * ';
 		$sql.= 'FROM pg_attribute ';
@@ -399,10 +465,9 @@ class SQL
 	*/
 	function showUsers()
 	{
-		$drv = self::$_pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
-		switch ($drv) {
+		switch ($this->_pdo_type) {
 		case 'mssql':
-			// return self::_sql_query('SELECT @@IDENTITY',null);
+			// return $this->_sql_query('SELECT @@IDENTITY',null);
 			break;
 		case 'mysql':
 			return $this->_pdo->fetchAll('SELECT * FROM mysql.user');
