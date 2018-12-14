@@ -89,8 +89,14 @@ class SQL
 			return $this->_delete($a[0], $a[1]);
 		case 'fetch':
 			return $this->_fetch($a[0], $a[1]);
+		case 'fetch_all':
+			return $this->fetchAll($a[0], $a[1]);
+		case 'fetch_row':
+			return $this->fetchRow($a[0], $a[1]);
 		case 'insert':
 			return $this->_insert($a[0], $a[1]);
+		case 'query':
+			return $this->_query($a[0], $a[1]);
 		case 'update':
 			return $this->_insert($a[0], $a[1], $a[2]);
 		}
@@ -136,9 +142,6 @@ class SQL
 	public function _fetch($sql,$arg=null)
 	{
 		$res = $this->_sql_query($sql,$arg);
-		if ($res) {
-			//$res->setFetchMode(\PDO::FETCH_ASSOC);
-		}
 		return $res;
 	}
 
@@ -153,7 +156,6 @@ class SQL
 	{
 		$ret = null;
 		if ($res = $this->_sql_query($sql,$arg)) {
-			//$res->setFetchMode(\PDO::FETCH_ASSOC);
 			$ret = $res->fetchAll();
 			$res->closeCursor();
 		}
