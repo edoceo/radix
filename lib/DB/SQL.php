@@ -62,6 +62,8 @@ class SQL
 			return self::$__me->_fetch($a[0], $a[1]);
 		case 'fetch_all':
 			return self::$__me->fetchAll($a[0], $a[1]);
+		case 'fetch_mix':
+			return self::$__me->fetchMix($a[0], $a[1]);
 		case 'fetch_one':
 			return self::$__me->fetchOne($a[0], $a[1]);
 		case 'fetch_row':
@@ -91,6 +93,8 @@ class SQL
 			return $this->_fetch($a[0], $a[1]);
 		case 'fetch_all':
 			return $this->fetchAll($a[0], $a[1]);
+		case 'fetch_mix':
+			return $this->fetchMix($a[0], $a[1]);
 		case 'fetch_row':
 			return $this->fetchRow($a[0], $a[1]);
 		case 'insert':
