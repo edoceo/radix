@@ -97,7 +97,6 @@ class Image
             // Copy & Center
             imagecopyresampled($dst_i,$src_i,$off_x,$off_y,0,0,$new_w,$new_h,$src_w,$src_h);
             $ret = imagepng($dst_i,$dst);
-            radix::dump($ret);
             imagedestroy($src_i);
             imagedestroy($dst_i);
             if ($ret !== true) {
