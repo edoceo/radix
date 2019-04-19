@@ -71,9 +71,9 @@ class ULID
 	/**
 		Generate a ULID and return in Base32
 	*/
-	static function generate()
+	static function generate($tms=null, $r=null)
 	{
-		$t = self::encodeTime();
+		$t = self::encodeTime($tms);
 		$r = self::encodeRandom();
 		return sprintf('%s%s', $t, $r);
 	}
