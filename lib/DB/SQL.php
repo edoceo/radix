@@ -102,7 +102,7 @@ class SQL
 		case 'query':
 			return $this->_query($a[0], $a[1]);
 		case 'update':
-			return $this->_insert($a[0], $a[1], $a[2]);
+			return $this->_update($a[0], $a[1], $a[2]);
 		}
 
 		die("object $f\n");
@@ -324,7 +324,19 @@ class SQL
 			$col[]= sprintf('%s = ?',$k);
 			$arg[] = $v;
 		}
-		$sql = sprintf('UPDATE %s SET %s WHERE (%s)',$t,implode(',',$col),$w);
+
+		// Expand WHERE?
+		if (is_array($w)) {
+			// rebuild Where
+			$tmp = array();
+			foreach ($w as $k => $v) {
+				$tmp[] = sprintf('%s = ?', $k);
+				$arg[] = $v;
+			}
+			$w = implode(' AND ', $tmp);
+		}
+
+		$sql = sprintf('UPDATE %s SET %s WHERE (%s)', $t, implode(',', $col), $w);
 		$res = $this->_sql_query($sql,$arg);
 		return $res->rowCount();
 	}
