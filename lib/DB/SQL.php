@@ -346,9 +346,21 @@ class SQL
 	*/
 	public function _delete($t,$w)
 	{
-		$sql = 'DELETE FROM ' . $this->_pdo->quote($t);
-		$sql.= ' WHERE (' . $w . ')';
-		return $this->_sql_query($sql);
+		$arg = array();
+
+		if (is_array($w)) {
+			// rebuild Where
+			$tmp = array();
+			foreach ($w as $k => $v) {
+				$tmp[] = sprintf('%s = ?', $k);
+				$arg[] = $v;
+			}
+			$w = implode(' AND ', $tmp);
+		}
+
+		$sql = sprintf('DELETE FROM %s WHERE (%s)', $t, $w);
+
+		return $this->_sql_query($sql, $arg);
 	}
 
 	public function shut()
