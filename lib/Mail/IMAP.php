@@ -39,7 +39,6 @@ class IMAP
 	private function _init($uri)
 	{
 		$this->_c = null;
-		$this->_c_uri = $uri;
 
 		if (empty($uri['host'])) {
 			$uri['host'] = 'localhost';
@@ -55,6 +54,7 @@ class IMAP
 		case 'imap-ssl':
 			$flag[] = 'imap';
 			$flag[] = 'ssl';
+			$flag[] = 'novalidate-cert';
 			$port = '993';
 			break;
 		case 'tls':
@@ -100,7 +100,16 @@ class IMAP
 			}
 		}
 
+		//var_dump($c_str);
+		//var_dump($uri);
+
 		$this->_c = imap_open($c_str, $uri['user'], $uri['pass'], OP_HALFOPEN, self::TRY_OPEN);
+		$err =  imap_last_error();
+		// var_dump($err);
+		// var_dump(imap_alerts());
+		// var_dump(imap_errors());
+
+		// exit;
 
 		// if ($this->_c) {
 		//	 // $this->_c_stat = imap_mailboxmsginfo($this->_c);
@@ -112,14 +121,16 @@ class IMAP
 	/**
 		Immediately Delete and Expunge the message
 	*/
-	function mailDelete($i, $flush=false)
+	function mailDelete($m, $flush=false)
 	{
 
-		imap_delete($this->_c, intval($x));
+		$x = imap_delete($this->_c, $m, FT_UID);
 
 		if ($flush) {
 			imap_expunge($this->_c);
 		}
+
+		return $x;
 
 	}
 
@@ -129,7 +140,7 @@ class IMAP
 	function mailGet($m, $part='1')
 	{
 		$i = intval($m);
-		$b = imap_fetchbody($this->_c, $i, null, FT_PEEK);
+		$b = imap_fetchbody($this->_c, $i, $part, FT_INTERNAL|FT_PEEK|FT_UID);
 		$x = $this->stat();
 		if (preg_match('/Could not parse command/',$x)) {
 			return null;
@@ -157,7 +168,7 @@ class IMAP
 	{
 		// $t0 = microtime(true);
 
-		$x = imap_fetchheader($this->_c, $i);
+		$x = imap_fetchheader($this->_c, $i, FT_INTERNAL|FT_UID);
 
 		$x = str_replace("\r\n", "\n", $x); // Fix Line Endings
 		$x = preg_replace('/\n\s+/ms', ' ', $x); // Un-Fold
@@ -177,6 +188,23 @@ class IMAP
 	function mailList()
 	{
 		// FT_UID imap_headers
+		$ret = imap_headers($this->_c);
+		var_dump($ret)
+		return $ret;
+	}
+
+
+	/**
+	 * [mailMove description]
+	 * @param [type] $m [description]
+	 * @param [type] $f [description]
+	 * @return [type] [description]
+	 */
+	function mailMove($m, $f)
+	{
+		$r = imap_mail_move($this->_c, $m, $f, CP_UID);
+		imap_expunge($this->_c);
+		return $r;
 	}
 
 
@@ -202,6 +230,19 @@ class IMAP
 		}
 
 		return true;
+	}
+
+	function mailStat($x, $y=null)
+	{
+		$uid = $x;
+		if (!empty($y)) {
+
+		}
+		$ret = imap_fetchstructure($this->_c, $uid, FT_UID);
+		$ret = json_decode(json_encode($ret), true);
+		// $ret['msgno'] = imap_msgno($this->_c, $m);
+		return $ret;
+
 	}
 
 	/**
@@ -286,13 +327,10 @@ class IMAP
 	function pathStat($p)
 	{
 		$ret = array();
-		// $ret = imap_status($this->_c, self::folderName($p), SA_ALL);
-		// print_r($ret);
-		// $x = $this->stat();
-		// print_r($x);
-
+		$ret['path_stat'] = imap_status($this->_c, $p, SA_ALL);
 		$ret['msg_max'] = imap_num_msg($this->_c);
-		$ret['msg_info'] = imap_mailboxmsginfo($this->_c);
+		$ret['mail_info'] = imap_mailboxmsginfo($this->_c);
+		$ret['mail_list'] = imap_fetch_overview($this->_c, sprintf('1:%d', $ret['msg_max']), 0);
 
 		return $ret;
 
