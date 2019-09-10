@@ -189,7 +189,7 @@ class IMAP
 	{
 		// FT_UID imap_headers
 		$ret = imap_headers($this->_c);
-		var_dump($ret)
+		var_dump($ret);
 		return $ret;
 	}
 
