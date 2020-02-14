@@ -71,11 +71,16 @@ class ULID
 	/**
 		Generate a ULID and return in Base32
 	*/
-	static function generate($tms=null, $r=null)
+	static function create($tms=null)
 	{
 		$t = self::encodeTime($tms);
 		$r = self::encodeRandom();
 		return sprintf('%s%s', $t, $r);
+	}
+	// Old Name
+	static function generate($tms=null)
+	{
+		return self::create($tms);
 	}
 
 }
