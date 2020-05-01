@@ -262,7 +262,7 @@ class SQL
 		if (empty($arg)) {
 			$arg = array();
 		}
-		$res = $this->$_pdo->prepare($sql,$arg);
+		$res = $this->_pdo->prepare($sql,$arg);
 		return $res;
 	}
 
