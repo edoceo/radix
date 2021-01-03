@@ -1,7 +1,6 @@
 <?php
 /**
-    @file
-    @brief Tools for interacting with Twitter
+ * Tools for interacting with Twitter
 
     @package radix
 
@@ -13,7 +12,9 @@
 
 */
 
-class radix_twitter
+namespace Edoceo\Radix\Service
+
+class Twitter
 {
     const API_URI = 'http://twitter.com';
     const AUTH_URI = 'http://twitter.com/oauth/authenticate';

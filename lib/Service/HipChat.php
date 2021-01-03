@@ -6,7 +6,9 @@
 	@see https://github.com/tobeychris/hipchat-room-message-APIv2/
 */
 
-class radix_api_hipchat
+namespace Edoceo\Radix\Service;
+
+class HipChat
 {
 	protected $_base = 'https://api.hipchat.com/v2';
 	public $_auth;
