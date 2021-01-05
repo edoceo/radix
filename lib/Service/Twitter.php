@@ -10,17 +10,27 @@
     @see https://github.com/jmathai/twitter-async
     @see http://pear.php.net/package/Services_Twitter
 
+  https://developer.twitter.com/en/docs/authentication/api-reference/authenticate
+  https://developer.twitter.com/en/docs/authentication/oauth-1-0a
+  https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
+  https://developer.twitter.com/ja/docs/basics/authentication/overview/oauth
+  https://stackoverflow.com/questions/12916539/simplest-php-example-for-retrieving-user-timeline-with-twitter-api-version-1-1/15314662#15314662
+  https://code.tutsplus.com/tutorials/how-to-authenticate-users-with-twitter-oauth-20--cms-25713
+  https://iag.me/socialmedia/build-your-first-twitter-app-using-php-in-8-easy-steps/
+  https://twitteroauth.com/
+
+
 */
 
-namespace Edoceo\Radix\Service
+namespace Edoceo\Radix\Service;
 
 class Twitter
 {
-    const API_URI = 'http://twitter.com';
-    const AUTH_URI = 'http://twitter.com/oauth/authenticate';
-    const URI_AUTHORIZE = 'http://api.twitter.com/oauth/authorize';
-    const TOKEN_REQUEST_URI = 'http://api.twitter.com/oauth/request_token';
-    const TOKEN_ACCESS_URI = 'http://api.twitter.com/oauth/access_token';
+    const API_URI = 'https://twitter.com';
+    const AUTH_URI = 'https://twitter.com/oauth/authenticate';
+    const URI_AUTHORIZE = 'https://api.twitter.com/oauth/authorize';
+    const TOKEN_REQUEST_URI = 'https://api.twitter.com/oauth/request_token';
+    const TOKEN_ACCESS_URI = 'https://api.twitter.com/oauth/access_token';
     const USER_AGENT = 'Edoceo Radix Twitter';
 
     private static $_oauth_keys = array(
@@ -99,38 +109,10 @@ class Twitter
         Returns a Request Token
         @param $a = something?
     */
-    private function getRequestToken($a=null)
+    public function getRequestToken($a=null)
     {
         $r = $this->_curl('POST',self::TOKEN_REQUEST_URI,$a);
         return $r;
-    }
-
-    /**
-        @deprecated
-    */
-    public function __call($name, $params = null)
-    {
-        $parts  = explode('_', $name);
-        $method = strtoupper(array_shift($parts));
-        $parts  = implode('_', $parts);
-        $path   = '/' . preg_replace('/[A-Z]|[0-9]+/e', "'/'.strtolower('\\0')", $parts) . '.json';
-        if(!empty($params))
-          $args = array_shift($params);
-
-        // intercept calls to the search api
-        if(preg_match('/^(search|trends)/', $parts)) {
-          $query = isset($args) ? http_build_query($args) : '';
-          $url = "{$this->searchUrl}{$path}?{$query}";
-          $ch = curl_init($url);
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-          return new EpiTwitterJson(EpiCurl::getInstance()->addCurl($ch));
-        }
-        // Radix::dump($args);
-
-        $r = $this->_curl($method, self::API_URI . $path, $args);
-        $r = json_decode($r['body']);
-        return $r; // new EpiTwitterJson(call_user_func(array($this, 'httpRequest'), $method, "{$this->apiUrl}{$path}", $args));
     }
 
     /**
@@ -182,6 +164,10 @@ class Twitter
         $verb = strtoupper($verb);
 
         $post_args = $args;
+	if (empty($post_args)) {
+		$post_args = [];
+	}
+
         $sign_args = array();
 
         // Sign Args Factors All Params
@@ -199,7 +185,6 @@ class Twitter
         }
         $sign_args['oauth_signature'] = $this->_makeSignature($verb, $uri, $sign_args);
         ksort($sign_args);
-        //Radix::dump($sign_args);
 
         // Create Headers
         $head = array('Expect:');
@@ -215,12 +200,17 @@ class Twitter
             'Expect:',
         );
 
+	if (('GET' == $verb) && (count($post_args) > 0)) {
+		$uri.= '?' . http_build_query($post_args);
+	}
+
         $ch = curl_init($uri);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
         curl_setopt($ch, CURLOPT_USERAGENT, self::USER_AGENT);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
+	curl_setopt($ch, CURLINFO_HEADER_OUT, true);
         if ($verb == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_args));
@@ -251,9 +241,9 @@ class Twitter
             }
         }
         $ret .= $uri['path'];
-        if(!empty($uri['query'])) {
-          $ret .= "?{$uri['query']}";
-        }
+        //if(!empty($uri['query'])) {
+        //  $ret .= "?{$uri['query']}";
+        //}
 
         return $ret;
     }
