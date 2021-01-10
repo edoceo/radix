@@ -376,6 +376,7 @@ class SQL
 	{
 		$out = $sql;
 
+		// Very Dummy Replacemnet
 		foreach ($arg as $k => $v) {
 			if (':' == substr($k, 0, 1)) {
 				$out = str_replace($k, "'$v'", $out);
@@ -384,7 +385,7 @@ class SQL
 			}
 		}
 
-		return "$out\n";
+		return sprintf('%s;', $out);
 	}
 
 	/**
