@@ -685,33 +685,33 @@ class Radix
             switch ($code) {
             case 301:
                 // Convert to GET
-                header("301 Moved Permanently HTTP/1.1",true,$code);
+                header('HTTP/1.1 301 Moved Permanently', true, $code);
                 break;
             case 302:
                 // Confirm re-POST
-                header("302 Found HTTP/1.1",true,$code);
+                header('HTTP/1.1 302 Found', true, $code);
                 break;
             case 303:
                 // dont cache, always use GET
-                header("303 See Other HTTP/1.1",true,$code);
+                header('HTTP/1.1 303 See Other', true, $code);
                 break;
             case 304:
                 // use cache
-                header("304 Not Modified HTTP/1.1",true,$code);
+                header('HTTP/1.1 304 Not Modified', true, $code);
                 break;
             case 305:
-                header("305 Use Proxy HTTP/1.1",true,$code);
+                header('HTTP/1.1 305 Use Proxy', true, $code);
                 break;
             // case 306:
             //     header("306 Not Used HTTP/1.1",true,$code);
             //     break;
             case 307:
-                header("307 Temporary Redirect HTTP/1.1",true,$code);
+                header('HTTP/1.1 307 Temporary Redirect', true, $code);
                 break;
             default:
                 // Pass Directly
-                if (preg_match('/^(\d{3}) .+ HTTP\/1\.[01]/',$code,$m)) {
-                    header($code,true,$m[1]);
+                if (preg_match('/^HTTP\/1.1 (\d{3})/', $code, $m)) {
+                    header($code, true, $m[1]);
                 }
                 break;
             }
