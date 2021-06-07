@@ -20,7 +20,6 @@
 		"php": ">=5.4.0",
 		"ext-curl": "*",
 		"ext-date": "*",
-		"ext-imap": "*",
 		"ext-json": "*",
 		"ext-PDO": "*",
 		"ext-session": "*",
