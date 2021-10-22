@@ -151,9 +151,9 @@ class Radix
         // die( $src );
         // if (preg_match(
     }
-    
+
     /**
-    
+
     */
     public static function stat()
     {
@@ -181,7 +181,7 @@ class Radix
         foreach ($list as $file) {
             if (is_file($file)) return true;
         }
-        
+ 
         return false;
     }
 
@@ -439,8 +439,7 @@ class Radix
         $base = null;
         if ($full) {
             // Find Hostname
-            $host = @$_SERVER['HTTP_HOST'];
-            if (empty($host)) $host = $_SERVER['SERVER_NAME'];
+            $host = $_SERVER['SERVER_NAME'];
             if (empty($host)) $host = $_SERVER['SERVER_ADDR'];
 
             // Scheme, Hostname & Port
@@ -648,38 +647,6 @@ class Radix
             $uri = '/';
         }
 
-        // Specific URL
-        $location = null;
-        if (substr($uri,0,4)=='http') {
-            $location = $uri;
-        } else {
-            $location = self::base(true);
-            // Special Trick, // starts at webserver root / starts at app root
-            if (substr($uri,0,2) == '//') {
-                $location .= '/' . ltrim($uri,'/');
-            } elseif (substr($uri,0,1) == '/') {
-                $location .= '/' . ltrim($uri,'/');
-            }
-        }
-
-        // This tried to do some file magic, too ugly
-        // $sn = $_SERVER['SCRIPT_NAME'];
-        // $cp = dirname($sn);
-        // $schema = $_SERVER['SERVER_PORT']=='443'?'https':'http';
-        // $host = strlen($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:$_SERVER['SERVER_NAME'];
-        // if (substr($to,0,1)=='/') $location = "$schema://$host$to";
-        // elseif (substr($to,0,1)=='.') // Relative Path
-        // {
-        //   $location = "$schema://$host/";
-        //   $pu = parse_url($to);
-        //   $cd = dirname($_SERVER['SCRIPT_FILENAME']).'/';
-        //   $np = realpath($cd.$pu['path']);
-        //   $np = str_replace($_SERVER['DOCUMENT_ROOT'],'',$np);
-        //   $location.= $np;
-        //   if ((isset($pu['query'])) && (strlen($pu['query'])>0)) $location.= '?'.$pu['query'];
-        // }
-        // }
-
         $hs = headers_sent();
         if ($hs === false) {
             switch ($code) {
@@ -716,8 +683,9 @@ class Radix
                 break;
             }
             header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
-            header("Location: $location");
+            header("Location: $uri");
         }
+
         // Show the HTML?
         if (($hs==true) || ($code==302) || ($code==303)) {
             // todo: draw some javascript to redirect
@@ -726,9 +694,10 @@ class Radix
             $link_div_style = 'background-color: #fff; border: 2px solid #f00; left: 0px; margin: 5px; padding: 3px; ';
             $link_div_style.= 'position: absolute; text-align: center; top: 0px; width: 95%; z-index: 99;';
             echo "<div style='$link_div_style'>\n";
-            echo "<p>Please See: <a href='$uri'>".htmlspecialchars($location)."</a></p>\n";
+            echo "<p>Please See: <a href='$uri'>".htmlspecialchars($uri)."</a></p>\n";
             echo "</div>\n</div>\n";
         }
+
         exit(0);
     }
 
