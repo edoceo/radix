@@ -76,7 +76,8 @@ class SQL
 			return self::$__me->_update($a[0], $a[1], $a[2]);
 		}
 
-		die("static $f");
+		throw new \Exception(sprintf('Undefined Static Function "%s" on %s', $f, __CLASS__));
+
 	}
 
 	/**
@@ -105,7 +106,8 @@ class SQL
 			return $this->_update($a[0], $a[1], $a[2]);
 		}
 
-		die("object $f\n");
+		throw new \Exception(sprintf('Undefined Function "%s" on %s', $f, __CLASS__));
+
 	}
 
 	/**
