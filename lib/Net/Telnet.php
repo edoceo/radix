@@ -72,7 +72,7 @@ class Radix_Telnet
         $data = null; // Bytes Read
         $mode = 'read';
         $send = null; // Bytes to Send as Reply
-        
+
         $r = array($this->_s);
         $w = null;
         $e = null;
@@ -86,8 +86,8 @@ class Radix_Telnet
         default:
             die("Unknown $s");
         }
-        
-        
+
+
 
 //        while ($byte = $this->_recv()) {
 //            // echo '.';
@@ -152,13 +152,14 @@ class Radix_Telnet
             //     }
             // }
             // echo '+';
-            $data .= $byte;
-        }
+//            $data .= $byte;
+//        }
+
         if (!empty($send)) {
             echo "To Send: " . bin2hex($send);
             fwrite($this->_s,$send);
         }
-        
+
         // echo "Proper Return\n";
         // echo bin2hex($data) . "\n";
         return $data;
