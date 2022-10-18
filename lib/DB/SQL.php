@@ -87,6 +87,14 @@ class SQL
 	*/
 	function __call($f, $a)
 	{
+		// To prevent E_WARNINGs
+		if (empty($a[1])) {
+			$a[1] = null;
+		}
+		if (empty($a[2])) {
+			$a[2] = null;
+		}
+
 		switch ($f) {
 		case 'delete':
 			return $this->_delete($a[0], $a[1]);
