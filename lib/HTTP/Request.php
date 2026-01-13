@@ -3,7 +3,7 @@
  *
  */
 
-namespace Edoceo\Vena\HTTP;
+namespace Edoceo\Radix\HTTP;
 
 class Request
 {
