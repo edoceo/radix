@@ -83,6 +83,30 @@ class Request
 		return $this->verb;
 	}
 
+	function isAJAX() : bool
+	{
+		$ret = false;
+		if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+			$x = strtoupper($_SERVER['HTTP_X_REQUESTED_WITH']);
+			if ('XMLHTTPREQUEST' === $x) {
+				$ret = true;
+			}
+		}
+		return $ret;
+	}
+
+	function isHTMX() : bool
+	{
+		$ret = false;
+		if ( ! empty($_SERVER['HTTP_HX_REQUEST'])) {
+			$x = strtoupper($_SERVER['HTTP_HX_REQUEST']);
+			if ('TRUE' === $x) {
+				$ret = true;
+			}
+		}
+		return $ret;
+	}
+
 	function setAttribute($k, $v)
 	{
 		$this->attr[$k] = $v;
