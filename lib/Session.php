@@ -176,7 +176,7 @@ class Session
         }
 
         $_SESSION['_radix']['_expires'][ $name ] = array(
-            'md5' => md5(serialize( $_SESSON[ $name ] ) ),
+            'md5' => md5(serialize( $_SESSION[ $name ] ) ),
             'mtime' => time(),
             'xtime' => $time,
         );
