@@ -9,36 +9,40 @@ class Request
 {
 	private $attr = [];
 
-	private $path;
-
 	private $path_full = '';
+
+	private $path_part_list = [];
 
 	private $hash;
 
 	private $verb;
 
+	private $want_type = 'text/html';
+
+	private $want_type_list = [];
+
 	private $_req_head;
 
-	function __construct($path='', $verb='GET')
+	function __construct(string $path='', string $verb='GET')
 	{
-		$this->verb = $verb;
-
 		if (empty($path)) {
 			$path = $_SERVER['REQUEST_URI'];
 		}
-
-		$this->hash = sha1($path . $verb);
-
-
 		$path = strtok($path, '?');
 		$path = ltrim($path, '/');
 		$this->path_full = $path;
+		$this->path_part_list = explode('/', $this->path_full);
 
-		$path_enc = rawurlencode($path);
-		$path = explode('/', $path);
+		$this->verb = $verb;
 
-		// $repo = array_shift($path);
+		$this->hash = sha1($this->path_full . $this->verb);
 
+		// Accept Header
+		$this->want_type_list = explode(',', $_SERVER['HTTP_ACCEPT']);
+		$this->want_type = strtolower($this->want_type_list[0]);
+		$this->want_type = strtok($this->want_type, ';');
+
+		// Copy Request Header
 		$req_head = [];
 		foreach ($_SERVER as $k => $v) {
 			if (preg_match('/^HTTP_(.+)$/', $k, $m)) {
@@ -47,12 +51,12 @@ class Request
 				$req_head[$k] = $v;
 			}
 		}
-		unset($req_head['host']);
-		unset($req_head['via']);
-		unset($req_head['x-forwarded-for']);
-		unset($req_head['x-forwarded-host']);
-		unset($req_head['x-forwarded-proto']);
-		ksort($req_head);
+		// unset($req_head['host']);
+		// unset($req_head['via']);
+		// unset($req_head['x-forwarded-for']);
+		// unset($req_head['x-forwarded-host']);
+		// unset($req_head['x-forwarded-proto']);
+		// ksort($req_head);
 
 		$this->_req_head = $req_head;
 
@@ -60,12 +64,17 @@ class Request
 
 	function getAttribute($k)
 	{
-		return $this->attr[$k] ?? '';
+		return $this->attr[$k] ?? null;
 	}
 
-	function getHash()
+	function getHash() : string
 	{
 		return $this->hash;
+	}
+
+	function getHeader(string $k) : string
+	{
+		return $this->_req_head[$k] ?: '';
 	}
 
 	function getHeaders()
@@ -73,10 +82,17 @@ class Request
 		return $this->_req_head;
 	}
 
-	function getPath()
+	function getPath() : string
 	{
 		return $this->path_full;
 	}
+
+	function getPathPart($idx) : string
+	{
+		$x = $this->path_list[$idx] ?: '';
+		return $x;
+	}
+
 
 	function getVerb()
 	{
