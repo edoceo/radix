@@ -60,14 +60,98 @@ class Router
 		$path = $REQ->getPath();
 		$verb = $REQ->getVerb();
 
+		$next = $this->resolvePath($path, $verb);
+		$func = $this->resolveNext($next);
+
+		if ( ! is_callable($func)) {
+			throw new \Exception(sprintf("Server Error [AHR-067]\nUndefined: %s", $next), 500);
+		}
+
+		$RES = $func($REQ);
+
+		if (empty($RES)) {
+			throw new \Exception(sprintf("Server Error [AHR-073]\nUndefined: %s", $next), 500);
+		}
+
+		return $RES;
+
+	}
+
+	function resolveNext($next)
+	{
+		$RES = null;
+
+		// If is Callable?
+		if (is_callable($next)) {
+			return $next;
+			// $RES = call_user_func($next, $REQ);
+			// return $RES;
+		}
+
+		if (is_string($next)) {
+
+			if (str_contains($next, '::')) {
+				return $next;
+				// return $next($REQ);
+			}
+
+			if (str_contains($next, ':')) {
+				// return $next;
+				// return $next($REQ);
+				[$c, $m] = explode(':', $next, 2);
+				return [new $c(), $m ];
+			}
+
+			if (function_exists($next)) {
+				return $next;
+			}
+
+			if (class_exists($next)) {
+				return new $next;
+			}
+
+			// // matches plain function name
+			// if (preg_match('/^\w+$/', $next)) {
+			// 	// Is a function name
+			// }
+
+			// // Vendor\Project\Library\Class::factory()
+			// if (preg_match('/^\w+\\.+::\w+$/', $next)) {
+			// 	// Is class name with static function
+			// }
+
+			// // Vendor\Project\Library\Class:factory()
+			// if (preg_match('/^\w+\\.+:\w+$/', $next)) {
+			// 	// Is class name with instance function
+			// }
+
+			// // Vendor\Project\Library\Class
+			// if (preg_match('/^\w+\\[^:]+$/', $next)) {
+			// 	// Is class name, call magic function __invoke()
+			// }
+
+			// if (class_exists($next)) {
+			// 	$next = new $next();
+			// 	$RES = $next->handle($REQ);
+			// 	return $RES;
+			// }
+			// if (function_exists($next)) {
+			// 	// echo "FUNK\n";
+			// 	$RES = call_user_func($next, $REQ);
+			// 	return $RES;
+			// }
+		}
+
+	}
+
+	function resolvePath($path, $verb)
+	{
 		$path = trim($path, '/');
 		$path_part_list = explode('/', $path);
 
 		$args = [];
 		$node = $this->root;
 		foreach ($path_part_list as $part) {
-
-			// echo "$part<br>\n";
 
 			// First Static Match
 			if ( ! empty($node->staticChildren[$part])) {
@@ -94,28 +178,13 @@ class Router
 
 		$next = $node->handlers[$verb];
 
-		$RES = null;
-
-		// If is Callable?
-		if (is_callable($next)) {
-			$RES = call_user_func($next, $REQ);
-			return $RES;
-		} elseif (is_string($next)) {
-			if (class_exists($next)) {
-				$next = new $next();
-				$RES = $next->handle($REQ);
-			}
-			if (function_exists($next)) {
-				// echo "FUNK\n";
-				$RES = call_user_func($next, $REQ);
-			}
-		}
-
-		if (empty($RES)) {
-			throw new \Exception(sprintf("Server Error [AHR-117]\nUndefined: %s", $next), 500);
-		}
-
-		return $RES;
+		return $next;
 
 	}
+
+	function save()
+	{
+
+	}
+
 }
