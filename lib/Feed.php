@@ -69,14 +69,25 @@ class Feed implements \ArrayAccess, \Iterator
             $this->_meta['note'] = strval($this->xml->channel->description);
             $this->_meta['link'] = strval($this->xml->channel->link);
             $this->_meta['time_updated'] = strtotime($this->xml->channel->pubDate);
+
+            $ns_list = $this->xml->getDocNamespaces(true, true);
+
             foreach ($this->xml->channel->item as $item) {
                 // radix::dump($item);
-                $this->_list[] = array(
+                $node = array(
                     'name' => strval($item->title),
                     'note' => strval($item->description),
                     'link' => strval($item->link),
                     'time_updated' => strval($item->pubDate),
+                    'node_list' => array(),
                 );
+                foreach ($ns_list as $ns_pre => $ns_url) {
+                    $ch_list = $item->children($ns_pre, true);
+                    foreach ($ch_list as $idx => $nsn) {
+                        $node['node_list'][] = $nsn;
+                    }
+                }
+                $this->_list[] = $node;
             }
             break;
         default:
@@ -86,7 +97,7 @@ class Feed implements \ArrayAccess, \Iterator
         // @todo should parse to common thing here?
 
         $this->_idx = 0;
-        // $this->_max = count($this->_list);
+        $this->_max = count($this->_list);
         // $this->_max = count($this->_feed);
         return true;
     }
