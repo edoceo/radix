@@ -65,7 +65,7 @@ class Radix
 
 		spl_autoload_register(function($c) {
 
-			$file = str_replace('Radix\\', null, $c);
+			$file = str_replace('Radix\\', '', $c);
 			$file = str_replace('\\', '/', $file);
 			$path = sprintf('%s/lib/%s.php', RADIX_ROOT, $file);
 
@@ -122,37 +122,6 @@ class Radix
     }
 
     /**
-        Create a new Route, routes are only process once (that is, no cascade/recurse)
-
-        @param $src = the source path, regular expression (with capture)
-        @param $dst = the destination path
-        @param $arg = the by-ref argument of where to put the matched stuff
-    */
-    public static function route($src=null,$dst=null,&$arg=null)
-    {
-        // Accept the $src as RE, but escape only the '/'
-        $src = str_replace('/','\/',$src);
-        self::$_route_list[] = array(
-            'src' => $src,
-            'dst' => $dst,
-            'arg' => $arg,
-        );
-
-        // @deprecated - over-rides existing pages/scripts cause it's in front
-        //               we want routes to trigger if no Controller/View Found
-        if (preg_match("/$src/i",$_SERVER['REQUEST_URI'],$m)) {
-            Radix::$path = $dst;
-            if ($arg !== null) {
-                $arg = array_merge($arg,$m);
-            } else {
-                $_GET = array_merge($_GET,$m);
-            }
-        }
-        // die( $src );
-        // if (preg_match(
-    }
-
-    /**
 
     */
     public static function stat()
@@ -181,7 +150,7 @@ class Radix
         foreach ($list as $file) {
             if (is_file($file)) return true;
         }
- 
+
         return false;
     }
 
@@ -374,7 +343,7 @@ class Radix
             return(true);
         }
 
-        $body = null;
+        $body = '';
 
         // An Error
         if (is_numeric($ecode)) {
@@ -436,7 +405,7 @@ class Radix
     */
     public static function base($full=false)
     {
-        $base = null;
+        $base = '';
         if ($full) {
             // Find Hostname
             $host = $_SERVER['SERVER_NAME'];
@@ -475,7 +444,7 @@ class Radix
     {
         // @todo Find First Best one and break loop
         // $list = array('PATH_INFO','SCRIPT_URI');
-        $path = null;
+        $path = '';
         if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
             $path = $_SERVER['HTTP_X_REWRITE_URL'];
         } elseif (isset($_SERVER['REQUEST_URI'])) {
@@ -502,7 +471,7 @@ class Radix
         $path = parse_url($path,PHP_URL_PATH);
         // If there is a Base value, remove it
         if (self::$base != '/') {
-            $path = str_replace(self::$base,null,$path);
+            $path = str_replace(self::$base, '', $path);
         }
         // Refine
         if (empty($path)) $path = '/';
@@ -513,10 +482,11 @@ class Radix
 
     /**
 		@return True if AJAX requested
+        @deprecated use the Request->isAjax()
     */
-    public static function isAjax($ua=null)
+    public static function isAjax($ua='')
     {
-        $chk = strtolower($ua == null ? $_SERVER['HTTP_X_REQUESTED_WITH'] : $ua);
+        $chk = strtolower($ua == '' ? $_SERVER['HTTP_X_REQUESTED_WITH'] : $ua);
         return ('xmlhttprequest' == $chk);
     }
 
@@ -526,7 +496,7 @@ class Radix
     */
     public static function info()
     {
-        $html = null;
+        $html = '';
         $html.= 'root:' . self::$root . '<br>'; // Root Path of Application
         $html.= 'host:' . self::$host . '<br>'; // Hostname
         $html.= 'base:' . self::$base . '<br>'; // Web-Base of Application ( "/" or "/something" )
@@ -540,7 +510,7 @@ class Radix
         $html.= 'routes:<br>';
         foreach (self::$_route_list as $k=>$v) {
             $html.= ('@' . htmlspecialchars($v['src']) . ' = ' . htmlspecialchars($v['dst']) . '<br>');
-        }                                                                                                                                                      
+        }
         // $html.= 'module:self::$m"; // Module of Request?
         // $html.= "view:$view; // The View Object
         if (php_sapi_name() == 'cli') {
@@ -570,7 +540,7 @@ class Radix
     */
     static function trace($x=null)
     {
-        $buf = null;
+        $buf = '';
         $dbt = debug_backtrace();
         $idx = 0;
 
@@ -637,7 +607,7 @@ class Radix
         @param $uri to redirect to
         @param $code HTTP code, default 302, or full HTTP status line
     */
-    public static function redirect($uri=null,$code=302)
+    public static function redirect($uri='',$code=302)
     {
         // Special Case of Missing
         if (empty($uri)) {
@@ -724,7 +694,7 @@ class Radix
             return $html;
         }
     }
-    
+
     /**
         Wrapper for htmlentities
     */
