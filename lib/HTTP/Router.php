@@ -23,11 +23,31 @@ class Router
 	}
 
 	/**
-	 *
+	 * @note Old Implementation had this backwards
+	 * it went $path, $next, $verb
+	 * It should be $path, $verb, $next
 	 */
 	function add($path0, $next0, $verb0='GET')
 	{
 		$path = trim($path0, '/');
+
+		// When $next0 == $2 to this function
+		// Eventually swap properly
+		if (is_string($next0)) {
+			switch ($next0) {
+				case 'GET':
+				case 'POST':
+				case 'OPTIONS':
+				case 'HEAD':
+				case 'PUT':
+					// Swap Them
+					$tmp = $next0;
+					$verb0 = $next0;
+					$next0 = $tmp;
+					break;
+			}
+		}
+
 		$verb = strtoupper($verb0);
 
 		// Find or Create My Node to Attach To
@@ -50,6 +70,16 @@ class Router
 
 		$node->handlers[$verb] = $next0;
 
+	}
+
+	function get($path0, $next0)
+	{
+		return $this->add($path0, 'GET', $next0);
+	}
+
+	function post($path0, $next0)
+	{
+		return $this->add($path0, 'POST', $next0);
 	}
 
 	/**
