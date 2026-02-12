@@ -41,7 +41,7 @@ class Router
 				case 'HEAD':
 				case 'PUT':
 					// Swap Them
-					$tmp = $next0;
+					$tmp = $verb0;
 					$verb0 = $next0;
 					$next0 = $tmp;
 					break;
