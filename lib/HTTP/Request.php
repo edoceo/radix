@@ -23,7 +23,7 @@ class Request
 
 	private $_req_head;
 
-	function __construct(string $path='', string $verb='GET')
+	function __construct(string $path='', string $verb='')
 	{
 		if (empty($path)) {
 			$path = $_SERVER['REQUEST_URI'];
@@ -32,6 +32,11 @@ class Request
 		$path = ltrim($path, '/');
 		$this->path_full = $path;
 		$this->path_part_list = explode('/', $this->path_full);
+
+		if (empty($verb)) {
+			$verb = $_SERVER['REQUEST_METHOD'];
+		}
+		$verb = strtoupper($verb);
 
 		$this->verb = $verb;
 
