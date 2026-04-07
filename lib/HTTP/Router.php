@@ -87,10 +87,42 @@ class Router
 	 */
 	function handle($REQ)
 	{
+		// Resolve Path & Parameters
 		$path = $REQ->getPath();
-		$verb = $REQ->getVerb();
+		$path = trim($path, '/');
+		$path_part_list = explode('/', $path);
 
-		$next = $this->resolvePath($path, $verb);
+		$args = [];
+		$node = $this->root;
+		foreach ($path_part_list as $part) {
+
+			// First Static Match
+			if ( ! empty($node->staticChildren[$part])) {
+				$node = $node->staticChildren[$part];
+				continue;
+			}
+
+			if ( ! empty($node->paramChild)) {
+				$node = $node->paramChild;
+				// $args[ $node->paramName ] = $part;
+				$REQ->setAttribute($node->paramName, $part);
+				continue;
+			}
+
+			// Then It's Not Found
+			// http_response_code(404);
+			throw new \Exception('Not Found', 404);
+		}
+
+		// Resolve Verb
+		$verb = $REQ->getVerb();
+		if (empty($node->handlers[$verb])) {
+			// http_response_code(405);
+			throw new \Exception('Method Not Allowed', 405);
+		}
+
+		$next = $node->handlers[$verb];
+
 		$func = $this->resolveNext($next);
 
 		if ( ! is_callable($func)) {
@@ -171,44 +203,6 @@ class Router
 			// 	return $RES;
 			// }
 		}
-
-	}
-
-	function resolvePath($path, $verb)
-	{
-		$path = trim($path, '/');
-		$path_part_list = explode('/', $path);
-
-		$args = [];
-		$node = $this->root;
-		foreach ($path_part_list as $part) {
-
-			// First Static Match
-			if ( ! empty($node->staticChildren[$part])) {
-				$node = $node->staticChildren[$part];
-				continue;
-			}
-
-			if ( ! empty($node->paramChild)) {
-				$node = $node->paramChild;
-				// $args[ $node->paramName ] = $part;
-				$REQ->setAttribute($node->paramName, $part);
-				continue;
-			}
-
-			// Then It's Not Found
-			http_response_code(404);
-			throw new \Exception('Not Found', 404);
-		}
-
-		if (empty($node->handlers[$verb])) {
-			http_response_code(405);
-			throw new \Exception('Method Not Allowed', 405);
-		}
-
-		$next = $node->handlers[$verb];
-
-		return $next;
 
 	}
 

@@ -37,7 +37,6 @@ class Request
 			$verb = $_SERVER['REQUEST_METHOD'];
 		}
 		$verb = strtoupper($verb);
-
 		$this->verb = $verb;
 
 		$this->hash = sha1($this->path_full . $this->verb);
