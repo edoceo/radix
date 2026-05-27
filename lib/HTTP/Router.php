@@ -109,10 +109,16 @@ class Router
 				continue;
 			}
 
-			// Then It's Not Found
-			// http_response_code(404);
+			// No Path Part = Not Found
 			throw new \Exception('Not Found', 404);
 		}
+
+
+		// No Handler = Not Found
+		if (empty($node->handlers)) {
+			throw new \Exception('Not Found', 404);
+		}
+
 
 		// Resolve Verb
 		$verb = $REQ->getVerb();
